@@ -1,0 +1,17 @@
+{
+	"editor.defaultFormatter": "oxc.oxc-vscode",
+	"explorer.fileNesting.enabled": true,
+	"explorer.fileNesting.patterns": {
+		"tsconfig.json": "tsconfig.*.json, env.d.ts",
+		"vite.config.*": "jsconfig*, vitest.config.*,uno.config.*,.oxfmtrc*, .oxlint*",
+		"package.json": "package-lock.json, pnpm*",
+		".env.example": ".env*"
+	},
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "explicit"
+	},
+	"editor.formatOnSave": true,
+	"vue.hover.rich": true,
+	"oxc.lint.run": "onSave",
+	"oxc.requireConfig": true
+}

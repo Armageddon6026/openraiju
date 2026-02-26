@@ -1,0 +1,17 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"semi": false,
+	"singleQuote": true,
+	"printWidth": 100,
+	"endOfLine": "lf",
+	"useTabs": true,
+	"tabWidth": 2,
+	"insertFinalNewline": true,
+	"ignorePatterns": [
+		"**/dist/**",
+		"**/dist-ssr/**",
+		"**/coverage/**",
+		"auto-imports.d.ts",
+		"components.d.ts"
+	]
+}
