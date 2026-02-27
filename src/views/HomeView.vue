@@ -1,5 +1,7 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { Button } from 'primevue'
+</script>
 
 <template>
-	<main></main>
+	<Button>Hello World</Button>
 </template>

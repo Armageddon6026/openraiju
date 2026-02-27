@@ -1,11 +1,5 @@
 html {
 	min-height: 100vh;
 	margin: 0;
-	background-image: radial-gradient(
-		140% 120% at 110% 120%,
-		#282828 0%,
-		#db96a6 40%,
-		#403d9d 65%,
-		#ffffff 90%
-	);
+	background-color: rgb(35, 35, 35);
 }
