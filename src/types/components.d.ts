@@ -14,12 +14,13 @@ declare module 'vue' {
     Avatar: typeof import('primevue/avatar')['default']
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
-    Dock: typeof import('primevue/dock')['default']
+    ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     Image: typeof import('primevue/image')['default']
     Menu: typeof import('primevue/menu')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./../components/Sidebar.vue')['default']
+    SidebarV2: typeof import('../components/Sidebar.vue')['default']
     Toast: typeof import('primevue/toast')['default']
   }
   export interface GlobalDirectives {

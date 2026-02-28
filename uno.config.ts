@@ -12,7 +12,17 @@ export default defineConfig({
 	presets: [
 		presetWind4(),
 		presetAttributify(),
-		presetIcons(),
+		presetIcons({
+			collections: {
+				brands: {
+					razer: async () => {
+						return await fetch(
+							`https://assets2.razerzone.com/images/phoenix/razer-ths-logo.svg`,
+						).then((res) => res.text())
+					},
+				},
+			},
+		}),
 		presetWebFonts({
 			provider: 'google',
 		}),
