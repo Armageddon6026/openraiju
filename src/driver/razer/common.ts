@@ -18,22 +18,28 @@ export enum razer_report_type {
 export async function sendCommand(
 	device: HIDDevice,
 	request: Uint8Array<ArrayBuffer>,
+	wait_min: number = 500,
 ): Promise<DataView<ArrayBufferLike>> {
 	if (!device.opened) {
 		await device.open()
 	}
 
 	await device.sendFeatureReport(0x00, request)
-	await new Promise((resolve) => setTimeout(resolve, 50))
+	await new Promise((resolve) => setTimeout(resolve, wait_min))
 
 	return device.receiveFeatureReport(0x00)
 }
 
-export function buildRazerReport(data_size: number, command_class: number, command_id: number) {
+export function buildRazerReport(
+	transaction_id: number,
+	data_size: number,
+	command_class: number,
+	command_id: number,
+) {
 	const data = new Uint8Array(razer_report_type.report_buffer_size)
 
 	data[razer_report_type.status_index] = 0x00
-	data[razer_report_type.transaction_id_index] = 0x1f
+	data[razer_report_type.transaction_id_index] = transaction_id
 	data[razer_report_type.remaining_packets_msb_index] = 0x00
 	data[razer_report_type.remaining_packets_lsb_index] = 0x00
 	data[razer_report_type.protocol_type_index] = 0x00
@@ -49,7 +55,7 @@ export function buildRazerReport(data_size: number, command_class: number, comma
 	return data
 }
 
-export function calculateCRC(data: Uint8Array<ArrayBuffer>) {
+function calculateCRC(data: Uint8Array<ArrayBuffer>) {
 	let crc = 0
 	for (
 		let i = razer_report_type.remaining_packets_msb_index;

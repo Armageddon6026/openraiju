@@ -1,19 +1,26 @@
 <script setup lang="ts">
 import { SUPPORTED_DEVICE_LIST } from '@/driver'
-import type { HIDDeviceConfig } from '@/driver/types'
 import { useToast } from 'primevue/usetoast'
 
+type HIDDeviceData = {
+	config: HIDDeviceConfig
+	handle: HIDDevice
+	BatteryLevel?: number
+}
+
 const toast = useToast()
-const hid_devices = ref<HIDDeviceConfig[]>([])
-const level = ref(0)
-const fs = SUPPORTED_DEVICE_LIST.map((d) => d.filter)
+const hid_devices = ref<HIDDeviceData[]>([])
+
+onMounted(async () => {
+	await getHidDevices()
+})
 
 async function connectDevice() {
 	const summary = 'hid device connect'
 
 	try {
 		const devices = await navigator.hid.requestDevice({
-			filters: fs,
+			filters: SUPPORTED_DEVICE_LIST,
 		})
 
 		if (devices.length < 1) {
@@ -43,9 +50,21 @@ async function connectDevice() {
 			severity: 'error',
 			summary: summary,
 			detail: `${e}`,
-			life: 3000, // 自動消失時間 (ms)
+			life: 3000,
 		})
 	}
+}
+
+async function disconnectDevice(device: HIDDevice) {
+	const summary = 'hid device disconnect'
+
+	try {
+		if (device.opened) {
+			await device.close()
+		}
+
+		await device.forget()
+	} catch (e) {}
 }
 
 async function getHidDevices() {
@@ -55,50 +74,74 @@ async function getHidDevices() {
 	}
 
 	devices.forEach(async (device) => {
-		const deviceInfo = SUPPORTED_DEVICE_LIST.find(
-			(d) => d.filter.vendorId === device.vendorId && d.filter.productId === device.productId,
+		const deviceConf = SUPPORTED_DEVICE_LIST.find(
+			(d) => d.vendorId === device.vendorId && d.productId === device.productId,
 		)
-		if (deviceInfo) {
-			hid_devices.value.push(deviceInfo)
-			await getBatteryLevel(device, deviceInfo)
+
+		if (deviceConf) {
+			const hid_device: HIDDeviceData = {
+				config: deviceConf,
+				handle: device,
+			}
+			// get battery level if supported
+			if (deviceConf.getBatteryLevel) {
+				hid_device.BatteryLevel = await deviceConf.getBatteryLevel(device)
+			}
+
+			hid_devices.value.push(hid_device)
 		}
 	})
 }
-
-async function getBatteryLevel(device: HIDDevice, config: HIDDeviceConfig) {
-	if (!config.features || !config.features.getBatteryLevel) {
-		return
-	}
-
-	level.value = await config.features.getBatteryLevel(device)
-}
-
-onMounted(async () => {
-	await getHidDevices()
-})
 </script>
 
 <template>
 	<div>
 		<h1 text="4xl gray-200" font="bold">DASHBOARD</h1>
-		<Button @click="connectDevice">ADD</Button>
-		<div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-6">
-			<Card v-for="device in hid_devices" class="bg-[#222] border-none w-[280px]">
+		<div grid="~ cols-[repeat(auto-fill,280px)]" mt="8" gap="6" justify="center" md:justify="start">
+			<Card
+				@click="connectDevice"
+				un-border="2 gray-600 dashed"
+				w="280px"
+				cursor="pointer"
+				hover="bg-#2a2a2a"
+				duration="300"
+			>
+				<template #content>
+					<div
+						flex="~ col"
+						items="center"
+						justify="center"
+						h="250px"
+						space="y-4"
+						text="gray-500"
+						font="bold"
+					>
+						<span i="material-symbols-add-circle-outline" text="30px "></span>
+						<span text="20px"> ADD DEVICE </span>
+					</div>
+				</template>
+			</Card>
+			<Card v-for="device in hid_devices" bg="#222" w="280px">
 				<template #header>
-					<div class="flex items-center justify-center">
-						<Image :src="device.ui.image" alt="Image" width="150" />
+					<div flex="~" items="center" justify="center">
+						<Image :src="device.config.ui.image" alt="Image" width="150" />
 					</div>
 				</template>
 				<template #title>
-					<h2 class="text-lg font-bold text-gray-200">{{ device.ui.name }}</h2>
+					<h2 text="lg gray-200" font="bold">{{ device.config.ui.name }}</h2>
 				</template>
 				<template #subtitle>
-					<p class="text-sm text-gray-400">{{ device.ui.type }}</p>
-					<p class="text-sm text-gray-400">{{ level }}%</p>
+					<p text="sm gray-400">{{ device.config.ui.type }}</p>
+					<p text="sm gray-400">{{ device.BatteryLevel }}%</p>
 				</template>
 				<template #footer>
-					<div class="flex justify-end">
-						<Button label="Settings" severity="secondary" text />
+					<div flex="~" justify="end">
+						<Button
+							label="Disconnect"
+							severity="danger"
+							variant="outlined"
+							@click="disconnectDevice(device.handle)"
+						></Button>
 					</div>
 				</template>
 			</Card>
