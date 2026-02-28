@@ -16,14 +16,9 @@ declare module 'vue' {
     Card: typeof import('primevue/card')['default']
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     Image: typeof import('primevue/image')['default']
-    Menu: typeof import('primevue/menu')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./../components/Sidebar.vue')['default']
-    SidebarV2: typeof import('../components/Sidebar.vue')['default']
     Toast: typeof import('primevue/toast')['default']
-  }
-  export interface GlobalDirectives {
-    Ripple: typeof import('primevue/ripple')['default']
   }
 }

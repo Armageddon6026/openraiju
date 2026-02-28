@@ -20,11 +20,18 @@
 		<div flex="~ col" items="center" gap="4">
 			<Button icon="i-material-symbols-settings-outline" variant="text"></Button>
 			<div h="px" w="8" bg="#333"></div>
-			<Avatar
-				image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
-				shape="circle"
-				class="!w-10 !h-10 cursor-pointer hover:ring-2 ring-gray-500 transition-all"
-			/>
+			<a
+				href="https://github.com/Armageddon6026"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="inline-block"
+			>
+				<Avatar
+					image="https://avatars.githubusercontent.com/u/104087939?s=400&u=15d47d5992d37d815bb4edeba2b50767d3738c25&v=4"
+					shape="circle"
+					class="!w-10 !h-10 cursor-pointer hover:ring-2 ring-gray-500 transition-all"
+				/>
+			</a>
 		</div>
 	</aside>
 </template>

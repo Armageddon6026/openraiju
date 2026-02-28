@@ -6,12 +6,13 @@ const router = createRouter({
 	routes: [
 		{
 			path: '/',
+			redirect: '/razer',
 			component: DashboardLayout,
 			children: [
 				{
-					path: '',
-					name: 'home',
-					component: () => import('../views/HomeView.vue'),
+					path: 'razer',
+					name: 'razer',
+					component: () => import('../views/RazerView.vue'),
 				},
 				{
 					path: 'about',

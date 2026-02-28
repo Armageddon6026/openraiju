@@ -129,6 +129,23 @@ async function getHidDevices() {
 		}
 	})
 }
+
+const getBatteryIcon = (level: number | undefined) => {
+	if (level === undefined || level === null)
+		return 'i-material-symbols-battery-android-question-outline'
+	if (level <= 10) return 'i-material-symbols-battery-android-alert-outline'
+	if (level <= 16) return 'i-material-symbols-battery-android-frame-1'
+	if (level <= 32) return 'i-material-symbols-battery-android-frame-2'
+	if (level <= 48) return 'i-material-symbols-battery-android-frame-3'
+	if (level <= 64) return 'i-material-symbols-battery-android-frame-4'
+	if (level <= 80) return 'i-material-symbols-battery-android-frame-5'
+	if (level <= 95) return 'i-material-symbols-battery-android-frame-6'
+	return 'i-material-symbols-battery-android-frame-full'
+}
+
+const getBatteryColor = (level: number | undefined) => {
+	return !level || level <= 20 ? 'text-red-500' : 'text-green-500'
+}
 </script>
 
 <template>
@@ -158,8 +175,22 @@ async function getHidDevices() {
 					</div>
 				</template>
 			</Card>
-			<Card v-for="device in hid_devices" bg="#222" w="280px">
+			<Card
+				v-for="device in hid_devices"
+				bg="#222"
+				w="280px"
+				relative="~"
+				cursor="pointer"
+				un-border="1 green-500"
+				hover="bg-#2a2a2a"
+			>
 				<template #header>
+					<div absolute="~" top="3" right="3" fleX="~" items="center" gap="1">
+						<span text="xs gray-400" font="mono">{{ device.BatteryLevel }}%</span>
+						<div
+							:class="[getBatteryIcon(device.BatteryLevel), getBatteryColor(device.BatteryLevel)]"
+						></div>
+					</div>
 					<div flex="~" items="center" justify="center">
 						<Image :src="device.config.ui.image" alt="Image" width="150" />
 					</div>
