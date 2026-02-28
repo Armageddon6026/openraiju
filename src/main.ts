@@ -6,6 +6,7 @@ import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import { definePreset } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
+import ToastService from 'primevue/toastservice'
 
 import App from './App.vue'
 import router from './router'
@@ -31,6 +32,7 @@ const RazerPreset = definePreset(Aura, {
 const app = createApp(App)
 
 app.use(createPinia())
+app.use(ToastService)
 app.use(PrimeVue, {
 	theme: {
 		preset: RazerPreset,

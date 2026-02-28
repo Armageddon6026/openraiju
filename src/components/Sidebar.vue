@@ -3,8 +3,6 @@ import type { MenuItem } from 'primevue/menuitem'
 import { ref } from 'vue'
 
 const items = ref<MenuItem[]>()
-
-async function fetchItems() {}
 </script>
 
 <template>
@@ -23,6 +21,7 @@ async function fetchItems() {}
 			<div p="2" mt="auto">
 				<Button v-ripple class="w-full flex justify-center" label="Primary" variant="outlined">
 					<span i-material-symbols-settings-outline-rounded />
+					<p>Settings</p>
 				</Button>
 			</div>
 		</template>

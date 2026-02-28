@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@primeuix/themes':
-        specifier: ^2.0.3
-        version: 2.0.3
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.29(typescript@5.9.3))
@@ -27,6 +24,12 @@ importers:
       '@iconify-json/material-symbols':
         specifier: ^1.2.58
         version: 1.2.58
+      '@primeuix/themes':
+        specifier: ^2.0.3
+        version: 2.0.3
+      '@primevue/auto-import-resolver':
+        specifier: ^4.5.4
+        version: 4.5.4
       '@tsconfig/node24':
         specifier: ^24.0.4
         version: 24.0.4
@@ -532,6 +535,10 @@ packages:
     resolution: {integrity: sha512-pZ5f+vj7wSzRhC7KoEQRU5fvYAe+RP9+m39CTscZ3UywCD1Y2o6Fe1rRgklMPSkzUcty2jzkA0zMYkiJBD1hgg==}
     engines: {node: '>=12.11.0'}
 
+  '@primevue/auto-import-resolver@4.5.4':
+    resolution: {integrity: sha512-YQHrZ9PQSG/4K2BwthA2Xuna4WyS0JMHajiHD9PljaDyQtBVwCadX5ZpKcrAUWR8E/1gjva8x/si0RYxxYrRJw==}
+    engines: {node: '>=12.11.0'}
+
   '@primevue/core@4.5.4':
     resolution: {integrity: sha512-lYJJB3wTrDJ8MkLctzHfrPZAqXVxoatjIsswSJzupatf6ZogJHVYADUKcn1JAkLLk8dtV1FA2AxDek663fHO5Q==}
     engines: {node: '>=12.11.0'}
@@ -540,6 +547,10 @@ packages:
 
   '@primevue/icons@4.5.4':
     resolution: {integrity: sha512-DxgryEc7ZmUqcEhYMcxGBRyFzdtLIoy3jLtlH1zsVSRZaG+iSAcjQ88nvfkZxGUZtZBFL7sRjF6KLq3bJZJwUw==}
+    engines: {node: '>=12.11.0'}
+
+  '@primevue/metadata@4.5.4':
+    resolution: {integrity: sha512-jJFD0KYm8bPYgFo0JP3Dc2RkyXzrMI1XHQGsEKTysx9Jx2d1XdxtFji/ZsQeoo/RmwUNof5ciZ72URq37rnK+g==}
     engines: {node: '>=12.11.0'}
 
   '@quansync/fs@1.0.0':
@@ -1958,6 +1969,10 @@ snapshots:
 
   '@primeuix/utils@0.6.4': {}
 
+  '@primevue/auto-import-resolver@4.5.4':
+    dependencies:
+      '@primevue/metadata': 4.5.4
+
   '@primevue/core@4.5.4(vue@3.5.29(typescript@5.9.3))':
     dependencies:
       '@primeuix/styled': 0.7.4
@@ -1970,6 +1985,8 @@ snapshots:
       '@primevue/core': 4.5.4(vue@3.5.29(typescript@5.9.3))
     transitivePeerDependencies:
       - vue
+
+  '@primevue/metadata@4.5.4': {}
 
   '@quansync/fs@1.0.0':
     dependencies:
