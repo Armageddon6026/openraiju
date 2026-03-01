@@ -96,17 +96,6 @@ async function removeDevice(productId: number) {
 
 	hid_devices.value.splice(index, 1)
 }
-
-function goToDeviceSettings(device: HIDDeviceData) {
-	if (!device.config.productId) {
-		return
-	}
-
-	router.push({
-		name: `razer${device.config.ui.type}`,
-		params: { productId: device.config.productId },
-	})
-}
 </script>
 
 <template>
@@ -134,11 +123,6 @@ function goToDeviceSettings(device: HIDDeviceData) {
 				</div>
 			</template>
 		</Card>
-		<DeviceCard
-			v-for="d in hid_devices"
-			:device="d"
-			@disconnect="removeDevice"
-			@click="goToDeviceSettings(d)"
-		></DeviceCard>
+		<DeviceCard v-for="d in hid_devices" :device="d" @disconnect="removeDevice"></DeviceCard>
 	</div>
 </template>
