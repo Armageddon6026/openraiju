@@ -2,15 +2,21 @@
 import { useToast } from 'primevue'
 import DeviceCard from './components/DeviceCard.vue'
 import { RAZER_MOUSE_DEVICES } from '@/driver/razer/mouse'
+import { useDeviceStore } from '@/stores'
 
 const toast = useToast()
 const router = useRouter()
+const deviceStore = useDeviceStore()
 
-const hid_devices = ref<HIDDeviceData[]>([])
+const { addDevice, removeDevice } = deviceStore
+const { devicesMap } = storeToRefs(deviceStore)
+
 const razer_support_list = [...RAZER_MOUSE_DEVICES /** add more devices here*/]
 
 onMounted(async () => {
-	await getHidDevices()
+	if (devicesMap.value.size < 1) {
+		await getHidDevices()
+	}
 })
 
 async function connectDevice() {
@@ -25,26 +31,35 @@ async function connectDevice() {
 			return
 		}
 
-		const device = devices[0]
+		devices.forEach(async (device) => {
+			const deviceConf = razer_support_list.find(
+				(conf) =>
+					conf.vendorId === device.vendorId &&
+					conf.productId === device.productId &&
+					device.collections[0] !== undefined &&
+					conf.usagePage === device.collections[0].usagePage &&
+					conf.usage === device.collections[0].usage,
+			)
 
-		if (!device) {
+			if (!deviceConf) {
+				toast.add({
+					severity: 'error',
+					summary: summary,
+					detail: 'device not supported',
+					life: 3000,
+				})
+				return
+			}
+
+			await addDevice(deviceConf, device)
+
 			toast.add({
-				severity: 'error',
+				severity: 'success',
 				summary: summary,
-				detail: 'device not found',
-				life: 3000, // 自動消失時間 (ms)
+				detail: `${device.productName} connected`,
+				life: 3000,
 			})
-			return
-		}
-
-		toast.add({
-			severity: 'success',
-			summary: summary,
-			detail: `${device.productName} connected`,
-			life: 3000,
 		})
-
-		await getHidDevices()
 	} catch (e) {
 		toast.add({
 			severity: 'error',
@@ -56,8 +71,6 @@ async function connectDevice() {
 }
 
 async function getHidDevices() {
-	hid_devices.value = []
-
 	const devices = (await navigator.hid.getDevices()).filter((d) => d.collections.length == 1)
 	if (devices.length < 1) {
 		return
@@ -65,46 +78,28 @@ async function getHidDevices() {
 
 	devices.forEach(async (device) => {
 		const deviceConf = razer_support_list.find(
-			(d) =>
-				d.vendorId === device.vendorId &&
-				d.productId === device.productId &&
+			(conf) =>
+				conf.vendorId === device.vendorId &&
+				conf.productId === device.productId &&
 				device.collections[0] !== undefined &&
-				d.usagePage === device.collections[0].usagePage &&
-				d.usage === device.collections[0].usage,
+				conf.usagePage === device.collections[0].usagePage &&
+				conf.usage === device.collections[0].usage,
 		)
 
 		if (deviceConf) {
-			const hid_device: HIDDeviceData = {
-				config: deviceConf,
-				handle: device,
-			}
-			// get battery level if supported
-			if (deviceConf.getBatteryLevel) {
-				hid_device.BatteryLevel = await deviceConf.getBatteryLevel(device)
-			}
-
-			hid_devices.value.push(hid_device)
+			await addDevice(deviceConf, device)
 		}
 	})
 }
 
-async function removeDevice(productId: number) {
-	const index = hid_devices.value.findIndex((d) => d.config.productId === productId)
-	if (index < 0) {
-		return
-	}
-
-	hid_devices.value.splice(index, 1)
-}
-
-function goToDeviceSettings(device: HIDDeviceData) {
-	if (!device.config.productId) {
+function goToDeviceSettings(instanceId: string, type: string) {
+	if (!instanceId) {
 		return
 	}
 
 	router.push({
-		name: `razer${device.config.ui.type}`,
-		params: { productId: device.config.productId },
+		name: `razer${type}`,
+		params: { instanceId: instanceId },
 	})
 }
 </script>
@@ -135,10 +130,10 @@ function goToDeviceSettings(device: HIDDeviceData) {
 			</template>
 		</Card>
 		<DeviceCard
-			v-for="d in hid_devices"
-			:device="d"
-			@click="goToDeviceSettings(d)"
-			@disconnect="removeDevice"
+			v-for="[id, device] in devicesMap"
+			:device="device"
+			@click="goToDeviceSettings(id, device.config.ui.type)"
+			@disconnect="removeDevice(id)"
 		></DeviceCard>
 	</div>
 </template>

@@ -20,7 +20,7 @@ const router = createRouter({
 							component: () => import('@/views/razer/DashboradView.vue'),
 						},
 						{
-							path: 'mouse/:productId',
+							path: 'mouse/:instanceId',
 							name: 'razermouse',
 							component: () => import('@/views/razer/MouseView.vue'),
 						},
