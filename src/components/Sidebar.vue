@@ -11,27 +11,30 @@
 		</div>
 
 		<nav flex="~ 1 col" gap="4" p="3">
-			<Button icon="i-brands-razer" variant="outlined"> </Button>
+			<Button as="router-link" to="/razer" icon="i-brands-razer" variant="outlined"> </Button>
 			<!-- add other brand buttons here 
 			<Button icon="i-brands-logitech" variant="outlined"></Button>
 			-->
 		</nav>
 
 		<div flex="~ col" items="center" gap="4">
-			<Button icon="i-material-symbols-settings-outline" variant="text"></Button>
+			<Button
+				as="router-link"
+				to="/setting"
+				icon="i-material-symbols-settings-outline"
+				variant="text"
+			></Button>
 			<div h="px" w="8" bg="#333"></div>
-			<a
+			<Button
+				icon="i-commons-github"
+				as="a"
 				href="https://github.com/Armageddon6026"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="inline-block"
+				severity="secondary"
+				variant="text"
 			>
-				<Avatar
-					image="https://avatars.githubusercontent.com/u/104087939?s=400&u=15d47d5992d37d815bb4edeba2b50767d3738c25&v=4"
-					shape="circle"
-					class="!w-10 !h-10 cursor-pointer hover:ring-2 ring-gray-500 transition-all"
-				/>
-			</a>
+			</Button>
 		</div>
 	</aside>
 </template>

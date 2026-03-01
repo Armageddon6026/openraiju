@@ -21,6 +21,13 @@ export default defineConfig({
 						).then((res) => res.text())
 					},
 				},
+				commons: {
+					github: async () => {
+						return await fetch(`https://api.iconify.design/grommet-icons:github.svg`).then((res) =>
+							res.text(),
+						)
+					},
+				},
 			},
 		}),
 		presetWebFonts({

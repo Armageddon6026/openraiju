@@ -53,17 +53,6 @@ async function disconnectDevice(device: HIDDeviceData) {
 	})
 }
 
-function goToDeviceSettings(device: HIDDeviceData) {
-	if (!device.config.productId) {
-		return
-	}
-
-	router.push({
-		name: `razer${device.config.ui.type}`,
-		params: { productId: device.config.productId },
-	})
-}
-
 function getBatteryIcon(level: number | undefined): string {
 	if (level === undefined || level === null)
 		return 'i-material-symbols-battery-android-question-outline'
@@ -95,7 +84,6 @@ const emits = defineEmits<{
 		cursor="pointer"
 		un-border="1 green-500"
 		hover="bg-#2a2a2a"
-		@click="goToDeviceSettings(device)"
 	>
 		<template #header>
 			<div
