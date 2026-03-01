@@ -12,15 +12,15 @@ const router = createRouter({
 				{
 					path: 'razer',
 					name: 'razer',
-					component: () => import('../views/RazerView.vue'),
+					component: () => import('../views/razer/DashboradView.vue'),
 				},
 				{
-					path: 'about',
-					name: 'about',
+					path: 'setting',
+					name: 'setting',
 					// route level code-splitting
 					// this generates a separate chunk (About.[hash].js) for this route
 					// which is lazy-loaded when the route is visited.
-					component: () => import('../views/AboutView.vue'),
+					component: () => import('../views/SettingView.vue'),
 				},
 			],
 		},

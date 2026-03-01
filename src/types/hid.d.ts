@@ -11,3 +11,9 @@ declare interface HIDDeviceConfig extends HIDDeviceFilter {
 	// option
 	getBatteryLevel?: (this: HIDDeviceConfig, device: HIDDevice) => Promise<number>
 }
+
+declare interface HIDDeviceData {
+	config: HIDDeviceConfig
+	handle: HIDDevice
+	BatteryLevel?: number
+}
