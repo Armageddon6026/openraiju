@@ -1,4 +1,5 @@
 export const RAZER_VENDOR_ID = 0x1532
+export const DEVICE_VARIABLE_STORAGE = 0x01
 
 export enum razer_report_type {
 	report_buffer_size = 90,
@@ -11,6 +12,7 @@ export enum razer_report_type {
 	command_class_index = 6,
 	command_id_index = 7,
 	args_index = 8, //args start from 8~87,total 80 bytes
+	maxArgsLength = 80,
 	crc_index = 88,
 	reserved_index = 89,
 }
@@ -35,6 +37,7 @@ export function buildRazerReport(
 	data_size: number,
 	command_class: number,
 	command_id: number,
+	args?: number[],
 ) {
 	const data = new Uint8Array(razer_report_type.report_buffer_size)
 
@@ -44,8 +47,12 @@ export function buildRazerReport(
 	data[razer_report_type.remaining_packets_lsb_index] = 0x00
 	data[razer_report_type.protocol_type_index] = 0x00
 	data[razer_report_type.args_size_index] = data_size
-	for (let i = 0; i < data_size; i++) {
-		data[razer_report_type.args_index + i] = 0x00
+	if (args) {
+		const argsLength = Math.min(args.length, razer_report_type.maxArgsLength)
+
+		for (let i = 0; i < argsLength; i++) {
+			data[razer_report_type.args_index + i] = args[i] ?? 0x00
+		}
 	}
 	data[razer_report_type.command_class_index] = command_class
 	data[razer_report_type.command_id_index] = command_id

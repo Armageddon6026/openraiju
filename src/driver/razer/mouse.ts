@@ -17,6 +17,7 @@ export const RAZER_COBRA_PRO_WIRELESS: HIDDeviceConfig = {
 	},
 
 	getBatteryLevel: razer_command.getBatteryLevel,
+	getDPIStages: razer_command.getDPIStages,
 }
 
 export const RAZER_COBRA_PRO_WIRED: HIDDeviceConfig = {
