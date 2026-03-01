@@ -4,6 +4,7 @@ import DeviceCard from './components/DeviceCard.vue'
 import { RAZER_MOUSE_DEVICES } from '@/driver/razer/mouse'
 
 const toast = useToast()
+const router = useRouter()
 
 const hid_devices = ref<HIDDeviceData[]>([])
 const razer_support_list = [...RAZER_MOUSE_DEVICES /** add more devices here*/]
@@ -64,7 +65,12 @@ async function getHidDevices() {
 
 	devices.forEach(async (device) => {
 		const deviceConf = razer_support_list.find(
-			(d) => d.vendorId === device.vendorId && d.productId === device.productId,
+			(d) =>
+				d.vendorId === device.vendorId &&
+				d.productId === device.productId &&
+				device.collections[0] !== undefined &&
+				d.usagePage === device.collections[0].usagePage &&
+				d.usage === device.collections[0].usage,
 		)
 
 		if (deviceConf) {
@@ -90,36 +96,49 @@ async function removeDevice(productId: number) {
 
 	hid_devices.value.splice(index, 1)
 }
+
+function goToDeviceSettings(device: HIDDeviceData) {
+	if (!device.config.productId) {
+		return
+	}
+
+	router.push({
+		name: `razer${device.config.ui.type}`,
+		params: { productId: device.config.productId },
+	})
+}
 </script>
 
 <template>
-	<div>
-		<h1 text="4xl gray-200" font="bold">DASHBOARD</h1>
-		<div grid="~ cols-[repeat(auto-fill,280px)]" mt="8" gap="6" justify="center" md:justify="start">
-			<Card
-				@click="connectDevice"
-				un-border="2 gray-600 dashed"
-				w="280px"
-				cursor="pointer"
-				hover="bg-#2a2a2a"
-				duration="300"
-			>
-				<template #content>
-					<div
-						flex="~ col"
-						items="center"
-						justify="center"
-						h="250px"
-						space="y-4"
-						text="gray-500"
-						font="bold"
-					>
-						<span i="material-symbols-add-circle-outline" text="30px "></span>
-						<span text="20px"> ADD DEVICE </span>
-					</div>
-				</template>
-			</Card>
-			<DeviceCard v-for="d in hid_devices" :device="d" @disconnect="removeDevice"></DeviceCard>
-		</div>
+	<div grid="~ cols-[repeat(auto-fill,280px)]" mt="8" gap="6" justify="center" md:justify="start">
+		<Card
+			@click="connectDevice"
+			un-border="2 gray-600 dashed"
+			w="280px"
+			cursor="pointer"
+			hover="bg-#2a2a2a"
+			duration="300"
+		>
+			<template #content>
+				<div
+					flex="~ col"
+					items="center"
+					justify="center"
+					h="250px"
+					space="y-4"
+					text="gray-500"
+					font="bold"
+				>
+					<span i="material-symbols-add-circle-outline" text="30px "></span>
+					<span text="20px"> ADD DEVICE </span>
+				</div>
+			</template>
+		</Card>
+		<DeviceCard
+			v-for="d in hid_devices"
+			:device="d"
+			@disconnect="removeDevice"
+			@click="goToDeviceSettings(d)"
+		></DeviceCard>
 	</div>
 </template>

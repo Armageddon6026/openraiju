@@ -8,7 +8,7 @@ export const RAZER_COBRA_PRO_WIRELESS: HIDDeviceConfig = {
 	usage: 0x0002,
 	ui: {
 		name: 'Razer Cobra Pro Wireless',
-		type: 'Mouse',
+		type: 'mouse',
 		image: 'https://dl.razerzone.com/src2/13182/13182-1-en-v2.png',
 	},
 	hardware: {
@@ -26,7 +26,7 @@ export const RAZER_COBRA_PRO_WIRED: HIDDeviceConfig = {
 	usage: 0x0002,
 	ui: {
 		name: 'Razer Cobra Pro Wired',
-		type: 'Mouse',
+		type: 'mouse',
 		image: 'https://dl.razerzone.com/src2/13182/13182-1-en-v2.png',
 	},
 	hardware: {

@@ -4,6 +4,7 @@ import { useToast } from 'primevue'
 
 const toast = useToast()
 const confirm = useConfirm()
+const router = useRouter()
 
 async function disconnectDevice(device: HIDDeviceData) {
 	const summary = 'hid device disconnect'
@@ -52,7 +53,7 @@ async function disconnectDevice(device: HIDDeviceData) {
 	})
 }
 
-const getBatteryIcon = (level: number | undefined) => {
+function getBatteryIcon(level: number | undefined): string {
 	if (level === undefined || level === null)
 		return 'i-material-symbols-battery-android-question-outline'
 	if (level <= 10) return 'i-material-symbols-battery-android-alert-outline'
@@ -65,7 +66,7 @@ const getBatteryIcon = (level: number | undefined) => {
 	return 'i-material-symbols-battery-android-frame-full'
 }
 
-const getBatteryColor = (level: number | undefined) => {
+function getBatteryColor(level: number | undefined): string {
 	return !level || level <= 20 ? 'text-red-500' : 'text-green-500'
 }
 
@@ -85,7 +86,15 @@ const emits = defineEmits<{
 		hover="bg-#2a2a2a"
 	>
 		<template #header>
-			<div absolute="~" top="3" right="3" fleX="~" items="center" gap="1">
+			<div
+				v-if="device.BatteryLevel"
+				absolute="~"
+				top="3"
+				right="3"
+				fleX="~"
+				items="center"
+				gap="1"
+			>
 				<span text="xs gray-400" font="mono">{{ device.BatteryLevel }}%</span>
 				<div
 					:class="[getBatteryIcon(device.BatteryLevel), getBatteryColor(device.BatteryLevel)]"

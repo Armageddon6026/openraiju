@@ -1,7 +1,7 @@
 declare interface HIDDeviceConfig extends HIDDeviceFilter {
 	readonly ui: {
 		name: string
-		type: 'Keyboard' | 'Mouse' | 'Headset'
+		type: 'keyboard' | 'mouse' | 'headset'
 		image: string
 	}
 	readonly hardware: {
