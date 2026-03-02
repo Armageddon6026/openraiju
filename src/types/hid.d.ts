@@ -11,6 +11,8 @@ declare interface HIDDeviceConfig extends HIDDeviceFilter, HIDDeviceFeature {
 }
 
 declare interface HIDDeviceFeature {
+	getSerial(this: HIDDeviceConfig, device: HIDDevice): Promise<string>
+	// option
 	getBatteryLevel?: (this: HIDDeviceConfig, device: HIDDevice) => Promise<number>
 	getDPIStages?: (this: HIDDeviceConfig, device: HIDDevice) => Promise<MouseDpiInfo>
 }

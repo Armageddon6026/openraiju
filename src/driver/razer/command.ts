@@ -1,6 +1,22 @@
 import { buildRazerReport, razer_report_type, sendCommand, DEVICE_VARIABLE_STORAGE } from './common'
 
-export const razer_command: HIDDeviceFeature = {
+export const razer_command = {
+	async getSerial(this: HIDDeviceConfig, device: HIDDevice): Promise<string> {
+		const response = await sendCommand(
+			device,
+			buildRazerReport(this.hardware.transaction_id, 0x16, 0x00, 0x82),
+			this.hardware.wait_min,
+		)
+
+		const bytes = new Uint8Array(
+			response.buffer,
+			response.byteOffset + razer_report_type.args_index,
+			0x16,
+		)
+
+		return new TextDecoder('ascii').decode(bytes).replace(/\0+$/, '') // remove padding \0
+	},
+
 	async getBatteryLevel(this: HIDDeviceConfig, device: HIDDevice): Promise<number> {
 		const response = await sendCommand(
 			device,

@@ -1,10 +1,15 @@
 export const useDeviceStore = defineStore('device', () => {
 	const devicesMap = ref(new Map<string, HIDDeviceData>())
-	let _idCounter = 0
 
 	async function addDevice(conf: HIDDeviceConfig, handle: HIDDevice) {
-		// generate ID "dev-1", "dev-2"
-		const instanceId = `dev-${_idCounter++}`
+		const sn = await conf.getSerial(handle)
+		if (!sn) {
+			return
+		}
+		console.log(sn)
+
+		// generate ID
+		const instanceId = `${conf.vendorId}-${conf.productId}-${sn}`
 
 		const deviceData: HIDDeviceData = {
 			config: conf,

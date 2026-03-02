@@ -31,7 +31,7 @@ async function connectDevice() {
 			return
 		}
 
-		devices.forEach(async (device) => {
+		for (const device of devices) {
 			const deviceConf = razer_support_list.find(
 				(conf) =>
 					conf.vendorId === device.vendorId &&
@@ -40,16 +40,7 @@ async function connectDevice() {
 					conf.usagePage === device.collections[0].usagePage &&
 					conf.usage === device.collections[0].usage,
 			)
-
-			if (!deviceConf) {
-				toast.add({
-					severity: 'error',
-					summary: summary,
-					detail: 'device not supported',
-					life: 3000,
-				})
-				return
-			}
+			if (!deviceConf) continue
 
 			await addDevice(deviceConf, device)
 
@@ -59,7 +50,10 @@ async function connectDevice() {
 				detail: `${device.productName} connected`,
 				life: 3000,
 			})
-		})
+			return
+		}
+
+		throw new Error('device not supported')
 	} catch (e) {
 		toast.add({
 			severity: 'error',
