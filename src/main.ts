@@ -11,6 +11,8 @@ import ConfirmationService from 'primevue/confirmationservice'
 import App from '@/App.vue'
 import router from '@/router'
 
+document.title = __APP_INFO__.pkg.name.charAt(0).toUpperCase() + __APP_INFO__.pkg.name.slice(1)
+
 const app = createApp(App)
 
 app.use(createPinia())

@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
+import { name, version } from './package.json'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -8,11 +9,18 @@ import Components from 'unplugin-vue-components/vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { PrimeVueResolver } from '@primevue/auto-import-resolver'
 
+const __APP_INFO__ = {
+	pkg: { name, version },
+	buildTimestamp: Date.now(),
+}
 // https://vite.dev/config/
 export default defineConfig(({}) => {
 	const PrimeVueConfig = PrimeVueResolver()
 
 	return {
+		define: {
+			__APP_INFO__: JSON.stringify(__APP_INFO__),
+		},
 		plugins: [
 			vue(),
 			UnoCSS(),
