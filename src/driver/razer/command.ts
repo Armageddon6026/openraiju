@@ -31,7 +31,7 @@ export const razer_command = {
 		)
 	},
 
-	async getDPIStages(this: HIDDeviceConfig, device: HIDDevice): Promise<MouseDpiInfo> {
+	async getDpiStages(this: HIDDeviceConfig, device: HIDDevice): Promise<MouseDpiInfo> {
 		const response = await sendCommand(
 			device,
 			buildRazerReport(this.hardware.transaction_id, 0x26, 0x04, 0x86, [DEVICE_VARIABLE_STORAGE]),
@@ -80,5 +80,42 @@ export const razer_command = {
 		}
 
 		return dpiInfo
+	},
+
+	async setDpiStages(this: HIDDeviceConfig, device: HIDDevice, dpiInfo: MouseDpiInfo) {
+		if (dpiInfo.ActivateID > dpiInfo.DpiStages.length) {
+			throw new Error('Active DPI stage ID exceeds the number of available stages')
+		}
+
+		// The request uses the same format as the response from getDpiStages
+		let args: number[] = []
+		args[0] = DEVICE_VARIABLE_STORAGE
+		args[1] = dpiInfo.ActivateID
+		args[2] = dpiInfo.DpiStages.length
+
+		let offset = 3
+		for (let i = 0; i < dpiInfo.DpiStages.length; i++) {
+			if (!dpiInfo.DpiStages[i]) {
+				throw new Error(`DPI stage at index ${i} is undefined`)
+			}
+
+			args[offset++] = dpiInfo.DpiStages[i]!.ID
+
+			const dpiX = dpiInfo.DpiStages[i]!.X
+			const dpiY = dpiInfo.DpiStages[i]!.Y
+
+			args[offset++] = (dpiX >> 8) & 0xff
+			args[offset++] = dpiX & 0xff
+			args[offset++] = (dpiY >> 8) & 0xff
+			args[offset++] = dpiY & 0xff
+			args[offset++] = 0x00 // Reserved
+			args[offset++] = 0x00 // Reserved
+		}
+
+		await sendCommand(
+			device,
+			buildRazerReport(this.hardware.transaction_id, 0x26, 0x04, 0x06, args),
+			this.hardware.wait_min,
+		)
 	},
 }

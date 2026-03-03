@@ -17,7 +17,8 @@ export const RAZER_COBRA: HIDDeviceConfig = {
 		wait_min: 50,
 	},
 	getSerial: razer_command.getSerial,
-	getDPIStages: razer_command.getDPIStages,
+	getDpiStages: razer_command.getDpiStages,
+	setDpiStages: razer_command.setDpiStages,
 }
 
 export const RAZER_COBRA_PRO_WIRED: HIDDeviceConfig = {

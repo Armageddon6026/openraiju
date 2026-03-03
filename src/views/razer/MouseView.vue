@@ -24,10 +24,28 @@ onMounted(async () => {
 		return
 	}
 
-	if (currentDevice.value.config.getDPIStages) {
-		dpiStages.value = await currentDevice.value.config.getDPIStages(currentDevice.value.handle)
+	if (currentDevice.value.config.getDpiStages) {
+		dpiStages.value = await currentDevice.value.config.getDpiStages(currentDevice.value.handle)
 	}
 })
+
+async function setDpiStage(selectStageId: number) {
+	if (!currentDevice.value?.config.setDpiStages) {
+		throw new Error('Device does not support setting DPI stages')
+	}
+	dpiStages.value!.ActivateID = selectStageId
+
+	try {
+		await currentDevice.value.config.setDpiStages(currentDevice.value.handle, dpiStages.value!)
+	} catch (e) {
+		toast.add({
+			severity: 'error',
+			summary: 'Set DPI Stage',
+			detail: `${e}`,
+			life: 3000,
+		})
+	}
+}
 </script>
 
 <template>
@@ -46,7 +64,7 @@ onMounted(async () => {
 				<div
 					v-for="stage in dpiStages.DpiStages"
 					:key="stage.ID"
-					@click="dpiStages.ActivateID = stage.ID"
+					@click="setDpiStage(stage.ID)"
 					:class="[
 						'flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 text-center',
 						dpiStages.ActivateID === stage.ID
