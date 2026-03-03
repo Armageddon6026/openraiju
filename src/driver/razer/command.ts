@@ -1,5 +1,6 @@
 import { buildRazerReport, razer_report_type, sendCommand, DEVICE_VARIABLE_STORAGE } from './common'
 
+// ref: https://github.com/openrazer/openrazer/blob/master/driver/razermouse_driver.c
 export const razer_command = {
 	async getSerial(this: HIDDeviceConfig, device: HIDDevice): Promise<string> {
 		const response = await sendCommand(
@@ -8,12 +9,12 @@ export const razer_command = {
 			this.hardware.wait_min,
 		)
 
+		// serial format: 15 bytes + 1 \0
 		const bytes = new Uint8Array(
 			response.buffer,
 			response.byteOffset + razer_report_type.args_index,
 			0x16,
 		)
-
 		return new TextDecoder('ascii').decode(bytes).replace(/\0+$/, '') // remove padding \0
 	},
 

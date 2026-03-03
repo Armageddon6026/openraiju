@@ -4,9 +4,8 @@ export const useDeviceStore = defineStore('device', () => {
 	async function addDevice(conf: HIDDeviceConfig, handle: HIDDevice) {
 		const sn = await conf.getSerial(handle)
 		if (!sn) {
-			return
+			throw new Error('No serial number found')
 		}
-		console.log(sn)
 
 		// generate ID
 		const instanceId = `${conf.vendorId}-${conf.productId}-${sn}`
@@ -22,7 +21,6 @@ export const useDeviceStore = defineStore('device', () => {
 		}
 
 		devicesMap.value.set(instanceId, deviceData)
-		return instanceId
 	}
 
 	function removeDevice(instanceId: string) {

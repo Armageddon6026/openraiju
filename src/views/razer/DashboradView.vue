@@ -42,7 +42,11 @@ async function connectDevice() {
 			)
 			if (!deviceConf) continue
 
-			await addDevice(deviceConf, device)
+			try {
+				await addDevice(deviceConf, device)
+			} catch {
+				continue
+			}
 
 			toast.add({
 				severity: 'success',

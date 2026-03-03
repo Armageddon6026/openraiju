@@ -23,6 +23,7 @@
 				to="/setting"
 				icon="i-material-symbols-settings-outline"
 				variant="text"
+				severity="secondary"
 			></Button>
 			<div h="px" w="8" bg="#333"></div>
 			<Button
