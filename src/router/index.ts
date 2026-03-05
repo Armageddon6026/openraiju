@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DashboardLayout from '@/layout/DashboardLayout.vue'
+import BaseLayout from '@/layout/BaseLayout.vue'
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,7 +7,7 @@ const router = createRouter({
 		{
 			path: '/',
 			redirect: '/razer',
-			component: DashboardLayout,
+			component: BaseLayout,
 			children: [
 				{
 					path: 'razer',

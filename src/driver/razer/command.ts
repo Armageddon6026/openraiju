@@ -2,7 +2,7 @@ import { buildRazerReport, razer_report_type, sendCommand, DEVICE_VARIABLE_STORA
 
 // ref: https://github.com/openrazer/openrazer/blob/master/driver/razermouse_driver.c
 export const razer_command = {
-	async getSerial(this: HIDDeviceConfig, device: HIDDevice): Promise<string> {
+	async getSerial(this: RazerDeviceConfig, device: HIDDevice): Promise<string> {
 		const response = await sendCommand(
 			device,
 			buildRazerReport(this.hardware.transaction_id, 0x16, 0x00, 0x82),
@@ -18,7 +18,7 @@ export const razer_command = {
 		return new TextDecoder('ascii').decode(bytes).replace(/\0+$/, '') // remove padding \0
 	},
 
-	async getBatteryLevel(this: HIDDeviceConfig, device: HIDDevice): Promise<number> {
+	async getBatteryLevel(this: RazerDeviceConfig, device: HIDDevice): Promise<number> {
 		const response = await sendCommand(
 			device,
 			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x80),
@@ -31,7 +31,7 @@ export const razer_command = {
 		)
 	},
 
-	async getDpiStages(this: HIDDeviceConfig, device: HIDDevice): Promise<MouseDpiInfo> {
+	async getDpiStages(this: RazerDeviceConfig, device: HIDDevice): Promise<MouseDpiInfo> {
 		const response = await sendCommand(
 			device,
 			buildRazerReport(this.hardware.transaction_id, 0x26, 0x04, 0x86, [DEVICE_VARIABLE_STORAGE]),
@@ -82,7 +82,7 @@ export const razer_command = {
 		return dpiInfo
 	},
 
-	async setDpiStages(this: HIDDeviceConfig, device: HIDDevice, dpiInfo: MouseDpiInfo) {
+	async setDpiStages(this: RazerDeviceConfig, device: HIDDevice, dpiInfo: MouseDpiInfo) {
 		if (dpiInfo.ActivateID > dpiInfo.DpiStages.length) {
 			throw new Error('Active DPI stage ID exceeds the number of available stages')
 		}
@@ -119,7 +119,7 @@ export const razer_command = {
 		)
 	},
 
-	async getPollingRate(this: HIDDeviceConfig, device: HIDDevice): Promise<number> {
+	async getPollingRate(this: RazerDeviceConfig, device: HIDDevice): Promise<number> {
 		let commandId = this.hardware.HyperPolling ? 0xc0 : 0x85
 		let maxPollingRate = this.hardware.HyperPolling ? 8000 : 1000
 

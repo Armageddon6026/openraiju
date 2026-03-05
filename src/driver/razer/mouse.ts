@@ -1,7 +1,7 @@
 import { razer_command } from './command'
 import { RAZER_VENDOR_ID } from './common'
 
-export const RAZER_COBRA: HIDDeviceConfig = {
+export const RAZER_COBRA: RazerDeviceConfig = {
 	vendorId: RAZER_VENDOR_ID,
 	productId: 0x00a3,
 	usagePage: 0x0001,
@@ -22,7 +22,7 @@ export const RAZER_COBRA: HIDDeviceConfig = {
 	getPollingRate: razer_command.getPollingRate,
 }
 
-export const RAZER_COBRA_PRO_WIRED: HIDDeviceConfig = {
+export const RAZER_COBRA_PRO_WIRED: RazerDeviceConfig = {
 	...RAZER_COBRA,
 	productId: 0x00af,
 	ui: {
@@ -33,7 +33,7 @@ export const RAZER_COBRA_PRO_WIRED: HIDDeviceConfig = {
 	getBatteryLevel: razer_command.getBatteryLevel,
 }
 
-export const RAZER_COBRA_PRO_WIRELESS: HIDDeviceConfig = {
+export const RAZER_COBRA_PRO_WIRELESS: RazerDeviceConfig = {
 	...RAZER_COBRA_PRO_WIRED,
 	productId: 0x00b0,
 	ui: {
@@ -42,8 +42,8 @@ export const RAZER_COBRA_PRO_WIRELESS: HIDDeviceConfig = {
 	},
 }
 
-export const RAZER_MOUSE_DEVICES: HIDDeviceConfig[] = [
+export const RAZER_MOUSE_DEVICES: RazerDeviceConfig[] = [
 	RAZER_COBRA,
-	RAZER_COBRA_PRO_WIRELESS,
 	RAZER_COBRA_PRO_WIRED,
+	RAZER_COBRA_PRO_WIRELESS,
 ]

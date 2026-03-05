@@ -6,7 +6,7 @@ const toast = useToast()
 const confirm = useConfirm()
 const router = useRouter()
 
-async function disconnectDevice(device: HIDDeviceData) {
+async function disconnectDevice(device: RazerDevice) {
 	const summary = 'hid device disconnect'
 
 	confirm.require({
@@ -24,15 +24,15 @@ async function disconnectDevice(device: HIDDeviceData) {
 		},
 		accept: async () => {
 			try {
-				if (device.handle.opened) {
-					await device.handle.close()
+				if (device.handler.opened) {
+					await device.handler.close()
 				}
 
-				await device.handle.forget()
+				await device.handler.forget()
 				toast.add({
 					severity: 'success',
 					summary: summary,
-					detail: `${device.handle.productName} disconnected`,
+					detail: `${device.handler.productName} disconnected`,
 					life: 3000,
 				})
 
@@ -70,7 +70,7 @@ function getBatteryColor(level: number | undefined): string {
 	return !level || level <= 20 ? 'text-red-500' : 'text-green-500'
 }
 
-const { device } = defineProps<{ device: HIDDeviceData }>()
+const { device } = defineProps<{ device: RazerDevice }>()
 const emits = defineEmits<{
 	disconnect: [productId: number]
 }>()
