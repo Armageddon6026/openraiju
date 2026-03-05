@@ -1,4 +1,5 @@
 export const RAZER_VENDOR_ID = 0x1532
+export const RUNTIME_VARIABLE_STORAGE = 0x00
 export const DEVICE_VARIABLE_STORAGE = 0x01
 
 export enum razer_report_type {

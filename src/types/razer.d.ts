@@ -13,8 +13,20 @@ declare interface RazerDeviceConfig extends HIDDeviceFilter, RazerDeviceFeature 
 	readonly hardware: {
 		wait_min: number
 		transaction_id: number
+		optical_sensor: RazerOpticalSensor
 		HyperPolling?: boolean // Indicates whether the device supports 8K polling rate.
 	}
+}
+
+declare interface RazerOpticalSensor {
+	max_dpi: number
+	dpi_step: number
+	smart_tracking_step: 3 | 2
+	motion_sync?: boolean
+	asymmetric_cutoff_levels?: 26
+	sensitivity_matcher?: boolean
+	dynamic_sensitivity?: boolean
+	rotation?: boolean
 }
 
 declare interface MouseDpiInfo {
