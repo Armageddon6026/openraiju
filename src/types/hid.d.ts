@@ -5,17 +5,10 @@ declare interface HIDDeviceConfig extends HIDDeviceFilter, HIDDeviceFeature {
 		image: string
 	}
 	readonly hardware: {
-		transaction_id: number
 		wait_min: number
+		transaction_id: number
+		HyperPolling?: boolean // Indicates whether the device supports 8K polling rate.
 	}
-}
-
-declare interface HIDDeviceFeature {
-	getSerial(this: HIDDeviceConfig, device: HIDDevice): Promise<string>
-	// option
-	getBatteryLevel?: (this: HIDDeviceConfig, device: HIDDevice) => Promise<number>
-	getDpiStages?: (this: HIDDeviceConfig, device: HIDDevice) => Promise<MouseDpiInfo>
-	setDpiStages?: (this: HIDDeviceConfig, device: HIDDevice, dpi: MouseDpiInfo) => Promise<void>
 }
 
 declare interface HIDDeviceData {
@@ -33,4 +26,13 @@ declare interface Dpi {
 	ID: number
 	X: number
 	Y: number
+}
+
+declare interface HIDDeviceFeature {
+	getSerial(this: HIDDeviceConfig, device: HIDDevice): Promise<string>
+	// option
+	getBatteryLevel?: (this: HIDDeviceConfig, device: HIDDevice) => Promise<number>
+	getDpiStages?: (this: HIDDeviceConfig, device: HIDDevice) => Promise<MouseDpiInfo>
+	setDpiStages?: (this: HIDDeviceConfig, device: HIDDevice, dpi: MouseDpiInfo) => Promise<void>
+	getPollingRate?: (this: HIDDeviceConfig, device: HIDDevice) => Promise<number>
 }

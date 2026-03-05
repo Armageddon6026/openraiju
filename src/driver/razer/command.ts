@@ -118,4 +118,25 @@ export const razer_command = {
 			this.hardware.wait_min,
 		)
 	},
+
+	async getPollingRate(this: HIDDeviceConfig, device: HIDDevice): Promise<number> {
+		let commandId = this.hardware.HyperPolling ? 0xc0 : 0x85
+		let maxPollingRate = this.hardware.HyperPolling ? 8000 : 1000
+
+		const response = await sendCommand(
+			device,
+			buildRazerReport(this.hardware.transaction_id, 0x01, 0x00, commandId),
+			this.hardware.wait_min,
+		)
+
+		// The response contains the polling index, which is used to calculate the polling rate.
+		// Ex:
+		// - If pollingIndex = 0x10 (16 in decimal) and HyperPolling is enabled,
+		// - pollingRate = maxPollingRate (8000) / pollingIndex (16) = 8000 / 12 = 500 Hz
+		const pollingIndex = response.getUint8(razer_report_type.args_index)
+		if (pollingIndex === 0) {
+			throw new Error('Failed to get polling rate')
+		}
+		return maxPollingRate / pollingIndex
+	},
 }

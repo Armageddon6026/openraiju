@@ -33,12 +33,7 @@ async function connectDevice() {
 
 		for (const device of devices) {
 			const deviceConf = razer_support_list.find(
-				(conf) =>
-					conf.vendorId === device.vendorId &&
-					conf.productId === device.productId &&
-					device.collections[0] !== undefined &&
-					conf.usagePage === device.collections[0].usagePage &&
-					conf.usage === device.collections[0].usage,
+				(conf) => conf.vendorId === device.vendorId && conf.productId === device.productId,
 			)
 			if (!deviceConf) continue
 
