@@ -112,7 +112,9 @@ export const razer_command = {
 
 			if (
 				dpiX > this.hardware.optical_sensor.max_dpi ||
-				dpiY > this.hardware.optical_sensor.max_dpi
+				dpiY > this.hardware.optical_sensor.max_dpi ||
+				dpiX < this.hardware.optical_sensor.dpi_step ||
+				dpiY < this.hardware.optical_sensor.dpi_step
 			) {
 				throw new Error(
 					`DPI value ${dpiX}/${dpiY} exceeds the maximum supported DPI of ${this.hardware.optical_sensor.max_dpi}`,
@@ -183,15 +185,15 @@ export const razer_command = {
 		if ((pollingIndex & (pollingIndex - 1)) !== 0) {
 			throw new Error(`Polling rate ${pollingRate} is not supported`)
 		}
-		const args = hyper ? [RUNTIME_VARIABLE_STORAGE, pollingIndex] : [pollingIndex]
 
+		// HyperPolling requires two commands: runtime update (0x00) and persistent storage (0x01) write
+		const args = hyper ? [RUNTIME_VARIABLE_STORAGE, pollingIndex] : [pollingIndex]
 		await sendCommand(
 			device,
 			buildRazerReport(this.hardware.transaction_id, data_size, 0x00, commandId, args),
 			this.hardware.wait_min,
 		)
 
-		// HyperPolling requires two commands: runtime update (0x00) and persistent storage (0x01) write
 		if (hyper) {
 			await sendCommand(
 				device,

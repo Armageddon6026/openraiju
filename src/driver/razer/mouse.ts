@@ -11,7 +11,7 @@ export const RAZER_OPTICAL_SENSORS = {
 		sensitivity_matcher: true,
 		dynamic_sensitivity: true,
 		rotation: true,
-	} as RazerOpticalSensor,
+	},
 
 	focus_pro_35K_gen2: {
 		max_dpi: 35000,
@@ -20,7 +20,7 @@ export const RAZER_OPTICAL_SENSORS = {
 		smart_tracking_step: 3,
 		asymmetric_cutoff_levels: 26,
 		sensitivity_matcher: true,
-	} as RazerOpticalSensor,
+	},
 
 	focus_pro_30K: {
 		max_dpi: 30000,
@@ -28,14 +28,14 @@ export const RAZER_OPTICAL_SENSORS = {
 		motion_sync: true,
 		smart_tracking_step: 3,
 		asymmetric_cutoff_levels: 26,
-	} as RazerOpticalSensor,
+	},
 
 	focus_X_26K: {
 		max_dpi: 45000,
 		dpi_step: 50,
 		smart_tracking_step: 3,
-	} as RazerOpticalSensor,
-}
+	},
+} as const satisfies Record<string, RazerOpticalSensor>
 
 export const RAZER_COBRA_PRO_WIRED: RazerDeviceConfig = {
 	vendorId: RAZER_VENDOR_ID,

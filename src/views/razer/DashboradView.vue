@@ -3,6 +3,7 @@ import { useToast } from 'primevue'
 import DeviceCard from './components/DeviceCard.vue'
 import { RAZER_MOUSE_DEVICES } from '@/driver/razer/mouse'
 import { useDeviceStore } from '@/stores'
+import { ping } from '@/driver/utils'
 
 const toast = useToast()
 const router = useRouter()
@@ -12,6 +13,7 @@ const { addDevice, removeDevice } = deviceStore
 const { devicesMap } = storeToRefs(deviceStore)
 
 const razer_support_list = [...RAZER_MOUSE_DEVICES /** add more devices here*/]
+const razer_config_map = new Map(razer_support_list.map((d) => [`${d.vendorId}:${d.productId}`, d]))
 
 onMounted(async () => {
 	if (devicesMap.value.size < 1) {
@@ -27,22 +29,11 @@ async function connectDevice() {
 			filters: razer_support_list,
 		})
 
-		if (devices.length < 1) {
-			return
-		}
-
 		for (const device of devices) {
-			const deviceConf = razer_support_list.find(
-				(conf) => conf.vendorId === device.vendorId && conf.productId === device.productId,
-			)
-			if (!deviceConf) continue
+			const deviceConf = razer_config_map.get(`${device.vendorId}:${device.productId}`)
+			if (!deviceConf || !(await ping(device, deviceConf.hardware.wait_min))) continue
 
-			try {
-				await addDevice(deviceConf, device)
-			} catch {
-				continue
-			}
-
+			await addDevice(deviceConf, device)
 			toast.add({
 				severity: 'success',
 				summary: summary,
@@ -51,8 +42,6 @@ async function connectDevice() {
 			})
 			return
 		}
-
-		throw new Error('device not supported')
 	} catch (e) {
 		toast.add({
 			severity: 'error',
@@ -65,24 +54,13 @@ async function connectDevice() {
 
 async function getHidDevices() {
 	const devices = (await navigator.hid.getDevices()).filter((d) => d.collections.length == 1)
-	if (devices.length < 1) {
-		return
+
+	for (const device of devices) {
+		const deviceConf = razer_config_map.get(`${device.vendorId}:${device.productId}`)
+		if (!deviceConf || !(await ping(device, deviceConf.hardware.wait_min))) continue
+
+		await addDevice(deviceConf, device)
 	}
-
-	devices.forEach(async (device) => {
-		const deviceConf = razer_support_list.find(
-			(conf) =>
-				conf.vendorId === device.vendorId &&
-				conf.productId === device.productId &&
-				device.collections[0] !== undefined &&
-				conf.usagePage === device.collections[0].usagePage &&
-				conf.usage === device.collections[0].usage,
-		)
-
-		if (deviceConf) {
-			await addDevice(deviceConf, device)
-		}
-	})
 }
 
 function goToDeviceSettings(instanceId: string, type: string) {

@@ -7,3 +7,18 @@ export function printBuffer(buffer: ArrayBufferLike) {
 	}
 	console.log(hexString.trim())
 }
+
+export async function ping(device: HIDDevice, wait_min: number) {
+	try {
+		if (!device.opened) await device.open()
+
+		await Promise.race([
+			device.receiveFeatureReport(0x00),
+			new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), wait_min)),
+		])
+
+		return true
+	} catch {
+		return false
+	}
+}

@@ -21,7 +21,7 @@ export enum razer_report_type {
 export async function sendCommand(
 	device: HIDDevice,
 	request: Uint8Array<ArrayBuffer>,
-	wait_min: number = 500,
+	wait_min: number,
 ): Promise<DataView<ArrayBufferLike>> {
 	if (!device.opened) {
 		await device.open()
