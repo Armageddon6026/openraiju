@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useToast } from 'primevue'
-import DeviceCard from './components/DeviceCard.vue'
 import { RAZER_MOUSE_DEVICES } from '@/driver/razer/mouse'
 import { useDeviceStore } from '@/stores'
 import { ping } from '@/driver/utils'
@@ -55,12 +53,12 @@ async function connectDevice() {
 async function getHidDevices() {
 	const devices = (await navigator.hid.getDevices()).filter((d) => d.collections.length == 1)
 
-	for (const device of devices) {
+	devices.forEach(async (device) => {
 		const deviceConf = razer_config_map.get(`${device.vendorId}:${device.productId}`)
-		if (!deviceConf || !(await ping(device, deviceConf.hardware.wait_min))) continue
+		if (!deviceConf || !(await ping(device, deviceConf.hardware.wait_min))) return
 
 		await addDevice(deviceConf, device)
-	}
+	})
 }
 
 function goToDeviceSettings(instanceId: string, type: string) {

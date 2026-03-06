@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useDeviceStore } from '@/stores'
-import { useToast } from 'primevue'
 
 const toast = useToast()
 const route = useRoute()

@@ -1,4 +1,4 @@
-export const useDeviceStore = defineStore('device', () => {
+export const useDeviceStore = defineStore('razerStore', () => {
 	const devicesMap = ref(new Map<string, RazerDevice>())
 
 	async function addDevice(conf: RazerDeviceConfig, handler: HIDDevice) {

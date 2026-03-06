@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import { useConfirm } from 'primevue/useconfirm'
-import { useToast } from 'primevue'
-
 const toast = useToast()
 const confirm = useConfirm()
-const router = useRouter()
 
 async function disconnectDevice(device: RazerDevice) {
 	const summary = 'hid device disconnect'

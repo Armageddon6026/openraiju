@@ -1,11 +1,9 @@
-<script setup lang="ts">
-import Sidebar from '@/components/Sidebar.vue'
-</script>
+<script setup lang="ts"></script>
 
 <template>
-	<div class="flex h-screen w-full">
+	<div flex="~" h="screen" w="full">
 		<Sidebar />
-		<main class="flex-1 p-8">
+		<main flex="1" p="8">
 			<RouterView />
 		</main>
 	</div>

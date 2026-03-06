@@ -15,8 +15,6 @@ const __APP_INFO__ = {
 }
 // https://vite.dev/config/
 export default defineConfig(({}) => {
-	const PrimeVueConfig = PrimeVueResolver()
-
 	return {
 		define: {
 			__APP_INFO__: JSON.stringify(__APP_INFO__),
@@ -26,12 +24,18 @@ export default defineConfig(({}) => {
 			UnoCSS(),
 			vueDevTools(),
 			AutoImport({
-				imports: ['vue', 'vue-router', 'pinia'],
-				resolvers: [PrimeVueConfig],
+				imports: [
+					'vue',
+					'vue-router',
+					'pinia',
+					{
+						primevue: ['useToast', 'useConfirm'],
+					},
+				],
 				dts: 'src/types/auto-imports.d.ts',
 			}),
 			Components({
-				resolvers: [PrimeVueConfig],
+				resolvers: [PrimeVueResolver()],
 				dirs: ['src/components', 'src/**/components'],
 				dts: 'src/types/components.d.ts',
 			}),
