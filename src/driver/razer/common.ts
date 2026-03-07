@@ -65,11 +65,7 @@ export function buildRazerReport(
 
 function calculateCRC(data: Uint8Array<ArrayBuffer>) {
 	let crc = 0
-	for (
-		let i = razer_report_type.remaining_packets_msb_index;
-		i < razer_report_type.crc_index;
-		i++
-	) {
+	for (let i = razer_report_type.remaining_packets_msb_index; i < razer_report_type.crc_index; i++) {
 		crc ^= data[i]!
 	}
 	return crc

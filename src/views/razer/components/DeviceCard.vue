@@ -50,8 +50,7 @@ async function disconnectDevice(device: RazerDevice) {
 }
 
 function getBatteryIcon(level: number | undefined): string {
-	if (level === undefined || level === null)
-		return 'i-material-symbols-battery-android-question-outline'
+	if (!level) return 'i-material-symbols-battery-android-question-outline'
 	if (level <= 10) return 'i-material-symbols-battery-android-alert-outline'
 	if (level <= 16) return 'i-material-symbols-battery-android-frame-1'
 	if (level <= 32) return 'i-material-symbols-battery-android-frame-2'
@@ -73,28 +72,11 @@ const emits = defineEmits<{
 </script>
 
 <template>
-	<Card
-		bg="#222"
-		w="280px"
-		relative="~"
-		cursor="pointer"
-		un-border="1 green-500"
-		hover="bg-#2a2a2a"
-	>
+	<Card bg="#222" w="280px" relative="~" cursor="pointer" un-border="1 green-500" hover="bg-#2a2a2a">
 		<template #header>
-			<div
-				v-if="device.BatteryLevel"
-				absolute="~"
-				top="3"
-				right="3"
-				fleX="~"
-				items="center"
-				gap="1"
-			>
+			<div v-if="device.BatteryLevel" absolute="~" top="3" right="3" fleX="~" items="center" gap="1">
 				<span text="xs gray-400" font="mono">{{ device.BatteryLevel }}%</span>
-				<div
-					:class="[getBatteryIcon(device.BatteryLevel), getBatteryColor(device.BatteryLevel)]"
-				></div>
+				<div :class="[getBatteryIcon(device.BatteryLevel), getBatteryColor(device.BatteryLevel)]"></div>
 			</div>
 			<div flex="~" items="center" justify="center">
 				<Image :src="device.config.ui.image" alt="Image" width="150" />

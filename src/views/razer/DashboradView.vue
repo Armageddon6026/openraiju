@@ -84,15 +84,7 @@ function goToDeviceSettings(instanceId: string, type: string) {
 			duration="300"
 		>
 			<template #content>
-				<div
-					flex="~ col"
-					items="center"
-					justify="center"
-					h="262px"
-					space="y-4"
-					text="gray-500"
-					font="bold"
-				>
+				<div flex="~ col" items="center" justify="center" h="262px" space="y-4" text="gray-500" font="bold">
 					<span i="material-symbols-add-circle-outline" text="30px "></span>
 					<span text="20px"> ADD DEVICE </span>
 				</div>

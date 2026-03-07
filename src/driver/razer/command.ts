@@ -16,11 +16,7 @@ export const razer_command = {
 		)
 
 		// serial format: 15 bytes + 1 \0
-		const bytes = new Uint8Array(
-			response.buffer,
-			response.byteOffset + razer_report_type.args_index,
-			0x16,
-		)
+		const bytes = new Uint8Array(response.buffer, response.byteOffset + razer_report_type.args_index, 0x16)
 		return new TextDecoder('ascii').decode(bytes).replace(/\0+$/, '') // remove padding \0
 	},
 
@@ -35,6 +31,17 @@ export const razer_command = {
 			// battery level located at args_index + 1 (total 2 bytes)
 			(response.getUint8(razer_report_type.args_index + 1) / 255) * 100,
 		)
+	},
+
+	async getChargeState(this: RazerDeviceConfig, device: HIDDevice): Promise<boolean> {
+		const response = await sendCommand(
+			device,
+			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x84),
+			this.hardware.wait_min,
+		)
+
+		// charge state located at args_index + 1, 0 when not charging, 1 when charging
+		return response.getUint8(razer_report_type.args_index) === 1
 	},
 
 	async getDpiStages(this: RazerDeviceConfig, device: HIDDevice): Promise<MouseDpiInfo> {
@@ -95,11 +102,12 @@ export const razer_command = {
 
 		// The request uses the same format as the response from getDpiStages
 		let args: number[] = []
-		args[0] = DEVICE_VARIABLE_STORAGE
-		args[1] = dpiInfo.ActivateID
-		args[2] = dpiInfo.DpiStages.length
+		let offset = 0
 
-		let offset = 3
+		args[offset++] = DEVICE_VARIABLE_STORAGE
+		args[offset++] = dpiInfo.ActivateID
+		args[offset++] = dpiInfo.DpiStages.length
+
 		for (let i = 0; i < dpiInfo.DpiStages.length; i++) {
 			if (!dpiInfo.DpiStages[i]) {
 				throw new Error(`DPI stage at index ${i} is undefined`)
@@ -121,10 +129,7 @@ export const razer_command = {
 				)
 			}
 
-			if (
-				dpiX % this.hardware.optical_sensor.dpi_step !== 0 ||
-				dpiY % this.hardware.optical_sensor.dpi_step !== 0
-			) {
+			if (dpiX % this.hardware.optical_sensor.dpi_step !== 0 || dpiY % this.hardware.optical_sensor.dpi_step !== 0) {
 				throw new Error(
 					`DPI value ${dpiX}/${dpiY} is not a multiple of the DPI step of ${this.hardware.optical_sensor.dpi_step}`,
 				)
@@ -176,7 +181,7 @@ export const razer_command = {
 			throw new Error('Polling rate exceeds the maximum supported rate')
 		}
 
-		if (maxPollingRate % pollingRate !== 0 || pollingRate === 250 /** RAZER Not supported 250  */) {
+		if (maxPollingRate % pollingRate <= 0 || pollingRate === 250 /** RAZER Not supported 250  */) {
 			throw new Error(`Polling rate ${pollingRate} is not supported`)
 		}
 

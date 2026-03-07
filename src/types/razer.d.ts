@@ -42,7 +42,9 @@ declare interface RazerDeviceFeature {
 	getSerial(this: RazerDeviceConfig, handler: HIDDevice): Promise<string>
 	// option
 	getBatteryLevel?: (this: RazerDeviceConfig, handler: HIDDevice) => Promise<number>
+	getChargeState?: (this: RazerDeviceConfig, device: HIDDevice) => Promise<boolean>
 	getDpiStages?: (this: RazerDeviceConfig, handler: HIDDevice) => Promise<MouseDpiInfo>
 	setDpiStages?: (this: RazerDeviceConfig, handler: HIDDevice, dpi: MouseDpiInfo) => Promise<void>
 	getPollingRate?: (this: RazerDeviceConfig, handler: HIDDevice) => Promise<number>
+	setPollingRate?: (this: RazerDeviceConfig, device: HIDDevice, pollingRate: number) => Promise<void>
 }

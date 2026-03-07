@@ -48,10 +48,7 @@ async function setDpiStage(selectStageId: number) {
 </script>
 
 <template>
-	<div
-		v-if="currentDevice && dpiStages"
-		class="p-6 bg-[#1a1a1a] rounded-xl shadow-lg border border-gray-800"
-	>
+	<div v-if="currentDevice && dpiStages" class="p-6 bg-[#1a1a1a] rounded-xl shadow-lg border border-gray-800">
 		<div class="flex items-center justify-between mb-8">
 			<h2 class="text-2xl font-bold text-white uppercase tracking-wider">Performance / DPI</h2>
 			<Badge :value="currentDevice.handler.productName" severity="success" />

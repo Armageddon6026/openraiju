@@ -1,7 +1,7 @@
 import { razer_command } from './command'
 import { RAZER_VENDOR_ID } from './common'
 
-export const RAZER_OPTICAL_SENSORS = {
+const RAZER_OPTICAL_SENSORS = {
 	focus_pro_45K_gen2: {
 		max_dpi: 45000,
 		dpi_step: 1,
@@ -31,13 +31,13 @@ export const RAZER_OPTICAL_SENSORS = {
 	},
 
 	focus_X_26K: {
-		max_dpi: 45000,
+		max_dpi: 26000,
 		dpi_step: 50,
-		smart_tracking_step: 3,
+		smart_tracking_step: 2,
 	},
 } as const satisfies Record<string, RazerOpticalSensor>
 
-export const RAZER_COBRA_PRO_WIRED: RazerDeviceConfig = {
+const RAZER_COBRA_PRO_WIRED: RazerDeviceConfig = {
 	vendorId: RAZER_VENDOR_ID,
 	productId: 0x00af,
 	usagePage: 0x0001,
@@ -53,13 +53,15 @@ export const RAZER_COBRA_PRO_WIRED: RazerDeviceConfig = {
 		wait_min: 50,
 	},
 	getSerial: razer_command.getSerial,
+	getBatteryLevel: razer_command.getBatteryLevel,
+	getChargeState: razer_command.getChargeState,
 	getDpiStages: razer_command.getDpiStages,
 	setDpiStages: razer_command.setDpiStages,
 	getPollingRate: razer_command.getPollingRate,
-	getBatteryLevel: razer_command.getBatteryLevel,
+	setPollingRate: razer_command.setPollingRate,
 }
 
-export const RAZER_COBRA_PRO_WIRELESS: RazerDeviceConfig = {
+const RAZER_COBRA_PRO_WIRELESS: RazerDeviceConfig = {
 	...RAZER_COBRA_PRO_WIRED,
 	productId: 0x00b0,
 	ui: {
@@ -68,7 +70,4 @@ export const RAZER_COBRA_PRO_WIRELESS: RazerDeviceConfig = {
 	},
 }
 
-export const RAZER_MOUSE_DEVICES: RazerDeviceConfig[] = [
-	RAZER_COBRA_PRO_WIRED,
-	RAZER_COBRA_PRO_WIRELESS,
-]
+export const RAZER_MOUSE_DEVICES: RazerDeviceConfig[] = [RAZER_COBRA_PRO_WIRED, RAZER_COBRA_PRO_WIRELESS]
