@@ -7,19 +7,7 @@ import {
 } from './common'
 
 // ref: https://github.com/openrazer/openrazer/blob/master/driver/razermouse_driver.c
-export const razer_command = {
-	async getSerial(this: RazerDeviceConfig, device: HIDDevice): Promise<string> {
-		const response = await sendCommand(
-			device,
-			buildRazerReport(this.hardware.transaction_id, 0x16, 0x00, 0x82),
-			this.hardware.wait_min,
-		)
-
-		// serial format: 15 bytes + 1 \0
-		const bytes = new Uint8Array(response.buffer, response.byteOffset + razer_report_type.args_index, 0x16)
-		return new TextDecoder('ascii').decode(bytes).replace(/\0+$/, '') // remove padding \0
-	},
-
+export const mouse_command = {
 	async getBatteryLevel(this: RazerDeviceConfig, device: HIDDevice): Promise<number> {
 		const response = await sendCommand(
 			device,

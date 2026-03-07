@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RAZER_MOUSE_DEVICES } from '@/driver/razer/mouse'
+import { RAZER_MOUSE_DEVICES } from '@/driver/razer/device'
 import { useDeviceStore } from '@/stores'
 import { ping } from '@/driver/utils'
 

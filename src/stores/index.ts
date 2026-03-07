@@ -1,1 +1,1 @@
-export * from './modules/razer'
+export * from './razer'

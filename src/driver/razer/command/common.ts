@@ -70,3 +70,17 @@ function calculateCRC(data: Uint8Array<ArrayBuffer>) {
 	}
 	return crc
 }
+
+export const common_command = {
+	async getSerial(this: RazerDeviceConfig, device: HIDDevice): Promise<string> {
+		const response = await sendCommand(
+			device,
+			buildRazerReport(this.hardware.transaction_id, 0x16, 0x00, 0x82),
+			this.hardware.wait_min,
+		)
+
+		// serial format: 15 bytes + 1 \0
+		const bytes = new Uint8Array(response.buffer, response.byteOffset + razer_report_type.args_index, 0x16)
+		return new TextDecoder('ascii').decode(bytes).replace(/\0+$/, '') // remove padding \0
+	},
+}

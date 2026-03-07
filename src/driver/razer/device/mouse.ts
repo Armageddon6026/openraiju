@@ -1,5 +1,4 @@
-import { razer_command } from './command'
-import { RAZER_VENDOR_ID } from './common'
+import { mouse_command, common_command, RAZER_VENDOR_ID } from '../command/index'
 
 const RAZER_OPTICAL_SENSORS = {
 	focus_pro_45K_gen2: {
@@ -52,13 +51,13 @@ const RAZER_COBRA_PRO_WIRED: RazerDeviceConfig = {
 		optical_sensor: RAZER_OPTICAL_SENSORS.focus_pro_30K,
 		wait_min: 50,
 	},
-	getSerial: razer_command.getSerial,
-	getBatteryLevel: razer_command.getBatteryLevel,
-	getChargeState: razer_command.getChargeState,
-	getDpiStages: razer_command.getDpiStages,
-	setDpiStages: razer_command.setDpiStages,
-	getPollingRate: razer_command.getPollingRate,
-	setPollingRate: razer_command.setPollingRate,
+	getSerial: common_command.getSerial,
+	getBatteryLevel: mouse_command.getBatteryLevel,
+	getChargeState: mouse_command.getChargeState,
+	getDpiStages: mouse_command.getDpiStages,
+	setDpiStages: mouse_command.setDpiStages,
+	getPollingRate: mouse_command.getPollingRate,
+	setPollingRate: mouse_command.setPollingRate,
 }
 
 const RAZER_COBRA_PRO_WIRELESS: RazerDeviceConfig = {
