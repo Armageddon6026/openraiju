@@ -23,9 +23,7 @@ export async function sendCommand(
 	request: Uint8Array<ArrayBuffer>,
 	wait_min: number,
 ): Promise<DataView<ArrayBufferLike>> {
-	if (!device.opened) {
-		await device.open()
-	}
+	if (!device.opened) await device.open()
 
 	await device.sendFeatureReport(0x00, request)
 	await new Promise((resolve) => setTimeout(resolve, wait_min))
@@ -72,9 +70,9 @@ function calculateCRC(data: Uint8Array<ArrayBuffer>) {
 }
 
 export const common_command = {
-	async getSerial(this: RazerDeviceConfig, device: HIDDevice): Promise<string> {
+	async getSerial(this: RazerDeviceConfig, instance: HIDDevice): Promise<string> {
 		const response = await sendCommand(
-			device,
+			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x16, 0x00, 0x82),
 			this.hardware.wait_min,
 		)

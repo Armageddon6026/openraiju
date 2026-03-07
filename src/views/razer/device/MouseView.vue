@@ -24,7 +24,7 @@ onMounted(async () => {
 	}
 
 	if (currentDevice.value.config.getDpiStages) {
-		dpiStages.value = await currentDevice.value.config.getDpiStages(currentDevice.value.handler)
+		dpiStages.value = await currentDevice.value.config.getDpiStages(currentDevice.value.instance)
 	}
 })
 
@@ -35,7 +35,7 @@ async function setDpiStage(selectStageId: number) {
 	dpiStages.value!.ActivateID = selectStageId
 
 	try {
-		await currentDevice.value.config.setDpiStages(currentDevice.value.handler, dpiStages.value!)
+		await currentDevice.value.config.setDpiStages(currentDevice.value.instance, dpiStages.value!)
 	} catch (e) {
 		toast.add({
 			severity: 'error',
@@ -51,7 +51,7 @@ async function setDpiStage(selectStageId: number) {
 	<div v-if="currentDevice && dpiStages" class="p-6 bg-[#1a1a1a] rounded-xl shadow-lg border border-gray-800">
 		<div class="flex items-center justify-between mb-8">
 			<h2 class="text-2xl font-bold text-white uppercase tracking-wider">Performance / DPI</h2>
-			<Badge :value="currentDevice.handler.productName" severity="success" />
+			<Badge :value="currentDevice.instance.productName" severity="success" />
 		</div>
 
 		<div class="mb-10">

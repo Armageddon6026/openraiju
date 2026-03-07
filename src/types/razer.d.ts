@@ -1,6 +1,6 @@
 declare interface RazerDevice {
-	config: RazerDeviceConfig
-	handler: HIDDevice
+	readonly config: RazerDeviceConfig
+	readonly instance: HIDDevice
 }
 
 declare interface RazerDeviceConfig extends HIDDeviceFilter, RazerDeviceFeature {
@@ -12,20 +12,20 @@ declare interface RazerDeviceConfig extends HIDDeviceFilter, RazerDeviceFeature 
 	readonly hardware: {
 		wait_min: number
 		transaction_id: number
-		optical_sensor: RazerOpticalSensor
+		optical_sensor?: RazerOpticalSensor
 		HyperPolling?: boolean // Indicates whether the device supports 8K polling rate.
 	}
 }
 
 declare interface RazerOpticalSensor {
-	max_dpi: number
-	dpi_step: number
-	smart_tracking_step: 3 | 2
-	motion_sync?: boolean
-	asymmetric_cutoff_levels?: 26
-	sensitivity_matcher?: boolean
-	dynamic_sensitivity?: boolean
-	rotation?: boolean
+	readonly max_dpi: number
+	readonly dpi_step: number
+	readonly smart_tracking_step: 3 | 2
+	readonly motion_sync?: boolean
+	readonly asymmetric_cutoff_levels?: 26
+	readonly sensitivity_matcher?: boolean
+	readonly dynamic_sensitivity?: boolean
+	readonly rotation?: boolean
 }
 
 declare interface MouseDpiInfo {
@@ -38,12 +38,12 @@ declare interface MouseDpiInfo {
 }
 
 declare interface RazerDeviceFeature {
-	getSerial(this: RazerDeviceConfig, handler: HIDDevice): Promise<string>
+	getSerial(this: RazerDeviceConfig, instance: HIDDevice): Promise<string>
 	// option
-	getBatteryLevel?: (this: RazerDeviceConfig, handler: HIDDevice) => Promise<number>
-	getChargeState?: (this: RazerDeviceConfig, device: HIDDevice) => Promise<boolean>
-	getDpiStages?: (this: RazerDeviceConfig, handler: HIDDevice) => Promise<MouseDpiInfo>
-	setDpiStages?: (this: RazerDeviceConfig, handler: HIDDevice, dpi: MouseDpiInfo) => Promise<void>
-	getPollingRate?: (this: RazerDeviceConfig, handler: HIDDevice) => Promise<number>
-	setPollingRate?: (this: RazerDeviceConfig, device: HIDDevice, pollingRate: number) => Promise<void>
+	getBatteryLevel?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
+	getChargeState?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<boolean>
+	getDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<MouseDpiInfo>
+	setDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice, dpi: MouseDpiInfo) => Promise<void>
+	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
+	setPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) => Promise<void>
 }

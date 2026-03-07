@@ -8,9 +8,9 @@ import {
 
 // ref: https://github.com/openrazer/openrazer/blob/master/driver/razermouse_driver.c
 export const mouse_command = {
-	async getBatteryLevel(this: RazerDeviceConfig, device: HIDDevice): Promise<number> {
+	async getBatteryLevel(this: RazerDeviceConfig, instance: HIDDevice): Promise<number> {
 		const response = await sendCommand(
-			device,
+			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x80),
 			this.hardware.wait_min,
 		)
@@ -21,9 +21,9 @@ export const mouse_command = {
 		)
 	},
 
-	async getChargeState(this: RazerDeviceConfig, device: HIDDevice): Promise<boolean> {
+	async getChargeState(this: RazerDeviceConfig, instance: HIDDevice): Promise<boolean> {
 		const response = await sendCommand(
-			device,
+			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x84),
 			this.hardware.wait_min,
 		)
@@ -32,9 +32,9 @@ export const mouse_command = {
 		return response.getUint8(razer_report_type.args_index + 1) === 1
 	},
 
-	async getDpiStages(this: RazerDeviceConfig, device: HIDDevice): Promise<MouseDpiInfo> {
+	async getDpiStages(this: RazerDeviceConfig, instance: HIDDevice): Promise<MouseDpiInfo> {
 		const response = await sendCommand(
-			device,
+			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x26, 0x04, 0x86, [DEVICE_VARIABLE_STORAGE]),
 			this.hardware.wait_min,
 		)
@@ -83,7 +83,11 @@ export const mouse_command = {
 		return dpiInfo
 	},
 
-	async setDpiStages(this: RazerDeviceConfig, device: HIDDevice, dpiInfo: MouseDpiInfo) {
+	async setDpiStages(this: RazerDeviceConfig, instance: HIDDevice, dpiInfo: MouseDpiInfo) {
+		if (!this.hardware.optical_sensor) {
+			throw new Error('Device does not support optical sensor')
+		}
+
 		if (dpiInfo.ActivateID > dpiInfo.DpiStages.length) {
 			throw new Error('Active DPI stage ID exceeds the number of available stages')
 		}
@@ -132,18 +136,18 @@ export const mouse_command = {
 		}
 
 		await sendCommand(
-			device,
+			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x26, 0x04, 0x06, args),
 			this.hardware.wait_min,
 		)
 	},
 
-	async getPollingRate(this: RazerDeviceConfig, device: HIDDevice): Promise<number> {
+	async getPollingRate(this: RazerDeviceConfig, instance: HIDDevice): Promise<number> {
 		const commandId = this.hardware.HyperPolling ? 0xc0 : 0x85
 		const maxPollingRate = this.hardware.HyperPolling ? 8000 : 1000
 
 		const response = await sendCommand(
-			device,
+			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x01, 0x00, commandId),
 			this.hardware.wait_min,
 		)
@@ -159,7 +163,7 @@ export const mouse_command = {
 		return maxPollingRate / pollingIndex
 	},
 
-	async setPollingRate(this: RazerDeviceConfig, device: HIDDevice, pollingRate: number) {
+	async setPollingRate(this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) {
 		const hyper = this.hardware.HyperPolling
 		const commandId = hyper ? 0x40 : 0x05
 		const maxPollingRate = hyper ? 8000 : 1000
@@ -181,14 +185,14 @@ export const mouse_command = {
 		// HyperPolling requires two commands: runtime update (0x00) and persistent storage (0x01) write
 		const args = hyper ? [RUNTIME_VARIABLE_STORAGE, pollingIndex] : [pollingIndex]
 		await sendCommand(
-			device,
+			instance,
 			buildRazerReport(this.hardware.transaction_id, data_size, 0x00, commandId, args),
 			this.hardware.wait_min,
 		)
 
 		if (hyper) {
 			await sendCommand(
-				device,
+				instance,
 				buildRazerReport(this.hardware.transaction_id, data_size, 0x00, commandId, [
 					DEVICE_VARIABLE_STORAGE,
 					pollingIndex,

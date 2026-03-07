@@ -23,19 +23,22 @@ async function connectDevice() {
 	const summary = 'hid device connect'
 
 	try {
-		const devices = await navigator.hid.requestDevice({
+		const instances = await navigator.hid.requestDevice({
 			filters: razer_support_list,
 		})
 
-		for (const device of devices) {
-			const deviceConf = razer_config_map.get(`${device.vendorId}:${device.productId}`)
-			if (!deviceConf || !(await ping(device, deviceConf.hardware.wait_min))) continue
+		for (const instance of instances) {
+			const deviceConf = razer_config_map.get(`${instance.vendorId}:${instance.productId}`)
+			if (!deviceConf || !(await ping(instance, deviceConf.hardware.wait_min))) continue
 
-			await addDevice(deviceConf, device)
+			await addDevice({
+				config: deviceConf,
+				instance: instance,
+			})
 			toast.add({
 				severity: 'success',
 				summary: summary,
-				detail: `${device.productName} connected`,
+				detail: `${instance.productName} connected`,
 				life: 3000,
 			})
 			return
@@ -51,13 +54,16 @@ async function connectDevice() {
 }
 
 async function getHidDevices() {
-	const devices = (await navigator.hid.getDevices()).filter((d) => d.collections.length == 1)
+	const instances = (await navigator.hid.getDevices()).filter((d) => d.collections.length == 1)
 
-	devices.forEach(async (device) => {
-		const deviceConf = razer_config_map.get(`${device.vendorId}:${device.productId}`)
-		if (!deviceConf || !(await ping(device, deviceConf.hardware.wait_min))) return
+	instances.forEach(async (instance) => {
+		const deviceConf = razer_config_map.get(`${instance.vendorId}:${instance.productId}`)
+		if (!deviceConf || !(await ping(instance, deviceConf.hardware.wait_min))) return
 
-		await addDevice(deviceConf, device)
+		await addDevice({
+			config: deviceConf,
+			instance: instance,
+		})
 	})
 }
 

@@ -1,21 +1,16 @@
 export const useDeviceStore = defineStore('razerStore', () => {
 	const devicesMap = ref(new Map<string, RazerDevice>())
 
-	async function addDevice(conf: RazerDeviceConfig, handler: HIDDevice) {
-		const sn = await conf.getSerial(handler)
+	async function addDevice(device: RazerDevice) {
+		const sn = await device.config.getSerial(device.instance)
 		if (!sn) {
 			throw new Error('No serial number found')
 		}
 
 		// generate ID
-		const instanceId = `${conf.vendorId}-${conf.productId}-${sn}`
+		const id = `${device.config.vendorId}-${device.config.productId}-${sn}`
 
-		const device: RazerDevice = {
-			config: conf,
-			handler: handler,
-		}
-
-		devicesMap.value.set(instanceId, device)
+		devicesMap.value.set(id, device)
 	}
 
 	function removeDevice(instanceId: string) {

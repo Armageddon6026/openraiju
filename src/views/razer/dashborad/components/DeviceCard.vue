@@ -7,11 +7,11 @@ const chargeState = ref<boolean | undefined>()
 
 onMounted(async () => {
 	if (device.config.getBatteryLevel) {
-		batteryLevel.value = await device.config.getBatteryLevel(device.handler)
+		batteryLevel.value = await device.config.getBatteryLevel(device.instance)
 	}
 
 	if (device.config.getChargeState) {
-		chargeState.value = await device.config.getChargeState(device.handler)
+		chargeState.value = await device.config.getChargeState(device.instance)
 	}
 })
 
@@ -33,15 +33,15 @@ async function disconnectDevice(device: RazerDevice) {
 		},
 		accept: async () => {
 			try {
-				if (device.handler.opened) {
-					await device.handler.close()
+				if (device.instance.opened) {
+					await device.instance.close()
 				}
 
-				await device.handler.forget()
+				await device.instance.forget()
 				toast.add({
 					severity: 'success',
 					summary: summary,
-					detail: `${device.handler.productName} disconnected`,
+					detail: `${device.instance.productName} disconnected`,
 					life: 3000,
 				})
 
