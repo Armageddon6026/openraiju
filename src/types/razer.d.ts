@@ -1,7 +1,6 @@
 declare interface RazerDevice {
 	config: RazerDeviceConfig
 	handler: HIDDevice
-	BatteryLevel?: number
 }
 
 declare interface RazerDeviceConfig extends HIDDeviceFilter, RazerDeviceFeature {

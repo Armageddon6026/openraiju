@@ -2,6 +2,19 @@
 const toast = useToast()
 const confirm = useConfirm()
 
+const batteryLevel = ref<number | undefined>()
+const chargeState = ref<boolean | undefined>()
+
+onMounted(async () => {
+	if (device.config.getBatteryLevel) {
+		batteryLevel.value = await device.config.getBatteryLevel(device.handler)
+	}
+
+	if (device.config.getChargeState) {
+		chargeState.value = await device.config.getChargeState(device.handler)
+	}
+})
+
 async function disconnectDevice(device: RazerDevice) {
 	const summary = 'hid device disconnect'
 
@@ -49,20 +62,27 @@ async function disconnectDevice(device: RazerDevice) {
 	})
 }
 
-function getBatteryIcon(level: number | undefined): string {
-	if (!level) return 'i-material-symbols-battery-android-question-outline'
-	if (level <= 10) return 'i-material-symbols-battery-android-alert-outline'
-	if (level <= 16) return 'i-material-symbols-battery-android-frame-1'
-	if (level <= 32) return 'i-material-symbols-battery-android-frame-2'
-	if (level <= 48) return 'i-material-symbols-battery-android-frame-3'
-	if (level <= 64) return 'i-material-symbols-battery-android-frame-4'
-	if (level <= 80) return 'i-material-symbols-battery-android-frame-5'
-	if (level <= 95) return 'i-material-symbols-battery-android-frame-6'
+function getBatteryIcon(): string {
+	if (!batteryLevel.value) return 'i-material-symbols-battery-android-question-outline'
+
+	if (chargeState.value) {
+		return 'i-material-symbols-battery-android-frame-bolt'
+	}
+
+	if (batteryLevel.value <= 10) return 'i-material-symbols-battery-android-alert-outline'
+	if (batteryLevel.value <= 16) return 'i-material-symbols-battery-android-frame-1'
+	if (batteryLevel.value <= 32) return 'i-material-symbols-battery-android-frame-2'
+	if (batteryLevel.value <= 48) return 'i-material-symbols-battery-android-frame-3'
+	if (batteryLevel.value <= 64) return 'i-material-symbols-battery-android-frame-4'
+	if (batteryLevel.value <= 80) return 'i-material-symbols-battery-android-frame-5'
+	if (batteryLevel.value <= 95) return 'i-material-symbols-battery-android-frame-6'
 	return 'i-material-symbols-battery-android-frame-full'
 }
 
-function getBatteryColor(level: number | undefined): string {
-	return !level || level <= 20 ? 'text-red-500' : 'text-green-500'
+function getBatteryColor(): string {
+	const level = batteryLevel.value
+
+	return (!level || level <= 20) && !chargeState.value ? 'text-red-500' : 'text-green-500'
 }
 
 const { device } = defineProps<{ device: RazerDevice }>()
@@ -74,9 +94,9 @@ const emits = defineEmits<{
 <template>
 	<Card bg="#222" w="280px" relative="~" cursor="pointer" un-border="1 green-500" hover="bg-#2a2a2a">
 		<template #header>
-			<div v-if="device.BatteryLevel" absolute="~" top="3" right="3" fleX="~" items="center" gap="1">
-				<span text="xs gray-400" font="mono">{{ device.BatteryLevel }}%</span>
-				<div :class="[getBatteryIcon(device.BatteryLevel), getBatteryColor(device.BatteryLevel)]"></div>
+			<div v-if="batteryLevel" absolute="~" top="3" right="3" fleX="~" items="center" gap="1">
+				<span text="xs gray-400" font="mono">{{ batteryLevel }}%</span>
+				<div :class="[getBatteryIcon(), getBatteryColor()]"></div>
 			</div>
 			<div flex="~" items="center" justify="center">
 				<Image :src="device.config.ui.image" alt="Image" width="150" />

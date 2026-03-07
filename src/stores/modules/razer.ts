@@ -15,11 +15,6 @@ export const useDeviceStore = defineStore('razerStore', () => {
 			handler: handler,
 		}
 
-		// if device has battery
-		if (device.config.getBatteryLevel) {
-			device.BatteryLevel = await device.config.getBatteryLevel(device.handler)
-		}
-
 		devicesMap.value.set(instanceId, device)
 	}
 

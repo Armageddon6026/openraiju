@@ -41,7 +41,7 @@ export const razer_command = {
 		)
 
 		// charge state located at args_index + 1, 0 when not charging, 1 when charging
-		return response.getUint8(razer_report_type.args_index) === 1
+		return response.getUint8(razer_report_type.args_index + 1) === 1
 	},
 
 	async getDpiStages(this: RazerDeviceConfig, device: HIDDevice): Promise<MouseDpiInfo> {
@@ -178,16 +178,15 @@ export const razer_command = {
 		const data_size = hyper ? 0x02 : 0x01
 
 		if (pollingRate > maxPollingRate) {
-			throw new Error('Polling rate exceeds the maximum supported rate')
-		}
-
-		if (maxPollingRate % pollingRate <= 0 || pollingRate === 250 /** RAZER Not supported 250  */) {
-			throw new Error(`Polling rate ${pollingRate} is not supported`)
+			throw new Error(`Polling rate exceeds the maximum supported rate of ${maxPollingRate}`)
 		}
 
 		const pollingIndex = maxPollingRate / pollingRate
-		// check 2^x
-		if ((pollingIndex & (pollingIndex - 1)) !== 0) {
+		if (
+			pollingRate === 250 /** RAZER Not supported 250  */ ||
+			maxPollingRate % pollingRate !== 0 ||
+			(pollingIndex & (pollingIndex - 1)) !== 0 /** check 2^x */
+		) {
 			throw new Error(`Polling rate ${pollingRate} is not supported`)
 		}
 
