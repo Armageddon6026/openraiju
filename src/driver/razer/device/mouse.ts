@@ -4,7 +4,6 @@ const RAZER_OPTICAL_SENSORS = {
 	focus_pro_45K_gen2: {
 		max_dpi: 45000,
 		dpi_step: 1,
-		motion_sync: true,
 		smart_tracking_step: 3,
 		asymmetric_cutoff_levels: 26,
 		sensitivity_matcher: true,
@@ -15,7 +14,6 @@ const RAZER_OPTICAL_SENSORS = {
 	focus_pro_35K_gen2: {
 		max_dpi: 35000,
 		dpi_step: 1,
-		motion_sync: true,
 		smart_tracking_step: 3,
 		asymmetric_cutoff_levels: 26,
 		sensitivity_matcher: true,
@@ -24,7 +22,6 @@ const RAZER_OPTICAL_SENSORS = {
 	focus_pro_30K: {
 		max_dpi: 30000,
 		dpi_step: 50,
-		motion_sync: true,
 		smart_tracking_step: 3,
 		asymmetric_cutoff_levels: 26,
 	},
@@ -58,6 +55,8 @@ const RAZER_COBRA_PRO_WIRED: RazerDeviceConfig = {
 	setDpiStages: mouse_command.setDpiStages,
 	getPollingRate: mouse_command.getPollingRate,
 	setPollingRate: mouse_command.setPollingRate,
+	getTrackingStep: mouse_command.getTrackingStep,
+	setTrackingStep: mouse_command.setTrackingStep,
 }
 
 const RAZER_COBRA_PRO_WIRELESS: RazerDeviceConfig = {

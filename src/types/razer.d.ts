@@ -46,4 +46,6 @@ declare interface RazerDeviceFeature {
 	setDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice, dpi: MouseDpiInfo) => Promise<void>
 	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	setPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) => Promise<void>
+	getTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
+	setTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice, trackingStep: number) => Promise<void>
 }
