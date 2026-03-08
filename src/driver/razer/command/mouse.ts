@@ -1,10 +1,4 @@
-import {
-	buildRazerReport,
-	razer_report_type,
-	sendCommand,
-	DEVICE_VARIABLE_STORAGE,
-	RUNTIME_VARIABLE_STORAGE,
-} from './common'
+import { buildRazerReport, razer_report_type, sendCommand, razer_storage_type } from './common'
 
 // ref: https://github.com/openrazer/openrazer/blob/master/driver/razermouse_driver.c
 export const mouse_command = {
@@ -35,7 +29,7 @@ export const mouse_command = {
 	async getDpiStages(this: RazerDeviceConfig, instance: HIDDevice): Promise<MouseDpiInfo> {
 		const response = await sendCommand(
 			instance,
-			buildRazerReport(this.hardware.transaction_id, 0x26, 0x04, 0x86, [DEVICE_VARIABLE_STORAGE]),
+			buildRazerReport(this.hardware.transaction_id, 0x26, 0x04, 0x86, [razer_storage_type.profile_slot_default]),
 			this.hardware.wait_min,
 		)
 
@@ -96,7 +90,7 @@ export const mouse_command = {
 		let args: number[] = []
 		let offset = 0
 
-		args[offset++] = DEVICE_VARIABLE_STORAGE
+		args[offset++] = razer_storage_type.profile_slot_default
 		args[offset++] = dpiInfo.ActivateID
 		args[offset++] = dpiInfo.DpiStages.length
 
@@ -183,7 +177,7 @@ export const mouse_command = {
 		}
 
 		// HyperPolling requires two commands: runtime update (0x00) and persistent storage (0x01) write
-		const args = hyper ? [RUNTIME_VARIABLE_STORAGE, pollingIndex] : [pollingIndex]
+		const args = hyper ? [razer_storage_type.runtime, pollingIndex] : [pollingIndex]
 		await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, data_size, 0x00, commandId, args),
@@ -194,7 +188,7 @@ export const mouse_command = {
 			await sendCommand(
 				instance,
 				buildRazerReport(this.hardware.transaction_id, data_size, 0x00, commandId, [
-					DEVICE_VARIABLE_STORAGE,
+					razer_storage_type.profile_slot_default,
 					pollingIndex,
 				]),
 				this.hardware.wait_min,

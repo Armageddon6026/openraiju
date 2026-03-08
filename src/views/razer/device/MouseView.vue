@@ -30,6 +30,7 @@ onMounted(async () => {
 		</div>
 
 		<DpiStages v-if="currentDevice.config.getDpiStages" :device="currentDevice" />
+		<PollingRate v-if="currentDevice.config.getPollingRate" :device="currentDevice" />
 	</div>
 	<div v-else flex="~col" items="center" justify="center" h="64" text="gray-600">
 		<p>Loading Device Configuration...</p>
