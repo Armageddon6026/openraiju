@@ -141,7 +141,7 @@ export const common_command = {
 		)
 
 		// serial format: 15 bytes + 1 \0
-		const bytes = new Uint8Array(response.buffer, response.byteOffset + razer_report_type.args_index, 0x16)
+		const bytes = new Uint8Array(response.buffer, response.byteOffset, 0x16)
 		return new TextDecoder('ascii').decode(bytes).replace(/\0+$/, '') // remove padding \0
 	},
 }

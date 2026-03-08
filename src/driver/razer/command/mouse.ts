@@ -51,13 +51,13 @@ export const mouse_command = {
 		// 03    third DPI stage
 		// ...
 		const dpiInfo: MouseDpiInfo = {
-			ActivateID: response.getUint8(+1),
+			ActivateID: response.getUint8(1),
 			DpiStages: [],
 		}
 
-		const numberOfStages = response.getUint8(+2)
+		const numberOfStages = response.getUint8(2)
 
-		let index = +3 // start read stage info
+		let index = 3 // start read stage info
 		for (let i = 0; i < numberOfStages; i++) {
 			const stageId = response.getUint8(index)
 			index += 1
@@ -154,6 +154,7 @@ export const mouse_command = {
 		if (pollingIndex === 0) {
 			throw new Error('Failed to get polling rate')
 		}
+
 		return maxPollingRate / pollingIndex
 	},
 
