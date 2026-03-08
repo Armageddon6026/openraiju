@@ -1,4 +1,9 @@
 <script setup lang="ts">
+const { device } = defineProps<{ device: RazerDevice }>()
+const emits = defineEmits<{
+	disconnect: [productId: number]
+}>()
+
 const toast = useToast()
 const confirm = useConfirm()
 
@@ -84,15 +89,10 @@ function getBatteryColor(): string {
 
 	return (!level || level <= 20) && !chargeState.value ? 'text-red-500' : 'text-green-500'
 }
-
-const { device } = defineProps<{ device: RazerDevice }>()
-const emits = defineEmits<{
-	disconnect: [productId: number]
-}>()
 </script>
 
 <template>
-	<Card bg="#222" w="280px" relative="~" cursor="pointer" un-border="1 green-500" hover="bg-#2a2a2a">
+	<Card w="280px" relative="~" cursor="pointer" un-border="1 green-500" hover="bg-#2a2a2a">
 		<template #header>
 			<div v-if="batteryLevel" absolute="~" top="3" right="3" fleX="~" items="center" gap="1">
 				<span text="xs gray-400" font="mono">{{ batteryLevel }}%</span>

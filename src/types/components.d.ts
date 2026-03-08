@@ -16,6 +16,7 @@ declare module 'vue' {
     Card: typeof import('primevue/card')['default']
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     DeviceCard: typeof import('./../views/razer/dashborad/components/DeviceCard.vue')['default']
+    DpiStages: typeof import('./../views/razer/device/components/DpiStages.vue')['default']
     Image: typeof import('primevue/image')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
