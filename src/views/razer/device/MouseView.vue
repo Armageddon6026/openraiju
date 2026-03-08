@@ -26,7 +26,9 @@ onMounted(async () => {
 <template>
 	<div v-if="currentDevice" p="6">
 		<div fle="~" items="center" justify="between" mb="8">
-			<h2 text="2xl" font="bold" uppercase="~" tracking="wider">Performance</h2>
+			<h2 text="2xl" font="bold" uppercase="~" tracking="wider">
+				{{ currentDevice.config.ui.name }}
+			</h2>
 		</div>
 
 		<div flex="~ col" gap="6">
