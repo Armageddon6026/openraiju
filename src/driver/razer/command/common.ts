@@ -49,11 +49,19 @@ export async function sendCommand(
 		await new Promise((resolve) => setTimeout(resolve, wait_min))
 
 		const response = await device.receiveFeatureReport(0x00)
+		if (response.byteLength !== razer_report_type.report_buffer_size) {
+			throw new Error('Invalid response length')
+		}
+
 		if (response.getUint8(razer_report_type.status_index) !== razer_report_status.command_successful) {
 			throw new Error(getRazerReportStatus(response.getUint8(razer_report_type.status_index)))
 		}
 
-		return response
+		return new DataView(
+			response.buffer,
+			response.byteOffset + razer_report_type.args_index,
+			response.byteLength - razer_report_type.args_index,
+		)
 	})
 
 	deviceQueues.set(

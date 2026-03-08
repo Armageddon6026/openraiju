@@ -1,4 +1,4 @@
-import { buildRazerReport, razer_report_type, sendCommand, razer_storage_type } from './common'
+import { buildRazerReport, sendCommand, razer_storage_type } from './common'
 
 // ref: https://github.com/openrazer/openrazer/blob/master/driver/razermouse_driver.c
 export const mouse_command = {
@@ -11,7 +11,7 @@ export const mouse_command = {
 
 		return Math.round(
 			// battery level located at args_index + 1 (total 2 bytes)
-			(response.getUint8(razer_report_type.args_index + 1) / 255) * 100,
+			(response.getUint8(1) / 255) * 100,
 		)
 	},
 
@@ -23,7 +23,7 @@ export const mouse_command = {
 		)
 
 		// charge state located at args_index + 1, 0 when not charging, 1 when charging
-		return response.getUint8(razer_report_type.args_index + 1) === 1
+		return response.getUint8(1) === 1
 	},
 
 	async getDpiStages(this: RazerDeviceConfig, instance: HIDDevice): Promise<MouseDpiInfo> {
@@ -51,13 +51,13 @@ export const mouse_command = {
 		// 03    third DPI stage
 		// ...
 		const dpiInfo: MouseDpiInfo = {
-			ActivateID: response.getUint8(razer_report_type.args_index + 1),
+			ActivateID: response.getUint8(+1),
 			DpiStages: [],
 		}
 
-		const numberOfStages = response.getUint8(razer_report_type.args_index + 2)
+		const numberOfStages = response.getUint8(+2)
 
-		let index = razer_report_type.args_index + 3 // start read stage info
+		let index = +3 // start read stage info
 		for (let i = 0; i < numberOfStages; i++) {
 			const stageId = response.getUint8(index)
 			index += 1
@@ -150,7 +150,7 @@ export const mouse_command = {
 		// Ex:
 		// - If pollingIndex = 0x10 (16 in decimal) and HyperPolling is enabled,
 		// - pollingRate = maxPollingRate (8000) / pollingIndex (16) = 8000 / 12 = 500 Hz
-		const pollingIndex = response.getUint8(razer_report_type.args_index)
+		const pollingIndex = response.getUint8(0)
 		if (pollingIndex === 0) {
 			throw new Error('Failed to get polling rate')
 		}
