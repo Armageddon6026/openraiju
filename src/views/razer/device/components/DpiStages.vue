@@ -14,7 +14,7 @@ onMounted(async () => {
 })
 
 async function setDpiStage(selectStageId: number) {
-	if (!device?.config.setDpiStages) {
+	if (!device.config.setDpiStages) {
 		throw new Error('Device does not support setting DPI stages')
 	}
 	if (!dpiStages.value || dpiStages.value.ActivateID === selectStageId) {

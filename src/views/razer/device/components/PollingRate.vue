@@ -14,7 +14,7 @@ const pollingRateOptions = computed(() => {
 	const maxPollingRate = device.config.hardware.HyperPolling ? 8000 : 1000
 	const rates = []
 	for (let rate = 125; rate <= maxPollingRate; rate *= 2) {
-		if (rate === 250) continue
+		if (rate === 250) continue // Skip 250 Hz
 		rates.push(rate)
 	}
 	return rates
@@ -24,25 +24,25 @@ async function setPollingRate(rate: number) {
 	if (!device.config.setPollingRate) {
 		throw new Error('Device does not support setting polling rate')
 	}
-
 	if (!rate || pollingRate.value === rate) return
 
+	const summary = 'Set Polling Rate'
 	const oldRate = pollingRate.value
-	pollingRate.value = rate // Optimistic update
+	pollingRate.value = rate
 	try {
 		await device.config.setPollingRate(device.instance, rate)
 		toast.add({
 			severity: 'success',
-			summary: 'Success',
+			summary: summary,
 			detail: `Polling rate set to ${rate} Hz`,
 			life: 3000,
 		})
-	} catch (error) {
+	} catch (e) {
 		pollingRate.value = oldRate // Revert on failure
 		toast.add({
 			severity: 'error',
-			summary: 'Error',
-			detail: 'Failed to set polling rate',
+			summary: summary,
+			detail: `${e}`,
 			life: 3000,
 		})
 	}
