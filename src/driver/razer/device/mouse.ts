@@ -49,6 +49,7 @@ const RAZER_COBRA_PRO_WIRED: RazerDeviceConfig = {
 		wait_min: 50,
 	},
 	getSerial: common_command.getSerial,
+	getFirmware: common_command.getFirmware,
 	getBatteryLevel: mouse_command.getBatteryLevel,
 	getChargeState: mouse_command.getChargeState,
 	getDpiStages: mouse_command.getDpiStages,
@@ -56,7 +57,6 @@ const RAZER_COBRA_PRO_WIRED: RazerDeviceConfig = {
 	getPollingRate: mouse_command.getPollingRate,
 	setPollingRate: mouse_command.setPollingRate,
 	getTrackingStep: mouse_command.getTrackingStep,
-	setTrackingStep: mouse_command.setTrackingStep,
 }
 
 const RAZER_COBRA_PRO_WIRELESS: RazerDeviceConfig = {

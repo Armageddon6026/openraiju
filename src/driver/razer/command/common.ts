@@ -144,4 +144,15 @@ export const common_command = {
 		const bytes = new Uint8Array(response.buffer, response.byteOffset, 0x16)
 		return new TextDecoder('ascii').decode(bytes).replace(/\0+$/, '') // remove padding \0
 	},
+
+	async getFirmware(this: RazerDeviceConfig, instance: HIDDevice): Promise<string> {
+		const response = await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x04, 0x00, 0x81),
+			this.hardware.wait_min,
+		)
+
+		// firmware format: 4 bytes
+		return `${response.getUint8(0)}.${response.getUint8(1)}.${response.getUint8(2)}.${response.getUint8(3)}`
+	},
 }

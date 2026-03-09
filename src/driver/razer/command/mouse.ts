@@ -207,20 +207,4 @@ export const mouse_command = {
 		// response fomat 00 00 01
 		return response.getUint8(2)
 	},
-
-	async setTrackingStep(this: RazerDeviceConfig, instance: HIDDevice, trackingStep: number) {
-		if (!this.hardware.optical_sensor) {
-			throw new Error('Device does not support optical sensor')
-		}
-
-		if (trackingStep > this.hardware.optical_sensor.smart_tracking_step || trackingStep < 1) {
-			throw new Error(`Tracking step ${trackingStep} is not supported`)
-		}
-
-		await sendCommand(
-			instance,
-			buildRazerReport(this.hardware.transaction_id, 0x03, 0x0b, 0x05, [0x00, 0x00, trackingStep]),
-			this.hardware.wait_min,
-		)
-	},
 }
