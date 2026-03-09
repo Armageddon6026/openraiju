@@ -150,7 +150,8 @@ export const mouse_command = {
 		// Ex:
 		// - If pollingIndex = 0x10 (16 in decimal) and HyperPolling is enabled,
 		// - pollingRate = maxPollingRate (8000) / pollingIndex (16) = 8000 / 12 = 500 Hz
-		const pollingIndex = response.getUint8(0)
+
+		const pollingIndex = response.getUint8(this.hardware.HyperPolling ? 1 : 0)
 		if (pollingIndex === 0) {
 			throw new Error('Failed to get polling rate')
 		}

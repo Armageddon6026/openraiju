@@ -6,7 +6,7 @@ declare interface RazerDevice {
 declare interface RazerDeviceConfig extends HIDDeviceFilter, RazerDeviceFeature {
 	readonly ui: {
 		name: string
-		type: 'keyboard' | 'mouse' | 'headset'
+		type: 'keyboard' | 'mouse' | 'headset' | 'other'
 		image: string
 	}
 	readonly hardware: {

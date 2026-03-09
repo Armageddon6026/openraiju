@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RAZER_MOUSE_DEVICES } from '@/driver/razer/device'
+import { RAZER_MOUSE_DEVICES, RAZER_OTHER_DEVICES } from '@/driver/razer/device'
 import { useDeviceStore } from '@/stores'
 import { ping } from '@/driver/utils'
 
@@ -10,7 +10,7 @@ const deviceStore = useDeviceStore()
 const { addDevice, removeDevice } = deviceStore
 const { devicesMap } = storeToRefs(deviceStore)
 
-const razer_support_list = [...RAZER_MOUSE_DEVICES /** add more devices here*/]
+const razer_support_list = [...RAZER_MOUSE_DEVICES, ...RAZER_OTHER_DEVICES /** add more devices here*/]
 const razer_config_map = new Map(razer_support_list.map((d) => [`${d.vendorId}:${d.productId}`, d]))
 
 onMounted(async () => {
