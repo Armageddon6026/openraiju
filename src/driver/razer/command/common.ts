@@ -1,3 +1,5 @@
+import { printBuffer } from '@/driver/utils'
+
 export const RAZER_VENDOR_ID = 0x1532
 
 export enum razer_storage_type {
@@ -130,6 +132,25 @@ function calculateCRC(data: Uint8Array<ArrayBuffer>) {
 		crc ^= data[i]!
 	}
 	return crc
+}
+
+export async function test(
+	conf: RazerDeviceConfig,
+	instance: HIDDevice,
+	data_size: number,
+	command_class: number,
+	command_id: number,
+	args?: number[],
+) {
+	const response = await sendCommand(
+		instance,
+		buildRazerReport(conf.hardware.transaction_id, data_size, command_class, command_id, args),
+		conf.hardware.wait_min,
+	)
+
+	printBuffer(
+		response.buffer.slice(razer_report_type.args_index, razer_report_type.args_index + razer_report_type.maxArgsLength),
+	)
 }
 
 export const common_command = {

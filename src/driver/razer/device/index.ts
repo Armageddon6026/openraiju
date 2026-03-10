@@ -1,2 +1,2 @@
 export * from './mouse'
-export * from './others'
+export * from './accessory'
