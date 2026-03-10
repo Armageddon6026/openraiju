@@ -87,7 +87,7 @@ export const mouse_command = {
 		}
 
 		// The request uses the same format as the response from getDpiStages
-		let args: number[] = []
+		const args: number[] = []
 		let offset = 0
 
 		args[offset++] = razer_storage_type.profile_slot_default
@@ -137,8 +137,8 @@ export const mouse_command = {
 	},
 
 	async getPollingRate(this: RazerDeviceConfig, instance: HIDDevice): Promise<number> {
-		const commandId = this.hardware.HyperPolling ? 0xc0 : 0x85
-		const maxPollingRate = this.hardware.HyperPolling ? 8000 : 1000
+		const commandId = this.hardware.hyper_polling ? 0xc0 : 0x85
+		const maxPollingRate = this.hardware.hyper_polling ? 8000 : 1000
 
 		const response = await sendCommand(
 			instance,
@@ -151,7 +151,7 @@ export const mouse_command = {
 		// - If pollingIndex = 0x10 (16 in decimal) and HyperPolling is enabled,
 		// - pollingRate = maxPollingRate (8000) / pollingIndex (16) = 8000 / 12 = 500 Hz
 
-		const pollingIndex = response.getUint8(this.hardware.HyperPolling ? 1 : 0)
+		const pollingIndex = response.getUint8(this.hardware.hyper_polling ? 1 : 0)
 		if (pollingIndex === 0) {
 			throw new Error('Failed to get polling rate')
 		}
@@ -160,7 +160,7 @@ export const mouse_command = {
 	},
 
 	async setPollingRate(this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) {
-		const hyper = this.hardware.HyperPolling
+		const hyper = this.hardware.hyper_polling
 		const commandId = hyper ? 0x40 : 0x05
 		const maxPollingRate = hyper ? 8000 : 1000
 		const data_size = hyper ? 0x02 : 0x01

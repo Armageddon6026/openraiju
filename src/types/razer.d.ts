@@ -13,7 +13,7 @@ declare interface RazerDeviceConfig extends HIDDeviceFilter, RazerDeviceFeature 
 		wait_min: number
 		transaction_id: number
 		optical_sensor?: RazerOpticalSensor
-		HyperPolling?: boolean // Indicates whether the device supports 8K polling rate.
+		hyper_polling?: boolean // Indicates whether the device supports 8K polling rate.
 	}
 }
 
@@ -48,4 +48,6 @@ declare interface RazerDeviceFeature {
 	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	setPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) => Promise<void>
 	getTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
+	pairHyperpollingDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
+	unpairHyperpollingDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
 }

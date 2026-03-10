@@ -1,4 +1,4 @@
-import { RAZER_VENDOR_ID } from '../command/index'
+import { accessory_command, RAZER_VENDOR_ID } from '../command/index'
 
 const RAZER_HYPERPOLLING_WIRELESS_DONGLE: RazerDeviceConfig = {
 	vendorId: RAZER_VENDOR_ID,
@@ -20,6 +20,8 @@ const RAZER_HYPERPOLLING_WIRELESS_DONGLE: RazerDeviceConfig = {
 	getFirmware: async () => {
 		return '0.0.0.0'
 	},
+	pairHyperpollingDevice: accessory_command.pairHyperpollingDevice,
+	unpairHyperpollingDevice: accessory_command.unpairHyperpollingDevice,
 }
 
 export const RAZER_ACCESSORY_DEVICES: RazerDeviceConfig[] = [RAZER_HYPERPOLLING_WIRELESS_DONGLE]
