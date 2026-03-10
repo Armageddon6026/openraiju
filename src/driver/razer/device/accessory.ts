@@ -7,7 +7,7 @@ const RAZER_HYPERPOLLING_WIRELESS_DONGLE: RazerDeviceConfig = {
 	usage: 0x0002,
 	ui: {
 		name: 'Razer Hyperpolling Dongle',
-		type: 'other',
+		type: 'accessory',
 		image: 'https://dl.razerzone.com/src/6141/6141-1-en-v1.png',
 	},
 	hardware: {
@@ -22,6 +22,7 @@ const RAZER_HYPERPOLLING_WIRELESS_DONGLE: RazerDeviceConfig = {
 	},
 	pairHyperpollingDevice: accessory_command.pairHyperpollingDevice,
 	unpairHyperpollingDevice: accessory_command.unpairHyperpollingDevice,
+	getPairDevices: accessory_command.getPairDevices,
 }
 
 export const RAZER_ACCESSORY_DEVICES: RazerDeviceConfig[] = [RAZER_HYPERPOLLING_WIRELESS_DONGLE]

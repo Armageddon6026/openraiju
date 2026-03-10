@@ -6,7 +6,7 @@ declare interface RazerDevice {
 declare interface RazerDeviceConfig extends HIDDeviceFilter, RazerDeviceFeature {
 	readonly ui: {
 		name: string
-		type: 'keyboard' | 'mouse' | 'headset' | 'other'
+		type: 'keyboard' | 'mouse' | 'headset' | 'accessory'
 		image: string
 	}
 	readonly hardware: {
@@ -50,4 +50,5 @@ declare interface RazerDeviceFeature {
 	getTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	pairHyperpollingDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
 	unpairHyperpollingDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
+	getPairDevices?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number[]>
 }

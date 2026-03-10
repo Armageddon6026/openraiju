@@ -11,7 +11,7 @@ const pollingRateOptions = computed(() => {
 	if (!device.config.hardware) {
 		return []
 	}
-	const maxPollingRate = device.config.hardware.HyperPolling ? 8000 : 1000
+	const maxPollingRate = device.config.hardware.hyper_polling ? 8000 : 1000
 	const rates = []
 	for (let rate = 125; rate <= maxPollingRate; rate *= 2) {
 		if (rate === 250) continue // Skip 250 Hz

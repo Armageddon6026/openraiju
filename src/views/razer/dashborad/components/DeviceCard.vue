@@ -106,7 +106,9 @@ function getBatteryColor(): string {
 			<h2 text="lg gray-200" font="bold">{{ device.config.ui.name }}</h2>
 		</template>
 		<template #subtitle>
-			<p text="sm gray-400">{{ device.config.ui.type }}</p>
+			<p text="sm gray-400">
+				{{ device.config.ui.type }}<Badge m="l1" v-if="device.config.hardware.hyper_polling">Hyper Polling</Badge>
+			</p>
 		</template>
 		<template #footer>
 			<div flex="~" justify="end">

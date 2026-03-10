@@ -137,9 +137,9 @@ export const mouse_command = {
 	},
 
 	async getPollingRate(this: RazerDeviceConfig, instance: HIDDevice): Promise<number> {
-		const commandId = this.hardware.hyper_polling ? 0xc0 : 0x85
-		const maxPollingRate = this.hardware.hyper_polling ? 8000 : 1000
-
+		const hyper = this.hardware.hyper_polling
+		const commandId = hyper ? 0xc0 : 0x85
+		const maxPollingRate = hyper ? 8000 : 1000
 		const response = await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x01, 0x00, commandId),
