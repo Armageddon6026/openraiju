@@ -2,6 +2,7 @@
 import { RAZER_MOUSE_DEVICES, RAZER_ACCESSORY_DEVICES } from '@/driver/razer/device'
 import { useDeviceStore } from '@/stores'
 import { ping } from '@/driver/utils'
+import { RAZER_KEYBOARD_DEVICES } from '@/driver/razer/device/keyboard'
 
 const toast = useToast()
 const router = useRouter()
@@ -10,7 +11,12 @@ const deviceStore = useDeviceStore()
 const { addDevice, removeDevice } = deviceStore
 const { devicesMap } = storeToRefs(deviceStore)
 
-const razer_support_list = [...RAZER_MOUSE_DEVICES, ...RAZER_ACCESSORY_DEVICES /** add more devices here*/]
+const razer_support_list = [
+	...RAZER_MOUSE_DEVICES,
+	...RAZER_KEYBOARD_DEVICES,
+	...RAZER_ACCESSORY_DEVICES,
+	/** add more devices here*/
+]
 const razer_config_map = new Map(razer_support_list.map((d) => [`${d.vendorId}:${d.productId}`, d]))
 
 onMounted(async () => {

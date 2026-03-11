@@ -86,6 +86,7 @@ async function connectPairedDevice(device: RazerDevice) {
 		}
 
 		deviceInfo.hardware.hyper_polling = true
+		deviceInfo.hardware.wait_min = device.config.hardware.wait_min
 		deviceStore.addDevice({
 			config: deviceInfo,
 			instance: device.instance,
