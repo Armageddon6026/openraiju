@@ -176,4 +176,38 @@ export const common_command = {
 		// firmware format: 4 bytes
 		return `${response.getUint8(0)}.${response.getUint8(1)}.${response.getUint8(2)}.${response.getUint8(3)}`
 	},
+
+	async getBatteryLevel(this: RazerDeviceConfig, instance: HIDDevice): Promise<number> {
+		const response = await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x80),
+			this.hardware.wait_min,
+		)
+
+		return Math.round(
+			// battery level located at args_index + 1 (total 2 bytes)
+			(response.getUint8(1) / 255) * 100,
+		)
+	},
+
+	async getChargeState(this: RazerDeviceConfig, instance: HIDDevice): Promise<boolean> {
+		const response = await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x84),
+			this.hardware.wait_min,
+		)
+
+		// charge state located at args_index + 1, 0 when not charging, 1 when charging
+		return response.getUint8(1) === 1
+	},
+
+	async getIdleTime(this: RazerDeviceConfig, instance: HIDDevice): Promise<number> {
+		const response = await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x83),
+			this.hardware.wait_min,
+		)
+
+		return (response.getUint8(0) << 8) | (response.getUint8(1) & 0xff)
+	},
 }

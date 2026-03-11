@@ -84,6 +84,21 @@ function getBatteryIcon(): string {
 	return 'i-material-symbols-battery-android-frame-full'
 }
 
+function getTypeIcon(): string {
+	switch (device.config.ui.type) {
+		case 'mouse':
+			return 'i-material-symbols-mouse-outline'
+		case 'keyboard':
+			return 'i-material-symbols-keyboard-outline'
+		case 'headset':
+			return 'i-material-symbols-headset-mic-outline'
+		case 'accessory':
+			return 'i-material-symbols-usb-rounded'
+		default:
+			return 'i-material-symbols-question-mark'
+	}
+}
+
 function getBatteryColor(): string {
 	const level = batteryLevel.value
 
@@ -106,9 +121,14 @@ function getBatteryColor(): string {
 			<h2 text="lg gray-200" font="bold">{{ device.config.ui.name }}</h2>
 		</template>
 		<template #subtitle>
-			<p text="sm gray-400">
-				{{ device.config.ui.type }}<Badge m="l1" v-if="device.config.hardware.hyper_polling">Hyper Polling</Badge>
-			</p>
+			<div flex="~" items="center" gap="1" text="gray-400">
+				<div :class="[getTypeIcon()]" v-tooltip="device.config.ui.type"></div>
+				<div
+					v-if="device.config.hardware.hyper_polling"
+					i="material-symbols-h-plus-mobiledata-badge-outline-rounded"
+					v-tooltip="'support hyper polling'"
+				></div>
+			</div>
 		</template>
 		<template #footer>
 			<div flex="~" justify="end">

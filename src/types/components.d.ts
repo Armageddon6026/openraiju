@@ -24,4 +24,7 @@ declare module 'vue' {
     Sidebar: typeof import('./../components/Sidebar.vue')['default']
     Toast: typeof import('primevue/toast')['default']
   }
+  export interface GlobalDirectives {
+    Tooltip: typeof import('primevue/tooltip')['default']
+  }
 }
