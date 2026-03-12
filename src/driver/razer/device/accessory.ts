@@ -1,4 +1,4 @@
-import { accessory_command, RAZER_VENDOR_ID } from '../command/index'
+import { accessory_command, common_command, RAZER_VENDOR_ID } from '../command/index'
 
 const RAZER_HYPERPOLLING_WIRELESS_DONGLE: RazerDeviceConfig = {
 	vendorId: RAZER_VENDOR_ID,
@@ -11,15 +11,11 @@ const RAZER_HYPERPOLLING_WIRELESS_DONGLE: RazerDeviceConfig = {
 		image: 'https://dl.razerzone.com/src/6141/6141-1-en-v1.png',
 	},
 	hardware: {
-		transaction_id: 0x1f,
+		transaction_id: 0xff,
 		wait_min: 100,
 	},
-	getSerial: async () => {
-		return Math.random().toString(36).substring(2)
-	},
-	getFirmware: async () => {
-		return '0.0.0.0'
-	},
+	getSerial: common_command.getSerial,
+	getFirmware: common_command.getFirmware,
 	pairHyperpollingDevice: accessory_command.pairHyperpollingDevice,
 	unpairHyperpollingDevice: accessory_command.unpairHyperpollingDevice,
 	getPairDevices: accessory_command.getPairDevices,

@@ -56,36 +56,54 @@ onMounted(async () => {
 </script>
 
 <template>
-	<Card v-if="pollingRate !== undefined" un-border="1 green-500">
+	<Card v-if="pollingRate !== undefined" rounded="2xl" border="1 emerald-500/35" bg="#121212" overflow="hidden">
 		<template #title>
-			<label block="~" text="xs gray-400" m="b4" font="semibold" uppercase="~">Polling Rate</label>
+			<div flex="~" items="center" justify="between">
+				<div>
+					<label block="~" text="xs gray-400" m="b1" font="semibold" uppercase="~">Response</label>
+					<h3 text="xl emerald-50" font="bold">Polling Rate</h3>
+				</div>
+				<div rounded="lg" p="x3 y2" bg="emerald-500/10" border="1 emerald-500/30" text="right">
+					<p text="xs emerald-200/85">Current</p>
+					<p text="sm emerald-100" font="bold">{{ pollingRate }} Hz</p>
+				</div>
+			</div>
 		</template>
-		<template #subtitle>
-			<div flex="~" gap="4">
+		<template #content>
+			<div flex="~ wrap" gap="3">
 				<div
 					v-for="rate in pollingRateOptions"
 					:key="rate"
-					flex="1"
+					flex="1 1 130px"
 					p="4"
 					rounded="lg"
 					un-border="2"
 					cursor="pointer"
 					transition="all"
 					duration="200"
-					text="center"
+					text="left"
 					:class="[
 						pollingRate === rate
-							? 'border-green-500 bg-green-500/10 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
-							: 'border-gray-700 bg-[#2a2a2a] hover:border-gray-500',
+							? 'border-emerald-500 bg-emerald-500/10 shadow-[0_0_18px_rgba(16,185,129,0.25)]'
+							: 'border-gray-700 bg-[#1b1b1b] hover:border-gray-500 hover:bg-[#202020]',
 					]"
 					@click="setPollingRate(rate)"
 				>
-					<div text="xl white" font="black">
-						{{ rate }}
+					<div flex="~" items="center" justify="between" gap="2">
+						<div>
+							<p text="xl" font="black" :class="pollingRate === rate ? 'text-emerald-100' : 'text-white'">
+								{{ rate }}
+							</p>
+							<p text="xs gray-500" m="t1">Hz</p>
+						</div>
+						<span v-if="pollingRate === rate" i="material-symbols-check-circle" text="xl emerald-300"></span>
 					</div>
-					<div text="xs gray-500" m="t1">Hz</div>
 				</div>
 			</div>
 		</template>
 	</Card>
+
+	<div v-else rounded="2xl" border="1 emerald-500/30" bg="#121212" p="4" text="sm gray-400">
+		Polling rate is unavailable for this device.
+	</div>
 </template>
