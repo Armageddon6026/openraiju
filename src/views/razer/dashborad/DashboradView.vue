@@ -79,7 +79,7 @@ function goToDeviceSettings(instanceId: string, type: string) {
 	}
 
 	router.push({
-		name: `razer${type}`,
+		name: `razerdevice`,
 		params: { instanceId: instanceId },
 	})
 }
