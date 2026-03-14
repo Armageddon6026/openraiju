@@ -27,7 +27,7 @@ const router = createRouter({
 						{
 							path: 'accessory/:instanceId',
 							name: 'razeraccessory',
-							component: () => import('@/views/razer/device/AccessoryView.vue'),
+							component: () => import('@/views/razer/device/MouseView.vue'),
 						},
 					],
 				},

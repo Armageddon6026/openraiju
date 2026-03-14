@@ -85,6 +85,12 @@ onMounted(async () => {
 					<span>Calibration</span>
 				</span>
 			</Tab>
+			<Tab :value="4">
+				<span flex="~" items="center" gap="2">
+					<span i="material-symbols-bluetooth-connected"></span>
+					<span>Pairing</span>
+				</span>
+			</Tab>
 		</template>
 
 		<template #tab-panels>
@@ -113,6 +119,12 @@ onMounted(async () => {
 				<div flex="~ col" items="center" justify="center" h="48" text="gray-500">
 					<span i="material-symbols-settings-input-component" text="3xl mb-4"></span>
 					<p>Calibration tools coming soon</p>
+				</div>
+			</TabPanel>
+
+			<TabPanel :value="4">
+				<div flex="~ col" gap="6">
+					<DonglePairing v-if="currentDevice.config.pairHyperpollingDevice" :device="currentDevice"></DonglePairing>
 				</div>
 			</TabPanel>
 		</template>
