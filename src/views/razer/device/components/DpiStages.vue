@@ -48,14 +48,14 @@ async function setDpiStage(selectStageId: number) {
 </script>
 
 <template>
-	<Card v-if="dpiStages" rounded="2xl" border="1 emerald-500/35" bg="#121212" overflow="hidden">
+	<Card v-if="dpiStages" rounded="2xl" un-border="1 emerald-500/35" bg="#121212" overflow="hidden">
 		<template #title>
 			<div flex="~" items="center" justify="between">
 				<div>
 					<label block="~" text="xs gray-400" m="b1" font="semibold" uppercase="~">Performance</label>
 					<h3 text="xl emerald-50" font="bold">DPI Stages</h3>
 				</div>
-				<div text="right" rounded="lg" p="x3 y2" bg="emerald-500/10" border="1 emerald-500/30">
+				<div text="right" rounded="lg" p="x3 y2" bg="emerald-500/10" un-border="1 emerald-500/30">
 					<p text="xs emerald-200/85">Active Stage</p>
 					<p text="sm emerald-100" font="bold">
 						{{ activeStage ? `Stage ${activeStage.ID} · ${activeStage.X.toLocaleString()} DPI` : '---' }}

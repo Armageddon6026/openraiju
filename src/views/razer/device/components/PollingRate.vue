@@ -56,14 +56,14 @@ onMounted(async () => {
 </script>
 
 <template>
-	<Card v-if="pollingRate !== undefined" rounded="2xl" border="1 emerald-500/35" bg="#121212" overflow="hidden">
+	<Card rounded="2xl" un-border="1 emerald-500/35" bg="#121212" overflow="hidden">
 		<template #title>
 			<div flex="~" items="center" justify="between">
 				<div>
 					<label block="~" text="xs gray-400" m="b1" font="semibold" uppercase="~">Response</label>
 					<h3 text="xl emerald-50" font="bold">Polling Rate</h3>
 				</div>
-				<div rounded="lg" p="x3 y2" bg="emerald-500/10" border="1 emerald-500/30" text="right">
+				<div rounded="lg" p="x3 y2" bg="emerald-500/10" un-border="1 emerald-500/30" text="right">
 					<p text="xs emerald-200/85">Current</p>
 					<p text="sm emerald-100" font="bold">{{ pollingRate }} Hz</p>
 				</div>
@@ -102,8 +102,4 @@ onMounted(async () => {
 			</div>
 		</template>
 	</Card>
-
-	<div v-else rounded="2xl" border="1 emerald-500/30" bg="#121212" p="4" text="sm gray-400">
-		Polling rate is unavailable for this device.
-	</div>
 </template>

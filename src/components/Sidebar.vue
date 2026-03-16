@@ -2,7 +2,7 @@
 
 <template>
 	<aside class="w-18 bg-[#0f0f0f] border-r border-[#222] flex flex-col items-center py-6 gap-4">
-		<div class="w-10 h-10 border border-[#444] rounded-xl flex items-center justify-center text-white">H</div>
+		<div class="w-10 h-10 flex items-center justify-center text-white" i="commons-ophiophagus"></div>
 
 		<nav flex="~ 1 col" gap="4" p="3">
 			<Button as="router-link" to="/razer" icon="i-brands-razer" variant="outlined"> </Button>
