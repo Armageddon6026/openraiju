@@ -5,7 +5,7 @@ const { device } = defineProps<{
 
 const toast = useToast()
 
-const dpiStages = ref<MouseDpiInfo>()
+const dpiStages = ref<DpiStagesInfo>()
 
 const activeStage = computed(() => {
 	if (!dpiStages.value) return undefined

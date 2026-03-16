@@ -208,6 +208,6 @@ export const common_command = {
 			this.hardware.wait_min,
 		)
 
-		return (response.getUint8(0) << 8) | (response.getUint8(1) & 0xff)
+		return response.getUint16(0, false)
 	},
 }

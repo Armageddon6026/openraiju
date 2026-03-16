@@ -52,6 +52,7 @@ const RAZER_COBRA_PRO_WIRED: RazerDeviceConfig = {
 	getFirmware: common_command.getFirmware,
 	getBatteryLevel: common_command.getBatteryLevel,
 	getChargeState: common_command.getChargeState,
+	getDpi: mouse_command.getDpi,
 	getDpiStages: mouse_command.getDpiStages,
 	setDpiStages: mouse_command.setDpiStages,
 	getPollingRate: mouse_command.getPollingRate,

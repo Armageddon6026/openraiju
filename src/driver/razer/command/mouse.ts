@@ -2,7 +2,21 @@ import { buildRazerReport, sendCommand, razer_storage_type } from './common'
 
 // ref: https://github.com/openrazer/openrazer/blob/master/driver/razermouse_driver.c
 export const mouse_command = {
-	async getDpiStages(this: RazerDeviceConfig, instance: HIDDevice): Promise<MouseDpiInfo> {
+	async getDpi(this: RazerDeviceConfig, instance: HIDDevice): Promise<DpiInfo> {
+		const response = await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x07, 0x04, 0x85, [razer_storage_type.profile_slot_default]),
+			this.hardware.wait_min,
+		)
+
+		return {
+			ID: response.getUint8(0), // Profile ID
+			X: response.getUint16(1, false), // DPI X
+			Y: response.getUint16(3, false), // DPI Y
+		}
+	},
+
+	async getDpiStages(this: RazerDeviceConfig, instance: HIDDevice): Promise<DpiStagesInfo> {
 		const response = await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x26, 0x04, 0x86, [razer_storage_type.profile_slot_default]),
@@ -26,7 +40,7 @@ export const mouse_command = {
 		//
 		// 03    third DPI stage
 		// ...
-		const dpiInfo: MouseDpiInfo = {
+		const dpiInfo: DpiStagesInfo = {
 			ActivateID: response.getUint8(1),
 			DpiStages: [],
 		}
@@ -53,7 +67,7 @@ export const mouse_command = {
 		return dpiInfo
 	},
 
-	async setDpiStages(this: RazerDeviceConfig, instance: HIDDevice, dpiInfo: MouseDpiInfo) {
+	async setDpiStages(this: RazerDeviceConfig, instance: HIDDevice, dpiInfo: DpiStagesInfo) {
 		if (!this.hardware.optical_sensor) {
 			throw new Error('Device does not support optical sensor')
 		}

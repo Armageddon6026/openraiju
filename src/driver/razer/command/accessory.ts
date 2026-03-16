@@ -14,7 +14,7 @@ export const accessory_command = {
 		args[offset++] = pid & 0xff
 
 		// scan device
-		await sendCommand(instance, buildRazerReport(0x1f, 0x03, 0x00, 0x41, args), 1000 * 10)
+		await sendCommand(instance, buildRazerReport(0x1f, 0x03, 0x00, 0x41, args), this.hardware.wait_min)
 	},
 
 	async unpairHyperpollingDevice(this: RazerDeviceConfig, instance: HIDDevice, pid: number) {

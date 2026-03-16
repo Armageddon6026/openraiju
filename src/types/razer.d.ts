@@ -28,13 +28,15 @@ declare interface RazerOpticalSensor {
 	readonly rotation?: boolean
 }
 
-declare interface MouseDpiInfo {
+declare interface DpiStagesInfo {
 	ActivateID: number
-	DpiStages: {
-		ID: number
-		X: number
-		Y: number
-	}[]
+	DpiStages: DpiInfo[]
+}
+
+declare interface DpiInfo {
+	ID: number
+	X: number
+	Y: number
 }
 
 declare interface RazerDeviceFeature {
@@ -43,8 +45,9 @@ declare interface RazerDeviceFeature {
 	// option
 	getBatteryLevel?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	getChargeState?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<boolean>
-	getDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<MouseDpiInfo>
-	setDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice, dpi: MouseDpiInfo) => Promise<void>
+	getDpi?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<DpiInfo>
+	getDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<DpiStagesInfo>
+	setDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice, dpi: DpiStagesInfo) => Promise<void>
 	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	setPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) => Promise<void>
 	getTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
