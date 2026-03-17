@@ -1,10 +1,7 @@
-import { accessory_command, common_command, RAZER_VENDOR_ID } from '../command/index'
+import { accessory_command, common_command } from '../command/index'
 
-const RAZER_HYPERPOLLING_WIRELESS_DONGLE: RazerDeviceConfig = {
-	vendorId: RAZER_VENDOR_ID,
+export default {
 	productId: 0x00b3,
-	usagePage: 0x0001,
-	usage: 0x0002,
 	ui: {
 		name: 'Razer Hyperpolling Dongle',
 		type: 'accessory',
@@ -19,6 +16,4 @@ const RAZER_HYPERPOLLING_WIRELESS_DONGLE: RazerDeviceConfig = {
 	pairHyperpollingDevice: accessory_command.pairHyperpollingDevice,
 	unpairHyperpollingDevice: accessory_command.unpairHyperpollingDevice,
 	getPairDevices: accessory_command.getPairDevices,
-}
-
-export const RAZER_ACCESSORY_DEVICES: RazerDeviceConfig[] = [RAZER_HYPERPOLLING_WIRELESS_DONGLE]
+} as const satisfies RazerDeviceConfig

@@ -1,7 +1,5 @@
 import { printBuffer } from '@/driver/utils'
 
-export const RAZER_VENDOR_ID = 0x1532
-
 export enum razer_storage_type {
 	runtime = 0x00,
 	profile_slot_default = 0x01,

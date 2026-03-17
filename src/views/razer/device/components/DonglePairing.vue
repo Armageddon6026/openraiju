@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { RAZER_MOUSE_DEVICES } from '@/driver/razer/device'
 import { useDeviceStore } from '@/stores'
 
 const { device } = defineProps<{
@@ -74,7 +73,7 @@ async function connectPairedDevice(device: RazerDevice) {
 
 		const pid = devices[0]
 		pairedDevicePid.value = pid
-		const deviceInfo = RAZER_MOUSE_DEVICES.find((d) => d.productId === pid)
+		const deviceInfo = await deviceStore.getConfig(pid)
 		if (!deviceInfo) {
 			throw new Error('device not found')
 		}

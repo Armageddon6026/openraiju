@@ -3,7 +3,8 @@ declare interface RazerDevice {
 	readonly instance: HIDDevice
 }
 
-declare interface RazerDeviceConfig extends HIDDeviceFilter, RazerDeviceFeature {
+declare interface RazerDeviceConfig extends RazerDeviceFeature {
+	readonly productId: number
 	readonly ui: {
 		name: string
 		type: 'keyboard' | 'mouse' | 'headset' | 'accessory'

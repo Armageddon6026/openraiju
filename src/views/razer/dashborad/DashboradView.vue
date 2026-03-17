@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { RAZER_MOUSE_DEVICES, RAZER_ACCESSORY_DEVICES } from '@/driver/razer/device'
 import { useDeviceStore } from '@/stores'
 import { ping } from '@/driver/utils'
-import { RAZER_KEYBOARD_DEVICES } from '@/driver/razer/device/keyboard'
+import { RAZER_VENDOR_ID } from '@/driver/razer/define'
 
 const toast = useToast()
 const router = useRouter()
@@ -10,16 +9,18 @@ const deviceStore = useDeviceStore()
 
 const { addDevice, removeDevice } = deviceStore
 const { devicesMap } = storeToRefs(deviceStore)
-
-const razer_support_list = [
-	...RAZER_MOUSE_DEVICES,
-	...RAZER_KEYBOARD_DEVICES,
-	...RAZER_ACCESSORY_DEVICES,
-	/** add more devices here*/
-]
-const razer_config_map = new Map(razer_support_list.map((d) => [`${d.vendorId}:${d.productId}`, d]))
+const razer_support_list = ref<HIDDeviceFilter[]>([])
 
 onMounted(async () => {
+	const res = await fetch('razer_support_devices.json')
+	const data = await res.json()
+	razer_support_list.value = data.map((d: { productId: number }) => ({
+		vendorId: RAZER_VENDOR_ID,
+		productId: d.productId,
+		usagePage: 0x0001,
+		usage: 0x0002,
+	}))
+
 	if (devicesMap.value.size < 1) {
 		await getHidDevices()
 	}
@@ -30,11 +31,11 @@ async function connectDevice() {
 
 	try {
 		const instances = await navigator.hid.requestDevice({
-			filters: razer_support_list,
+			filters: razer_support_list.value,
 		})
 
 		for (const instance of instances) {
-			const deviceConf = razer_config_map.get(`${instance.vendorId}:${instance.productId}`)
+			const deviceConf = await deviceStore.getConfig(instance.productId)
 			if (!deviceConf || !(await ping(instance, deviceConf.hardware.wait_min))) continue
 
 			await addDevice({
@@ -63,7 +64,7 @@ async function getHidDevices() {
 	const instances = (await navigator.hid.getDevices()).filter((d) => d.collections.length == 1)
 
 	instances.forEach(async (instance) => {
-		const deviceConf = razer_config_map.get(`${instance.vendorId}:${instance.productId}`)
+		const deviceConf = await deviceStore.getConfig(instance.productId)
 		if (!deviceConf || !(await ping(instance, deviceConf.hardware.wait_min))) return
 
 		await addDevice({

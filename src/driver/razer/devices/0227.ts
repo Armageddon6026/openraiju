@@ -1,10 +1,7 @@
-import { common_command, RAZER_VENDOR_ID } from '../command/index'
+import { common_command } from '../command/index'
 
-const RAZER_HUNTMAN: RazerDeviceConfig = {
-	vendorId: RAZER_VENDOR_ID,
+export default {
 	productId: 0x0227,
-	usagePage: 0x0001,
-	usage: 0x0002,
 	ui: {
 		name: 'Razer Huntman',
 		type: 'keyboard',
@@ -16,6 +13,4 @@ const RAZER_HUNTMAN: RazerDeviceConfig = {
 	},
 	getSerial: common_command.getSerial,
 	getFirmware: common_command.getFirmware,
-}
-
-export const RAZER_KEYBOARD_DEVICES: RazerDeviceConfig[] = [RAZER_HUNTMAN]
+} as const satisfies RazerDeviceConfig
