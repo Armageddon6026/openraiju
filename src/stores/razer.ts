@@ -6,7 +6,7 @@ export const useDeviceStore = defineStore('razerStore', () => {
 	async function getConfig(productId: number): Promise<RazerDeviceConfig | null> {
 		const hex = productId.toString(16).padStart(4, '0')
 
-		// lazy load
+		// lazy loading
 		const loader = RAZER_SUPPORTED_DEVICES[`/src/driver/razer/devices/${hex}.ts`] as () =>
 			| Promise<{ default: RazerDeviceConfig }>
 			| undefined
