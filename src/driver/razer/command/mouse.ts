@@ -53,12 +53,31 @@ export const mouse_command = {
 		return dpiInfo
 	},
 
-	async setDpiStages(this: RazerDeviceConfig, instance: HIDDevice, dpiInfo: DpiStagesInfo) {
-		if (!this.hardware.optical_sensor) {
-			throw new Error('Device does not support optical sensor')
+	async setActivateDpiStage(this: RazerDeviceConfig, instance: HIDDevice, stageId: number) {
+		if (!this.hardware.max_dpi_stages) {
+			throw new Error('Device does not support DPI stage')
 		}
 
-		if (dpiInfo.ActivateID > dpiInfo.DpiStages.length) {
+		if (stageId > this.hardware.max_dpi_stages) {
+			throw new Error('Active DPI stage ID exceeds the number of available stages')
+		}
+
+		await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x02, 0x04, 0x04, [
+				razer_storage_type.profile_slot_default,
+				stageId,
+			]),
+			this.hardware.wait_min,
+		)
+	},
+
+	async setDpiStages(this: RazerDeviceConfig, instance: HIDDevice, dpiInfo: DpiStagesInfo) {
+		if (!this.hardware.optical_sensor || !this.hardware.max_dpi_stages) {
+			throw new Error('Device does not support DPI stage')
+		}
+
+		if (dpiInfo.ActivateID > this.hardware.max_dpi_stages) {
 			throw new Error('Active DPI stage ID exceeds the number of available stages')
 		}
 

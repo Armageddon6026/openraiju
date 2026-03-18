@@ -18,8 +18,8 @@ onMounted(async () => {
 	}
 })
 
-async function setDpiStage(selectStageId: number) {
-	if (!device.config.setDpiStages) {
+async function setActivateDpiStage(selectStageId: number) {
+	if (!device.config.setActivateDpiStage) {
 		throw new Error('Device does not support setting DPI stages')
 	}
 	if (!dpiStages.value || dpiStages.value.ActivateID === selectStageId) {
@@ -27,9 +27,9 @@ async function setDpiStage(selectStageId: number) {
 	}
 
 	const summary = 'Set DPI Stage'
-	dpiStages.value.ActivateID = selectStageId
 	try {
-		await device.config.setDpiStages(device.instance, dpiStages.value!)
+		await device.config.setActivateDpiStage(device.instance, selectStageId)
+		dpiStages.value.ActivateID = selectStageId
 		toast.add({
 			severity: 'success',
 			summary: summary,
@@ -76,7 +76,7 @@ async function setDpiStage(selectStageId: number) {
 					transition="all"
 					duration="200"
 					text="left"
-					@click="setDpiStage(stage.ID)"
+					@click="setActivateDpiStage(stage.ID)"
 					:class="[
 						dpiStages.ActivateID === stage.ID
 							? 'border-emerald-500 bg-emerald-500/10 shadow-[0_0_18px_rgba(16,185,129,0.25)]'

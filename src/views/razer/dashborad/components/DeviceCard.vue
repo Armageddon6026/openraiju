@@ -138,16 +138,6 @@ function getBatteryColor(): string {
 					icon="i-material-symbols-delete-outline"
 					severity="danger"
 					variant="text"
-					@click.stop="
-						async () => {
-							await test(device, 0x02, 0x04, 0x04, [0x01, 0x02])
-						}
-					"
-				></Button>
-				<Button
-					icon="i-material-symbols-delete-outline"
-					severity="danger"
-					variant="text"
 					@click.stop="disconnectDevice(device)"
 				></Button>
 			</div>

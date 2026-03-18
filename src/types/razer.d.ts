@@ -13,6 +13,7 @@ declare interface RazerDeviceConfig extends RazerDeviceFeature {
 	readonly hardware: {
 		wait_min: number
 		transaction_id: number
+		max_dpi_stages?: number
 		optical_sensor?: RazerOpticalSensor
 		hyper_polling?: boolean // Indicates whether the device supports 8K polling rate.
 	}
@@ -48,6 +49,7 @@ declare interface RazerDeviceFeature {
 	getChargeState?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<boolean>
 	getDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<DpiStagesInfo>
 	setDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice, dpi: DpiStagesInfo) => Promise<void>
+	setActivateDpiStage?: (this: RazerDeviceConfig, instance: HIDDevice, stageId: number) => Promise<void>
 	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	setPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) => Promise<void>
 	getTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>

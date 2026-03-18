@@ -10,6 +10,7 @@ export default {
 	},
 	hardware: {
 		transaction_id: 0x00,
+		max_dpi_stages: 5,
 		optical_sensor: RAZER_OPTICAL_SENSORS.focus_pro_30K,
 		wait_min: 50,
 	},
@@ -18,6 +19,7 @@ export default {
 	getBatteryLevel: common_command.getBatteryLevel,
 	getChargeState: common_command.getChargeState,
 	getDpiStages: mouse_command.getDpiStages,
+	setActivateDpiStage: mouse_command.setActivateDpiStage,
 	setDpiStages: mouse_command.setDpiStages,
 	getPollingRate: mouse_command.getPollingRate,
 	setPollingRate: mouse_command.setPollingRate,
