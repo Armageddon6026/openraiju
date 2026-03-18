@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { test } from '@/driver/razer/command'
+
 const { device } = defineProps<{ device: RazerDevice }>()
 const emits = defineEmits<{
 	disconnect: [productId: number]
@@ -132,6 +134,16 @@ function getBatteryColor(): string {
 		</template>
 		<template #footer>
 			<div flex="~" justify="end">
+				<Button
+					icon="i-material-symbols-delete-outline"
+					severity="danger"
+					variant="text"
+					@click.stop="
+						async () => {
+							await test(device, 0x02, 0x04, 0x04, [0x01, 0x02])
+						}
+					"
+				></Button>
 				<Button
 					icon="i-material-symbols-delete-outline"
 					severity="danger"

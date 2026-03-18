@@ -133,17 +133,16 @@ function calculateCRC(data: Uint8Array<ArrayBuffer>) {
 }
 
 export async function test(
-	conf: RazerDeviceConfig,
-	instance: HIDDevice,
+	device: RazerDevice,
 	data_size: number,
 	command_class: number,
 	command_id: number,
 	args?: number[],
 ) {
 	const response = await sendCommand(
-		instance,
-		buildRazerReport(conf.hardware.transaction_id, data_size, command_class, command_id, args),
-		conf.hardware.wait_min,
+		device.instance,
+		buildRazerReport(device.config.hardware.transaction_id, data_size, command_class, command_id, args),
+		device.config.hardware.wait_min,
 	)
 
 	printBuffer(

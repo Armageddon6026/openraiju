@@ -46,7 +46,6 @@ declare interface RazerDeviceFeature {
 	// option
 	getBatteryLevel?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	getChargeState?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<boolean>
-	getDpi?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<DpiInfo>
 	getDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<DpiStagesInfo>
 	setDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice, dpi: DpiStagesInfo) => Promise<void>
 	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>

@@ -9,7 +9,7 @@ export default {
 		image: 'https://dl.razerzone.com/src2/13182/13182-1-en-v2.png',
 	},
 	hardware: {
-		transaction_id: 0x1f,
+		transaction_id: 0x00,
 		optical_sensor: RAZER_OPTICAL_SENSORS.focus_pro_30K,
 		wait_min: 50,
 	},
@@ -17,7 +17,6 @@ export default {
 	getFirmware: common_command.getFirmware,
 	getBatteryLevel: common_command.getBatteryLevel,
 	getChargeState: common_command.getChargeState,
-	getDpi: mouse_command.getDpi,
 	getDpiStages: mouse_command.getDpiStages,
 	setDpiStages: mouse_command.setDpiStages,
 	getPollingRate: mouse_command.getPollingRate,

@@ -8,7 +8,7 @@ export default {
 		image: 'https://assets.razerzone.com/eeimages/support/products/1360/1360_huntsman-3.png',
 	},
 	hardware: {
-		transaction_id: 0x1f,
+		transaction_id: 0x00,
 		wait_min: 100,
 	},
 	getSerial: common_command.getSerial,

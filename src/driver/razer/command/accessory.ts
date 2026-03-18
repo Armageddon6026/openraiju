@@ -2,9 +2,8 @@ import { buildRazerReport, sendCommand } from './common'
 
 export const accessory_command = {
 	async pairHyperpollingDevice(this: RazerDeviceConfig, instance: HIDDevice, pid: number) {
-		// use 0x1f as transaction_id
 		// start pair mode
-		await sendCommand(instance, buildRazerReport(0x1f, 0x01, 0x00, 0x46, [0x01]), this.hardware.wait_min)
+		await sendCommand(instance, buildRazerReport(0x00, 0x01, 0x00, 0x46, [0x01]), this.hardware.wait_min)
 
 		const args: number[] = []
 		let offset = 0
@@ -14,7 +13,7 @@ export const accessory_command = {
 		args[offset++] = pid & 0xff
 
 		// scan device
-		await sendCommand(instance, buildRazerReport(0x1f, 0x03, 0x00, 0x41, args), this.hardware.wait_min)
+		await sendCommand(instance, buildRazerReport(0x00, 0x03, 0x00, 0x41, args), this.hardware.wait_min)
 	},
 
 	async unpairHyperpollingDevice(this: RazerDeviceConfig, instance: HIDDevice, pid: number) {
@@ -23,19 +22,11 @@ export const accessory_command = {
 
 		args[offset++] = (pid >> 8) & 0xff
 		args[offset++] = pid & 0xff
-		await sendCommand(
-			instance,
-			buildRazerReport(this.hardware.transaction_id, 0x02, 0x00, 0x42, args),
-			this.hardware.wait_min,
-		)
+		await sendCommand(instance, buildRazerReport(0x00, 0x02, 0x00, 0x42, args), this.hardware.wait_min)
 	},
 
 	async getPairDevices(this: RazerDeviceConfig, instance: HIDDevice): Promise<number[]> {
-		const response = await sendCommand(
-			instance,
-			buildRazerReport(this.hardware.transaction_id, 0x00, 0x00, 0xbf),
-			this.hardware.wait_min,
-		)
+		const response = await sendCommand(instance, buildRazerReport(0x00, 0x00, 0x00, 0xbf), this.hardware.wait_min)
 
 		// Response format (hex):
 		// 02    pair count
