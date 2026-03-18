@@ -1,21 +1,24 @@
-import { RAZER_SUPPORTED_DEVICES, RAZER_VENDOR_ID } from '@/driver/razer/define'
+import { RAZER_DEVICE_CONFIGS, RAZER_VENDOR_ID } from '@/driver/razer/define'
 
 export const useDeviceStore = defineStore('razerStore', () => {
 	const devicesMap = ref(new Map<string, RazerDevice>())
+
+	const deviceIterator = computed(() => Array.from(devicesMap.value.entries()))
+	const hasDevices = computed(() => devicesMap.value.size > 0)
 
 	async function getConfig(productId: number): Promise<RazerDeviceConfig | null> {
 		const hex = productId.toString(16).padStart(4, '0')
 
 		// lazy loading
-		const loader = RAZER_SUPPORTED_DEVICES[`/src/driver/razer/devices/${hex}.ts`] as () =>
+		const configloader = RAZER_DEVICE_CONFIGS[`/src/driver/razer/devices/${hex}.ts`] as () =>
 			| Promise<{ default: RazerDeviceConfig }>
 			| undefined
-		if (!loader) return null
+		if (!configloader) return null
 
-		const mod = await loader()
-		if (!mod) return null
+		const conf = await configloader()
+		if (!conf) return null
 
-		return mod.default
+		return conf.default
 	}
 
 	async function addDevice(device: RazerDevice) {
@@ -38,7 +41,7 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		return devicesMap.value.get(instanceId)
 	}
 
-	return { devicesMap, addDevice, removeDevice, getDevice, getConfig }
+	return { deviceIterator, hasDevices, addDevice, removeDevice, getDevice, getConfig }
 })
 
 if (import.meta.hot) {

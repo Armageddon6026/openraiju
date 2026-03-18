@@ -1,4 +1,4 @@
-export const RAZER_SUPPORTED_DEVICES = import.meta.glob('@/driver/razer/devices/*.ts')
+export const RAZER_DEVICE_CONFIGS = import.meta.glob('@/driver/razer/devices/*.ts')
 
 export const RAZER_VENDOR_ID = 0x1532
 

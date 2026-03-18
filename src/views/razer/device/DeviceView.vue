@@ -25,7 +25,7 @@ const sensorSummary = computed(() => {
 })
 
 const currentDevice = computed(() => {
-	return deviceStore.devicesMap.get(route.params.instanceId as string)
+	return deviceStore.getDevice(route.params.instanceId as string)
 })
 
 async function loadDeviceMeta(device: RazerDevice) {

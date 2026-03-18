@@ -29,7 +29,7 @@ export enum razer_report_type {
 	command_class_index = 6,
 	command_id_index = 7,
 	args_index = 8, //args start from 8~87,total 80 bytes
-	maxArgsLength = 80,
+	max_args_length = 80,
 	crc_index = 88,
 	reserved_index = 89,
 }
@@ -91,7 +91,7 @@ export function buildRazerReport(
 	data[razer_report_type.protocol_type_index] = 0x00
 	data[razer_report_type.args_size_index] = data_size
 	if (args) {
-		const argsLength = Math.min(args.length, razer_report_type.maxArgsLength)
+		const argsLength = Math.min(args.length, razer_report_type.max_args_length)
 
 		for (let i = 0; i < argsLength; i++) {
 			data[razer_report_type.args_index + i] = args[i] ?? 0x00
@@ -147,7 +147,10 @@ export async function test(
 	)
 
 	printBuffer(
-		response.buffer.slice(razer_report_type.args_index, razer_report_type.args_index + razer_report_type.maxArgsLength),
+		response.buffer.slice(
+			razer_report_type.args_index,
+			razer_report_type.args_index + razer_report_type.max_args_length,
+		),
 	)
 }
 

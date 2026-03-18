@@ -6,9 +6,6 @@ import { RAZER_VENDOR_ID } from '@/driver/razer/define'
 const toast = useToast()
 const router = useRouter()
 const deviceStore = useDeviceStore()
-
-const { addDevice, removeDevice } = deviceStore
-const { devicesMap } = storeToRefs(deviceStore)
 const razer_support_list = ref<HIDDeviceFilter[]>([])
 
 onMounted(async () => {
@@ -21,9 +18,7 @@ onMounted(async () => {
 		usage: 0x0002,
 	}))
 
-	if (devicesMap.value.size < 1) {
-		await getHidDevices()
-	}
+	if (!deviceStore.hasDevices) await getHidDevices()
 })
 
 async function connectDevice() {
@@ -38,7 +33,7 @@ async function connectDevice() {
 			const deviceConf = await deviceStore.getConfig(instance.productId)
 			if (!deviceConf || !(await ping(instance, deviceConf.hardware.wait_min))) continue
 
-			await addDevice({
+			await deviceStore.addDevice({
 				config: deviceConf,
 				instance: instance,
 			})
@@ -67,18 +62,14 @@ async function getHidDevices() {
 		const deviceConf = await deviceStore.getConfig(instance.productId)
 		if (!deviceConf || !(await ping(instance, deviceConf.hardware.wait_min))) return
 
-		await addDevice({
+		await deviceStore.addDevice({
 			config: deviceConf,
 			instance: instance,
 		})
 	})
 }
 
-function goToDeviceSettings(instanceId: string, type: string) {
-	if (!instanceId) {
-		return
-	}
-
+function goToDeviceSettings(instanceId: string) {
 	router.push({
 		name: `razerdevice`,
 		params: { instanceId: instanceId },
@@ -104,10 +95,10 @@ function goToDeviceSettings(instanceId: string, type: string) {
 			</template>
 		</Card>
 		<DeviceCard
-			v-for="[id, device] in devicesMap"
+			v-for="[id, device] in deviceStore.deviceIterator"
 			:device="device"
-			@click="goToDeviceSettings(id, device.config.ui.type)"
-			@disconnect="removeDevice(id)"
+			@click="goToDeviceSettings(id)"
+			@disconnect="deviceStore.removeDevice(id)"
 		></DeviceCard>
 	</div>
 </template>
