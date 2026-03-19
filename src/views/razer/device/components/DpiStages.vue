@@ -128,12 +128,27 @@ async function setDpi(dpi: number) {
 					</div>
 				</div>
 			</div>
-			<Slider
-				v-model="dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X"
-				:max="device.config.hardware.optical_sensor.max_dpi"
-				:step="device.config.hardware.optical_sensor.dpi_step"
-				@slideend="setDpi(dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X)"
-			/>
+			<div mt="4" rounded="xl" p="4" bg="[#171717]" un-border="1 emerald-500/20">
+				<div flex="~" items="center" justify="between" gap="3">
+					<div>
+						<p text="xs gray-400">Sensitivity</p>
+						<p text="sm emerald-100" font="bold">
+							{{ dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X.toLocaleString() }} DPI
+						</p>
+					</div>
+					<div text="xs gray-500 right">
+						<p>{{ device.config.hardware.optical_sensor.dpi_step.toLocaleString() }} min</p>
+						<p>{{ device.config.hardware.optical_sensor.max_dpi.toLocaleString() }} max</p>
+					</div>
+				</div>
+				<Slider
+					mt="4"
+					v-model="dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X"
+					:max="device.config.hardware.optical_sensor.max_dpi"
+					:step="device.config.hardware.optical_sensor.dpi_step"
+					@slideend="setDpi(dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X)"
+				/>
+			</div>
 		</template>
 	</Card>
 </template>
