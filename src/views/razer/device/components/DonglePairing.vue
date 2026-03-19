@@ -77,14 +77,18 @@ async function connectPairedDevice(device: RazerDevice) {
 		if (!deviceInfo) {
 			throw new Error('device not found')
 		}
-
-		const newDeviceInfo: RazerDeviceConfig = {
+		console.log(deviceInfo)
+		const newDeviceInfo = {
 			...deviceInfo,
 			hardware: {
 				...deviceInfo.hardware,
-				hyper_polling: true,
 			},
 		}
+
+		if ('hyper_polling' in newDeviceInfo.hardware) {
+			newDeviceInfo.hardware.hyper_polling = true
+		}
+
 		deviceStore.addDevice({
 			config: newDeviceInfo,
 			instance: device.instance,

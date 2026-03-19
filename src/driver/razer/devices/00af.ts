@@ -10,9 +10,10 @@ export default {
 	},
 	hardware: {
 		transaction_id: 0x00,
+		wait_min: 31,
 		max_dpi_stages: 5,
 		optical_sensor: RAZER_OPTICAL_SENSORS.focus_pro_30K,
-		wait_min: 50,
+		hyper_polling: false,
 	},
 	getSerial: common_command.getSerial,
 	getFirmware: common_command.getFirmware,
@@ -24,4 +25,4 @@ export default {
 	getPollingRate: mouse_command.getPollingRate,
 	setPollingRate: mouse_command.setPollingRate,
 	getTrackingStep: mouse_command.getTrackingStep,
-} as const satisfies RazerDeviceConfig
+} as const satisfies RazerDeviceConfig<'mouse'>

@@ -9,11 +9,12 @@ export default {
 	},
 	hardware: {
 		transaction_id: 0xff,
-		wait_min: 100,
+		wait_min: 60,
+		transaction_device_id: 0x00,
 	},
 	getSerial: common_command.getSerial,
 	getFirmware: common_command.getFirmware,
 	pairHyperpollingDevice: accessory_command.pairHyperpollingDevice,
 	unpairHyperpollingDevice: accessory_command.unpairHyperpollingDevice,
 	getPairDevices: accessory_command.getPairDevices,
-} as const satisfies RazerDeviceConfig
+} as const satisfies RazerDeviceConfig<'accessory'>

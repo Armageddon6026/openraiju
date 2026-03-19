@@ -2,7 +2,7 @@ import { buildRazerReport, sendCommand, razer_storage_type } from './common'
 
 // ref: https://github.com/openrazer/openrazer/blob/master/driver/razermouse_driver.c
 export const mouse_command = {
-	async getDpiStages(this: RazerDeviceConfig, instance: HIDDevice): Promise<DpiStagesInfo> {
+	async getDpiStages(this: RazerDeviceConfig<'mouse'>, instance: HIDDevice): Promise<RazerDpiStageInfo> {
 		const response = await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x26, 0x04, 0x86, [razer_storage_type.profile_slot_default]),
@@ -26,7 +26,7 @@ export const mouse_command = {
 		//
 		// 03    third DPI stage
 		// ...
-		const dpiInfo: DpiStagesInfo = {
+		const dpiInfo: RazerDpiStageInfo = {
 			ActivateID: response.getUint8(1),
 			DpiStages: [],
 		}
@@ -53,7 +53,7 @@ export const mouse_command = {
 		return dpiInfo
 	},
 
-	async setActivateDpiStage(this: RazerDeviceConfig, instance: HIDDevice, stageId: number) {
+	async setActivateDpiStage(this: RazerDeviceConfig<'mouse'>, instance: HIDDevice, stageId: number) {
 		if (!this.hardware.max_dpi_stages) {
 			throw new Error('Device does not support DPI stage')
 		}
@@ -72,7 +72,7 @@ export const mouse_command = {
 		)
 	},
 
-	async setDpiStages(this: RazerDeviceConfig, instance: HIDDevice, dpiInfo: DpiStagesInfo) {
+	async setDpiStages(this: RazerDeviceConfig<'mouse'>, instance: HIDDevice, dpiInfo: RazerDpiStageInfo) {
 		if (!this.hardware.optical_sensor || !this.hardware.max_dpi_stages) {
 			throw new Error('Device does not support DPI stage')
 		}
@@ -131,7 +131,7 @@ export const mouse_command = {
 		)
 	},
 
-	async getPollingRate(this: RazerDeviceConfig, instance: HIDDevice): Promise<number> {
+	async getPollingRate(this: RazerDeviceConfig<'mouse'>, instance: HIDDevice): Promise<number> {
 		const hyper = this.hardware.hyper_polling
 		const commandId = hyper ? 0xc0 : 0x85
 		const maxPollingRate = hyper ? 8000 : 1000
@@ -153,7 +153,7 @@ export const mouse_command = {
 		return maxPollingRate / pollingIndex
 	},
 
-	async setPollingRate(this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) {
+	async setPollingRate(this: RazerDeviceConfig<'mouse'>, instance: HIDDevice, pollingRate: number) {
 		const hyper = this.hardware.hyper_polling
 		const commandId = hyper ? 0x40 : 0x05
 		const maxPollingRate = hyper ? 8000 : 1000
@@ -192,7 +192,7 @@ export const mouse_command = {
 		}
 	},
 
-	async getTrackingStep(this: RazerDeviceConfig, instance: HIDDevice): Promise<number> {
+	async getTrackingStep(this: RazerDeviceConfig<'mouse'>, instance: HIDDevice): Promise<number> {
 		const response = await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x03, 0x0b, 0x85),

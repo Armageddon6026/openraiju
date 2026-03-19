@@ -7,4 +7,4 @@ export default {
 		...RAZER_COBRA_PRO_WIRED.ui,
 		name: 'Razer Cobra Pro Wireless',
 	},
-} as const satisfies RazerDeviceConfig
+} as const satisfies RazerDeviceConfig<'mouse'>

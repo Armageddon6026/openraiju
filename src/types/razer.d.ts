@@ -1,22 +1,45 @@
-declare interface RazerDevice {
-	readonly config: RazerDeviceConfig
+declare interface RazerDevice<TConfig extends BaseDeviceConfig = BaseDeviceConfig> {
+	readonly config: TConfig
 	readonly instance: HIDDevice
 }
 
-declare interface RazerDeviceConfig extends RazerDeviceFeature {
+type RazerDeviceType = 'keyboard' | 'mouse' | 'headset' | 'accessory'
+
+declare interface RazerBaseDeviceConfig extends RazerDeviceFeature {
 	readonly productId: number
 	readonly ui: {
 		name: string
-		type: 'keyboard' | 'mouse' | 'headset' | 'accessory'
+		type: RazerDeviceType
 		image: string
 	}
 	readonly hardware: {
 		wait_min: number
 		transaction_id: number
-		max_dpi_stages?: number
-		optical_sensor?: RazerOpticalSensor
-		hyper_polling?: boolean // Indicates whether the device supports 8K polling rate.
 	}
+}
+
+type RazerHardwareMap = {
+	keyboard: {
+		hyper_polling: boolean // Indicates whether the device supports 8K polling rate.
+	}
+	mouse: {
+		max_dpi_stages: number
+		optical_sensor: RazerOpticalSensor
+		hyper_polling: boolean
+	}
+	headset: HeadsetHardware
+	accessory: {
+		transaction_device_id: number
+	}
+}
+
+type RazerDeviceConfig<T extends RazerDeviceType> = RazerBaseDeviceConfig & {
+	ui: {
+		name: string
+		type: T
+		image: string
+	}
+	hardware: RazerHardwareMap[T]
 }
 
 declare interface RazerOpticalSensor {
@@ -30,12 +53,12 @@ declare interface RazerOpticalSensor {
 	readonly rotation?: boolean
 }
 
-declare interface DpiStagesInfo {
+declare interface RazerDpiStageInfo {
 	ActivateID: number
 	DpiStages: DpiInfo[]
 }
 
-declare interface DpiInfo {
+declare interface RazerDpiInfo {
 	ID: number
 	X: number
 	Y: number

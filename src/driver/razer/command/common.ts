@@ -154,7 +154,7 @@ export async function test(
 }
 
 export const common_command = {
-	async getSerial(this: RazerDeviceConfig, instance: HIDDevice): Promise<string> {
+	async getSerial(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<string> {
 		const response = await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x16, 0x00, 0x82),
@@ -166,7 +166,7 @@ export const common_command = {
 		return new TextDecoder('ascii').decode(bytes).replace(/\0+$/, '') // remove padding \0
 	},
 
-	async getFirmware(this: RazerDeviceConfig, instance: HIDDevice): Promise<string> {
+	async getFirmware(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<string> {
 		const response = await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x04, 0x00, 0x81),
@@ -177,7 +177,7 @@ export const common_command = {
 		return `${response.getUint8(0)}.${response.getUint8(1)}.${response.getUint8(2)}.${response.getUint8(3)}`
 	},
 
-	async getBatteryLevel(this: RazerDeviceConfig, instance: HIDDevice): Promise<number> {
+	async getBatteryLevel(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<number> {
 		const response = await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x80),
@@ -190,7 +190,7 @@ export const common_command = {
 		)
 	},
 
-	async getChargeState(this: RazerDeviceConfig, instance: HIDDevice): Promise<boolean> {
+	async getChargeState(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<boolean> {
 		const response = await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x84),
@@ -201,7 +201,7 @@ export const common_command = {
 		return response.getUint8(1) === 1
 	},
 
-	async getIdleTime(this: RazerDeviceConfig, instance: HIDDevice): Promise<number> {
+	async getIdleTime(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<number> {
 		const response = await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x83),
