@@ -77,14 +77,13 @@ async function connectPairedDevice(device: RazerDevice) {
 		if (!deviceInfo) {
 			throw new Error('device not found')
 		}
-		console.log(deviceInfo)
+
 		const newDeviceInfo = {
 			...deviceInfo,
 			hardware: {
 				...deviceInfo.hardware,
 			},
 		}
-
 		if ('hyper_polling' in newDeviceInfo.hardware) {
 			newDeviceInfo.hardware.hyper_polling = true
 		}

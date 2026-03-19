@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { device } = defineProps<{
-	device: RazerDevice
+	device: RazerDevice<RazerDeviceConfig<'mouse'>> | RazerDevice<RazerDeviceConfig<'keyboard'>>
 }>()
 
 const toast = useToast()

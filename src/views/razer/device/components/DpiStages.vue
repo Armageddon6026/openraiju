@@ -1,11 +1,11 @@
 <script setup lang="ts">
 const { device } = defineProps<{
-	device: RazerDevice
+	device: RazerDevice<RazerDeviceConfig<'mouse'>>
 }>()
 
 const toast = useToast()
 
-const dpiStages = ref<DpiStagesInfo>()
+const dpiStages = ref<RazerDpiStageInfo>()
 
 const activeStage = computed(() => {
 	if (!dpiStages.value) return undefined
@@ -34,6 +34,35 @@ async function setActivateDpiStage(selectStageId: number) {
 			severity: 'success',
 			summary: summary,
 			detail: `DPI Stage set to stage ${selectStageId}`,
+			life: 3000,
+		})
+	} catch (e) {
+		toast.add({
+			severity: 'error',
+			summary: summary,
+			detail: `${e}`,
+			life: 3000,
+		})
+	}
+}
+
+async function setDpi(dpi: number) {
+	if (!device.config.setDpiStages) {
+		throw new Error('Device does not support setting DPI')
+	}
+	if (!dpiStages.value) {
+		return
+	}
+
+	const summary = 'Set DPI'
+	try {
+		dpiStages.value.DpiStages[dpiStages.value.ActivateID - 1]!.X = dpi
+		dpiStages.value.DpiStages[dpiStages.value.ActivateID - 1]!.Y = dpi
+		await device.config.setDpiStages(device.instance, dpiStages.value)
+		toast.add({
+			severity: 'success',
+			summary: summary,
+			detail: `DPI set to ${dpi}`,
 			life: 3000,
 		})
 	} catch (e) {
@@ -99,6 +128,12 @@ async function setActivateDpiStage(selectStageId: number) {
 					</div>
 				</div>
 			</div>
+			<Slider
+				v-model="dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X"
+				:max="device.config.hardware.optical_sensor.max_dpi"
+				:step="device.config.hardware.optical_sensor.dpi_step"
+				@slideend="setDpi(dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X)"
+			/>
 		</template>
 	</Card>
 </template>

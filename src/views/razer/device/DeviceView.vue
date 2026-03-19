@@ -10,18 +10,16 @@ const serial = ref('---')
 const firmware = ref('---')
 const activeSettingsTab = ref<number>(0)
 
-const hasDpiControl = computed(() => Boolean(currentDevice.value?.config.getDpiStages))
+const hasDpiControl = computed(() => {
+	if (currentDevice.value && currentDevice.value.config.getDpiStages) {
+		return currentDevice.value as RazerDevice<RazerDeviceConfig<'mouse'>>
+	}
+})
 const hasPollingControl = computed(() => Boolean(currentDevice.value?.config.getPollingRate))
 
 const productIdHex = computed(() => {
 	if (!currentDevice.value?.config.productId) return '--'
 	return `0x${currentDevice.value.config.productId.toString(16).padStart(4, '0').toUpperCase()}`
-})
-
-const sensorSummary = computed(() => {
-	const sensor = currentDevice.value?.config.hardware.optical_sensor
-	if (!sensor) return 'No optical sensor profile'
-	return `${sensor.max_dpi.toLocaleString()} DPI / Step ${sensor.dpi_step}`
 })
 
 const currentDevice = computed(() => {
@@ -80,11 +78,14 @@ onMounted(async () => {
 					<h2 text="3xl md:4xl emerald-50" font="black" leading="tight">
 						{{ currentDevice.config.ui.name }}
 					</h2>
-					<p text="sm emerald-100/75" mt="3">PID {{ productIdHex }} • {{ sensorSummary }}</p>
+					<p text="sm emerald-100/75" mt="3">PID {{ productIdHex }}</p>
 
 					<div flex="~ wrap" gap="2" mt="5">
 						<Badge value="Connected" severity="success" />
-						<Badge v-if="currentDevice.config.hardware.hyper_polling" value="Hyper Polling" />
+						<Badge
+							v-if="'hyper_polling' in currentDevice.config.hardware && currentDevice.config.hardware.hyper_polling"
+							value="Hyper Polling"
+						/>
 						<Badge v-if="hasDpiControl" value="DPI Control" severity="contrast" />
 						<Badge v-if="hasPollingControl" value="Polling Rate" severity="contrast" />
 					</div>
@@ -134,7 +135,7 @@ onMounted(async () => {
 				<TabPanels>
 					<TabPanel :value="0">
 						<div flex="~ col" gap="6">
-							<DpiStages v-if="hasDpiControl" :device="currentDevice" />
+							<DpiStages v-if="hasDpiControl" :device="hasDpiControl" />
 							<PollingRate v-if="hasPollingControl" :device="currentDevice" />
 						</div>
 					</TabPanel>
@@ -184,10 +185,6 @@ onMounted(async () => {
 						<div rounded="xl" p="3" bg="[#1a1a1a]" un-border="1 emerald-500/20">
 							<p text="xs gray-400" mb="1">Firmware</p>
 							<p font="mono">{{ firmware }}</p>
-						</div>
-						<div rounded="xl" p="3" bg="[#1a1a1a]" un-border="1 emerald-500/20">
-							<p text="xs gray-400" mb="1">Sensor Profile</p>
-							<p>{{ sensorSummary }}</p>
 						</div>
 					</div>
 				</template>

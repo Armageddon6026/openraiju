@@ -1,9 +1,9 @@
-declare interface RazerDevice<TConfig extends BaseDeviceConfig = BaseDeviceConfig> {
+declare interface RazerDevice<TConfig extends RazerDeviceConfig = RazerDeviceConfig> {
 	readonly config: TConfig
 	readonly instance: HIDDevice
 }
 
-type RazerDeviceType = 'keyboard' | 'mouse' | 'headset' | 'accessory'
+type RazerDeviceType = 'keyboard' | 'mouse' | 'accessory'
 
 declare interface RazerBaseDeviceConfig extends RazerDeviceFeature {
 	readonly productId: number
@@ -27,7 +27,6 @@ type RazerHardwareMap = {
 		optical_sensor: RazerOpticalSensor
 		hyper_polling: boolean
 	}
-	headset: HeadsetHardware
 	accessory: {
 		transaction_device_id: number
 	}
@@ -55,7 +54,7 @@ declare interface RazerOpticalSensor {
 
 declare interface RazerDpiStageInfo {
 	ActivateID: number
-	DpiStages: DpiInfo[]
+	DpiStages: RazerDpiInfo[]
 }
 
 declare interface RazerDpiInfo {
