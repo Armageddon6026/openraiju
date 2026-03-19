@@ -11,11 +11,39 @@ const firmware = ref('---')
 const activeSettingsTab = ref<number>(0)
 
 const hasDpiControl = computed(() => {
-	if (currentDevice.value && currentDevice.value.config.getDpiStages) {
+	if (
+		currentDevice.value &&
+		currentDevice.value.config.getDpiStages &&
+		currentDevice.value.config.ui.type === 'mouse'
+	) {
 		return currentDevice.value as RazerDevice<RazerDeviceConfig<'mouse'>>
 	}
 })
-const hasPollingControl = computed(() => Boolean(currentDevice.value?.config.getPollingRate))
+
+const hasPollingControl = computed(() => {
+	if (!currentDevice.value || !currentDevice.value.config.getPollingRate) {
+		return undefined
+	}
+
+	switch (currentDevice.value.config.ui.type) {
+		case 'mouse':
+			return currentDevice.value as RazerDevice<RazerDeviceConfig<'mouse'>>
+		case 'keyboard':
+			return currentDevice.value as RazerDevice<RazerDeviceConfig<'keyboard'>>
+		default:
+			return undefined
+	}
+})
+
+const hasHyperpollingControl = computed(() => {
+	if (
+		currentDevice.value &&
+		currentDevice.value.config.pairHyperpollingDevice &&
+		currentDevice.value.config.ui.type === 'accessory'
+	) {
+		return currentDevice.value as RazerDevice<RazerDeviceConfig<'accessory'>>
+	}
+})
 
 const productIdHex = computed(() => {
 	if (!currentDevice.value?.config.productId) return '--'
@@ -136,7 +164,7 @@ onMounted(async () => {
 					<TabPanel :value="0">
 						<div flex="~ col" gap="6">
 							<DpiStages v-if="hasDpiControl" :device="hasDpiControl" />
-							<PollingRate v-if="hasPollingControl" :device="currentDevice" />
+							<PollingRate v-if="hasPollingControl" :device="hasPollingControl" />
 						</div>
 					</TabPanel>
 
@@ -163,7 +191,7 @@ onMounted(async () => {
 
 					<TabPanel :value="4">
 						<div flex="~ col" gap="6">
-							<DonglePairing v-if="currentDevice.config.pairHyperpollingDevice" :device="currentDevice"></DonglePairing>
+							<DonglePairing v-if="hasHyperpollingControl" :device="hasHyperpollingControl"></DonglePairing>
 						</div>
 					</TabPanel>
 				</TabPanels>

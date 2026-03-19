@@ -2,14 +2,14 @@
 import { useDeviceStore } from '@/stores'
 
 const { device } = defineProps<{
-	device: RazerDevice
+	device: RazerDevice<RazerDeviceConfig<'accessory'>>
 }>()
 
 const toast = useToast()
 const deviceStore = useDeviceStore()
 const pairedDevicePid = ref<number | null>(null)
 
-async function pairDevice(device: RazerDevice) {
+async function pairDevice() {
 	const summary = 'Pairing Device'
 	const pid = 0x00b0
 	try {
@@ -34,7 +34,7 @@ async function pairDevice(device: RazerDevice) {
 	}
 }
 
-async function unpairDevice(device: RazerDevice) {
+async function unpairDevice() {
 	const summary = 'Unpairing Device'
 	try {
 		if (!device.config.unpairHyperpollingDevice) {
@@ -59,7 +59,7 @@ async function unpairDevice(device: RazerDevice) {
 	}
 }
 
-async function connectPairedDevice(device: RazerDevice) {
+async function connectPairedDevice() {
 	const summary = 'Pairing Device'
 	try {
 		if (!device.config.getPairDevices) {
@@ -119,21 +119,21 @@ async function connectPairedDevice(device: RazerDevice) {
 					label="Pair"
 					icon="i-material-symbols-link"
 					severity="success"
-					@click="pairDevice(device)"
+					@click="pairDevice()"
 				></Button>
 				<Button
 					class="w-full"
 					label="Fetch Paired Device"
 					icon="i-material-symbols-cable"
 					severity="contrast"
-					@click="connectPairedDevice(device)"
+					@click="connectPairedDevice()"
 				></Button>
 				<Button
 					class="w-full"
 					label="Unpair"
 					icon="i-material-symbols-link-off"
 					severity="danger"
-					@click="unpairDevice(device)"
+					@click="unpairDevice()"
 				></Button>
 			</div>
 
