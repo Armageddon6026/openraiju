@@ -10,6 +10,10 @@ const serial = ref('---')
 const firmware = ref('---')
 const activeSettingsTab = ref<number>(0)
 
+const currentDevice = computed(() => {
+	return deviceStore.getDevice(route.params.instanceId as string)
+})
+
 const hasDpiControl = computed(() => {
 	if (
 		currentDevice.value &&
@@ -45,29 +49,6 @@ const hasHyperpollingControl = computed(() => {
 	}
 })
 
-const productIdHex = computed(() => {
-	if (!currentDevice.value?.config.productId) return '--'
-	return `0x${currentDevice.value.config.productId.toString(16).padStart(4, '0').toUpperCase()}`
-})
-
-const currentDevice = computed(() => {
-	return deviceStore.getDevice(route.params.instanceId as string)
-})
-
-async function loadDeviceMeta(device: RazerDevice) {
-	try {
-		serial.value = await device.config.getSerial(device.instance)
-	} catch {
-		serial.value = 'Unavailable'
-	}
-
-	try {
-		firmware.value = await device.config.getFirmware(device.instance)
-	} catch {
-		firmware.value = 'Unavailable'
-	}
-}
-
 onMounted(async () => {
 	if (!currentDevice.value) {
 		toast.add({
@@ -80,7 +61,17 @@ onMounted(async () => {
 		return
 	}
 
-	await loadDeviceMeta(currentDevice.value)
+	try {
+		serial.value = await currentDevice.value.config.getSerial(currentDevice.value.instance)
+	} catch {
+		serial.value = 'Unavailable'
+	}
+
+	try {
+		firmware.value = await currentDevice.value.config.getFirmware(currentDevice.value.instance)
+	} catch {
+		firmware.value = 'Unavailable'
+	}
 })
 </script>
 
@@ -119,8 +110,14 @@ onMounted(async () => {
 		</section>
 
 		<section gap="6">
-			<Tabs :value="activeSettingsTab" @update:value="(v: string | number) => (activeSettingsTab = Number(v))">
-				<TabList>
+			<Tabs
+				un-border="1 emerald-500/35"
+				rounded="2xl"
+				bg="black/30"
+				:value="activeSettingsTab"
+				@update:value="(v: string | number) => (activeSettingsTab = Number(v))"
+			>
+				<TabList rounded="2xl">
 					<Tab :value="0">
 						<span flex="~" items="center" gap="2">
 							<span i="material-symbols-performance-max"></span>
@@ -153,7 +150,7 @@ onMounted(async () => {
 					</Tab>
 				</TabList>
 
-				<TabPanels>
+				<TabPanels rounded="2xl">
 					<TabPanel :value="0">
 						<div flex="~ col" gap="3">
 							<DpiStages v-if="hasDpiControl" :device="hasDpiControl" />
