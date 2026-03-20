@@ -1,16 +1,32 @@
-import { computed, type ComputedRef } from 'vue'
+import { computed, type ComputedRef, type Component } from 'vue'
+
+export interface TabContentComponent {
+	component: Component // Vue component definition
+	condition: () => boolean
+	props?: Record<string, unknown>
+}
 
 export interface TabConfig {
 	value: number
 	icon: string
 	label: string
 	visible: boolean
+	contentComponents: TabContentComponent[] | undefined
+	emptyContent:
+		| {
+				icon: string
+				text: string
+		  }
+		| undefined
 }
 
 export function useDeviceTabs(
 	hasDpiControl: ComputedRef<RazerDevice<RazerBaseDeviceConfig> | undefined>,
 	hasPollingControl: ComputedRef<RazerDevice<RazerBaseDeviceConfig> | undefined>,
 	hasHyperpollingControl: ComputedRef<RazerDevice<RazerBaseDeviceConfig> | undefined>,
+	tabContents?: Readonly<
+		Record<number, readonly TabContentComponent[] | { readonly icon: string; readonly text: string }>
+	>,
 ) {
 	// Tab visibility 驗證邏輯集中管理
 	const tabCheckers = {
@@ -29,6 +45,8 @@ export function useDeviceTabs(
 			get visible() {
 				return tabCheckers[0]()
 			},
+			contentComponents: tabContents?.[0] as TabContentComponent[] | undefined,
+			emptyContent: undefined,
 		},
 		{
 			value: 1,
@@ -36,6 +54,11 @@ export function useDeviceTabs(
 			label: 'Lighting',
 			get visible() {
 				return tabCheckers[1]()
+			},
+			contentComponents: undefined,
+			emptyContent: {
+				icon: 'material-symbols-lightbulb-outline',
+				text: 'Lighting control feature coming soon',
 			},
 		},
 		{
@@ -45,6 +68,11 @@ export function useDeviceTabs(
 			get visible() {
 				return tabCheckers[2]()
 			},
+			contentComponents: undefined,
+			emptyContent: {
+				icon: 'material-symbols-battery-charging-20',
+				text: 'Power management feature coming soon',
+			},
 		},
 		{
 			value: 3,
@@ -52,6 +80,11 @@ export function useDeviceTabs(
 			label: 'Calibration',
 			get visible() {
 				return tabCheckers[3]()
+			},
+			contentComponents: undefined,
+			emptyContent: {
+				icon: 'material-symbols-settings-input-component',
+				text: 'Calibration tools coming soon',
 			},
 		},
 		{
@@ -61,6 +94,8 @@ export function useDeviceTabs(
 			get visible() {
 				return tabCheckers[4]()
 			},
+			contentComponents: tabContents?.[4] as TabContentComponent[] | undefined,
+			emptyContent: undefined,
 		},
 	] as const
 
