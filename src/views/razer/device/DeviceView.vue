@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useDeviceStore } from '@/stores'
+import { useDeviceTabs } from '@/views/razer/device/composables/useDeviceTabs'
 
 const toast = useToast()
 const route = useRoute()
@@ -9,48 +10,6 @@ const deviceStore = useDeviceStore()
 const serial = ref('---')
 const firmware = ref('---')
 const activeSettingsTab = ref<number>(0)
-const tabs = [
-	{
-		value: 0,
-		icon: 'i-material-symbols-performance-max',
-		label: 'Performance',
-		get visible() {
-			return !!hasDpiControl.value || !!hasPollingControl.value
-		},
-	},
-	{
-		value: 1,
-		icon: 'i-material-symbols-light-mode',
-		label: 'Lighting',
-		get visible() {
-			return false // Coming soon
-		},
-	},
-	{
-		value: 2,
-		icon: 'i-material-symbols-power-settings-new-rounded',
-		label: 'Power',
-		get visible() {
-			return false // Coming soon
-		},
-	},
-	{
-		value: 3,
-		icon: 'i-material-symbols-settings-input-component-outline-rounded',
-		label: 'Calibration',
-		get visible() {
-			return false // Coming soon
-		},
-	},
-	{
-		value: 4,
-		icon: 'i-material-symbols-add-link-rounded',
-		label: 'Pairing',
-		get visible() {
-			return !!hasHyperpollingControl.value
-		},
-	},
-]
 
 const currentDevice = computed(() => {
 	return deviceStore.getDevice(route.params.instanceId as string)
@@ -91,7 +50,7 @@ const hasHyperpollingControl = computed(() => {
 	}
 })
 
-const visibleTabs = computed(() => tabs.filter((tab) => tab.visible))
+const { visibleTabs } = useDeviceTabs(hasDpiControl, hasPollingControl, hasHyperpollingControl)
 
 // Ensure active tab is valid when available tabs change
 watchEffect(() => {
