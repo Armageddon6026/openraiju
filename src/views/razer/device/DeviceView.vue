@@ -9,6 +9,48 @@ const deviceStore = useDeviceStore()
 const serial = ref('---')
 const firmware = ref('---')
 const activeSettingsTab = ref<number>(0)
+const tabs = [
+	{
+		value: 0,
+		icon: 'i-material-symbols-performance-max',
+		label: 'Performance',
+		get visible() {
+			return !!hasDpiControl.value || !!hasPollingControl.value
+		},
+	},
+	{
+		value: 1,
+		icon: 'i-material-symbols-light-mode',
+		label: 'Lighting',
+		get visible() {
+			return false // Coming soon
+		},
+	},
+	{
+		value: 2,
+		icon: 'i-material-symbols-power-settings-new-rounded',
+		label: 'Power',
+		get visible() {
+			return false // Coming soon
+		},
+	},
+	{
+		value: 3,
+		icon: 'i-material-symbols-settings-input-component-outline-rounded',
+		label: 'Calibration',
+		get visible() {
+			return false // Coming soon
+		},
+	},
+	{
+		value: 4,
+		icon: 'i-material-symbols-add-link-rounded',
+		label: 'Pairing',
+		get visible() {
+			return !!hasHyperpollingControl.value
+		},
+	},
+]
 
 const currentDevice = computed(() => {
 	return deviceStore.getDevice(route.params.instanceId as string)
@@ -46,6 +88,15 @@ const hasHyperpollingControl = computed(() => {
 		currentDevice.value.config.ui.type === 'accessory'
 	) {
 		return currentDevice.value as RazerDevice<RazerDeviceConfig<'accessory'>>
+	}
+})
+
+const visibleTabs = computed(() => tabs.filter((tab) => tab.visible))
+
+// Ensure active tab is valid when available tabs change
+watchEffect(() => {
+	if (!visibleTabs.value.some((t) => t.value === activeSettingsTab.value)) {
+		activeSettingsTab.value = visibleTabs.value[0]?.value ?? 0
 	}
 })
 
@@ -109,7 +160,7 @@ onMounted(async () => {
 			</div>
 		</section>
 
-		<section gap="6">
+		<section gap="6" v-if="visibleTabs.length > 0">
 			<Tabs
 				un-border="1 emerald-500/35"
 				rounded="2xl"
@@ -118,68 +169,44 @@ onMounted(async () => {
 				@update:value="(v: string | number) => (activeSettingsTab = Number(v))"
 			>
 				<TabList rounded="2xl">
-					<Tab :value="0">
+					<Tab v-for="tab in visibleTabs" :key="tab.value" :value="tab.value">
 						<span flex="~" items="center" gap="2">
-							<span i="material-symbols-performance-max"></span>
-							<span>Performance</span>
-						</span>
-					</Tab>
-					<Tab :value="1">
-						<span flex="~" items="center" gap="2">
-							<span i="material-symbols-light-mode"></span>
-							<span>Lighting</span>
-						</span>
-					</Tab>
-					<Tab :value="2">
-						<span flex="~" items="center" gap="2">
-							<span i="material-symbols-power-settings-new-rounded"></span>
-							<span>Power</span>
-						</span>
-					</Tab>
-					<Tab :value="3">
-						<span flex="~" items="center" gap="2">
-							<span i="material-symbols-settings-input-component-outline-rounded"></span>
-							<span>Calibration</span>
-						</span>
-					</Tab>
-					<Tab :value="4">
-						<span flex="~" items="center" gap="2">
-							<span i="material-symbols-add-link-rounded"></span>
-							<span>Pairing</span>
+							<span :class="[tab.icon]"></span>
+							<span>{{ tab.label }}</span>
 						</span>
 					</Tab>
 				</TabList>
 
 				<TabPanels rounded="2xl">
-					<TabPanel :value="0">
+					<TabPanel v-if="visibleTabs.some((t) => t.value === 0)" :value="0">
 						<div flex="~ col" gap="3">
 							<DpiStages v-if="hasDpiControl" :device="hasDpiControl" />
 							<PollingRate v-if="hasPollingControl" :device="hasPollingControl" />
 						</div>
 					</TabPanel>
 
-					<TabPanel :value="1">
+					<TabPanel v-if="visibleTabs.some((t) => t.value === 1)" :value="1">
 						<div flex="~ col" items="center" justify="center" h="48" text="gray-500">
 							<span i="material-symbols-lightbulb-outline" text="3xl mb-4"></span>
 							<p>Lighting control feature coming soon</p>
 						</div>
 					</TabPanel>
 
-					<TabPanel :value="2">
+					<TabPanel v-if="visibleTabs.some((t) => t.value === 2)" :value="2">
 						<div flex="~ col" items="center" justify="center" h="48" text="gray-500">
 							<span i="material-symbols-battery-charging-20" text="3xl mb-4"></span>
 							<p>Power management feature coming soon</p>
 						</div>
 					</TabPanel>
 
-					<TabPanel :value="3">
+					<TabPanel v-if="visibleTabs.some((t) => t.value === 3)" :value="3">
 						<div flex="~ col" items="center" justify="center" h="48" text="gray-500">
 							<span i="material-symbols-settings-input-component" text="3xl mb-4"></span>
 							<p>Calibration tools coming soon</p>
 						</div>
 					</TabPanel>
 
-					<TabPanel :value="4">
+					<TabPanel v-if="visibleTabs.some((t) => t.value === 4)" :value="4">
 						<div flex="~ col" gap="6">
 							<DonglePairing v-if="hasHyperpollingControl" :device="hasHyperpollingControl"></DonglePairing>
 						</div>
