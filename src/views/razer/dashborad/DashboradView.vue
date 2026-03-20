@@ -78,6 +78,7 @@ function goToDeviceSettings(instanceId: string) {
 </script>
 
 <template>
+	<h1 text="4xl gray-200" font="bold" mb="4">RAZER HUB</h1>
 	<div grid="~ cols-[repeat(auto-fill,280px)]" mt="8" gap="6" justify="center" md:justify="start">
 		<Card
 			@click="connectDevice"

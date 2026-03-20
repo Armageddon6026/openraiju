@@ -106,16 +106,9 @@ onMounted(async () => {
 					<h2 text="3xl md:4xl emerald-50" font="black" leading="tight">
 						{{ currentDevice.config.ui.name }}
 					</h2>
-					<p text="sm emerald-100/75" mt="3">PID {{ productIdHex }}</p>
-
-					<div flex="~ wrap" gap="2" mt="5">
-						<Badge value="Connected" severity="success" />
-						<Badge
-							v-if="'hyper_polling' in currentDevice.config.hardware && currentDevice.config.hardware.hyper_polling"
-							value="Hyper Polling"
-						/>
-						<Badge v-if="hasDpiControl" value="DPI Control" severity="contrast" />
-						<Badge v-if="hasPollingControl" value="Polling Rate" severity="contrast" />
+					<div m="t2">
+						<span text="sm emerald-100/75" m="r3">SN: {{ serial }}</span>
+						<span text="sm emerald-100/75" m="r3">Firmware: {{ firmware }}</span>
 					</div>
 				</div>
 
@@ -125,7 +118,7 @@ onMounted(async () => {
 			</div>
 		</section>
 
-		<section grid="~ cols-1 xl:cols-[1.6fr_0.9fr]" gap="6">
+		<section gap="6">
 			<Tabs :value="activeSettingsTab" @update:value="(v: string | number) => (activeSettingsTab = Number(v))">
 				<TabList>
 					<Tab :value="0">
@@ -142,19 +135,19 @@ onMounted(async () => {
 					</Tab>
 					<Tab :value="2">
 						<span flex="~" items="center" gap="2">
-							<span i="material-symbols-power-settings-rounded"></span>
+							<span i="material-symbols-power-settings-new-rounded"></span>
 							<span>Power</span>
 						</span>
 					</Tab>
 					<Tab :value="3">
 						<span flex="~" items="center" gap="2">
-							<span i="material-symbols-tuning"></span>
+							<span i="material-symbols-settings-input-component-outline-rounded"></span>
 							<span>Calibration</span>
 						</span>
 					</Tab>
 					<Tab :value="4">
 						<span flex="~" items="center" gap="2">
-							<span i="material-symbols-bluetooth-connected"></span>
+							<span i="material-symbols-add-link-rounded"></span>
 							<span>Pairing</span>
 						</span>
 					</Tab>
@@ -162,7 +155,7 @@ onMounted(async () => {
 
 				<TabPanels>
 					<TabPanel :value="0">
-						<div flex="~ col" gap="6">
+						<div flex="~ col" gap="3">
 							<DpiStages v-if="hasDpiControl" :device="hasDpiControl" />
 							<PollingRate v-if="hasPollingControl" :device="hasPollingControl" />
 						</div>
@@ -196,27 +189,6 @@ onMounted(async () => {
 					</TabPanel>
 				</TabPanels>
 			</Tabs>
-
-			<Card rounded="2xl" un-border="1 emerald-500/35" bg="#121212" overflow="hidden">
-				<template #title>
-					<div flex="~" items="center" justify="between">
-						<h3 text="xl emerald-50" font="bold">Device Summary</h3>
-						<span class="i-material-symbols-mouse-outline" text="2xl emerald-400"></span>
-					</div>
-				</template>
-				<template #content>
-					<div flex="~ col" gap="4" text="sm gray-200">
-						<div rounded="xl" p="3" bg="[#1a1a1a]" un-border="1 emerald-500/20">
-							<p text="xs gray-400" mb="1">Serial Number</p>
-							<p font="mono" break-all>{{ serial }}</p>
-						</div>
-						<div rounded="xl" p="3" bg="[#1a1a1a]" un-border="1 emerald-500/20">
-							<p text="xs gray-400" mb="1">Firmware</p>
-							<p font="mono">{{ firmware }}</p>
-						</div>
-					</div>
-				</template>
-			</Card>
 		</section>
 	</div>
 

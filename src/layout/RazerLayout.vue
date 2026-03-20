@@ -2,7 +2,6 @@
 
 <template>
 	<div>
-		<h1 text="4xl gray-200" font="bold" mb="4">RAZER HUB</h1>
 		<RouterView />
 	</div>
 </template>
