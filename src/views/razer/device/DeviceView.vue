@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useDeviceStore } from '@/stores'
+import { useCapabilityDevice, useTypedCapabilityDevice } from './composables/capability'
 
 type TabContent = {
 	component: ReturnType<typeof defineAsyncComponent>
@@ -28,68 +29,37 @@ const currentDevice = computed(() => {
 	return deviceStore.getDevice(route.params.instanceId as string)
 })
 
-// ── capability helpers ────────────────────────────────────────────
-function deviceHasFeatures<K extends keyof RazerDeviceFeature>(
-	device: RazerDevice<RazerBaseDeviceConfig> | undefined,
-	features: readonly K[],
-): device is DeviceWith<K> {
-	if (!device) return false
-	return features.every((k) => typeof (device.config as unknown as Record<string, unknown>)[k] === 'function')
-}
+// Define async components for each tab content
+// DPI Stages
+const DpiStagesComp = defineAsyncComponent(() => import('./components/DpiStages.vue'))
+const hasDpiControl = useTypedCapabilityDevice('mouse', currentDevice.value, [
+	'getDpiStages',
+	'setDpiStages',
+	'setActivateDpiStage',
+] as const)
 
-function deviceHasTypeAndFeatures<T extends RazerDeviceType, K extends keyof RazerDeviceFeature>(
-	device: RazerDevice<RazerBaseDeviceConfig> | undefined,
-	type: T,
-	features: readonly K[],
-): device is TypedDeviceWith<T, K> {
-	if (!device || device.config.ui.type !== type) return false
-	return features.every((k) => typeof (device.config as unknown as Record<string, unknown>)[k] === 'function')
-}
+// Polling Rate
+const PollingRateComp = defineAsyncComponent(() => import('./components/PollingRate.vue'))
+const hasPollingControl = useCapabilityDevice(currentDevice.value, ['getPollingRate', 'setPollingRate'] as const)
 
-function capabilityDevice<K extends keyof RazerDeviceFeature>(features: readonly K[]) {
-	return computed((): DeviceWith<K> | undefined => {
-		const d = currentDevice.value
-		return deviceHasFeatures(d, features) ? d : undefined
-	})
-}
+// Power - Idle Time
+const IdleTimeComp = defineAsyncComponent(() => import('./components/IdleTime.vue'))
+const hasIdleTimeControl = useCapabilityDevice(currentDevice.value, ['getIdleTime', 'setIdleTime'] as const)
 
-function typedCapabilityDevice<T extends RazerDeviceType, K extends keyof RazerDeviceFeature>(
-	type: T,
-	features: readonly K[],
-) {
-	return computed((): TypedDeviceWith<T, K> | undefined => {
-		const d = currentDevice.value
-		return deviceHasTypeAndFeatures(d, type, features) ? d : undefined
-	})
-}
+// Power - Battery Threshold
+const BatteryThresholdComp = defineAsyncComponent(() => import('./components/BatteryThreshold.vue'))
+const hasBatteryThresholdControl = useCapabilityDevice(currentDevice.value, [
+	'getLowBatteryThreshold',
+	'setLowBatteryThreshold',
+] as const)
 
-// ── capabilities ──────────────────────────────────────────────────
-const hasDpiControl = typedCapabilityDevice('mouse', ['getDpiStages', 'setDpiStages', 'setActivateDpiStage'] as const)
-
-const hasPollingControl = capabilityDevice(['getPollingRate', 'setPollingRate'] as const)
-const hasIdleTimeControl = capabilityDevice(['getIdleTime', 'setIdleTime'] as const)
-const hasBatteryThresholdControl = capabilityDevice(['getLowBatteryThreshold', 'setLowBatteryThreshold'] as const)
-
-const hasHyperpollingControl = typedCapabilityDevice('accessory', [
+// Pairing - Hyperpolling Dongle
+const DonglePairingComp = defineAsyncComponent(() => import('./components/DonglePairing.vue'))
+const hasHyperpollingControl = useTypedCapabilityDevice('accessory', currentDevice.value, [
 	'pairHyperpollingDevice',
 	'unpairHyperpollingDevice',
 	'getPairDevices',
 ] as const)
-
-// ── async components（宣告一次，不放進 computed 裡）───────────────
-const DpiStagesComp = defineAsyncComponent(() => import('./components/DpiStages.vue'))
-const PollingRateComp = defineAsyncComponent(() => import('./components/PollingRate.vue'))
-const IdleTimeComp = defineAsyncComponent(() => import('./components/IdleTime.vue'))
-const BatteryThresholdComp = defineAsyncComponent(() => import('./components/BatteryThreshold.vue'))
-const DonglePairingComp = defineAsyncComponent(() => import('./components/DonglePairing.vue'))
-
-// ── resolved tabs ─────────────────────────────────────────────────
-function resolve(
-	device: RazerDevice<RazerBaseDeviceConfig> | undefined,
-	comp: ReturnType<typeof defineAsyncComponent>,
-): TabContent | null {
-	return device != null ? { component: comp, props: { device } } : null
-}
 
 const visibleTabs = computed((): ResolvedTab[] => {
 	const tabs: ResolvedTab[] = [
@@ -172,6 +142,14 @@ onMounted(async () => {
 		firmware.value = 'Unavailable'
 	}
 })
+
+// ── resolved tabs ─────────────────────────────────────────────────
+function resolve(
+	device: RazerDevice<RazerBaseDeviceConfig> | undefined,
+	comp: ReturnType<typeof defineAsyncComponent>,
+): TabContent | null {
+	return device != null ? { component: comp, props: { device } } : null
+}
 </script>
 
 <template>
