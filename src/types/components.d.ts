@@ -17,6 +17,7 @@ declare module 'vue' {
     Card: typeof import('primevue/card')['default']
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     DeviceCard: typeof import('./../views/razer/dashborad/components/DeviceCard.vue')['default']
+    DeviceHero: typeof import('./../views/razer/device/components/DeviceHero.vue')['default']
     DonglePairing: typeof import('./../views/razer/device/components/DonglePairing.vue')['default']
     DpiStages: typeof import('./../views/razer/device/components/DpiStages.vue')['default']
     IdleTime: typeof import('./../views/razer/device/components/IdleTime.vue')['default']

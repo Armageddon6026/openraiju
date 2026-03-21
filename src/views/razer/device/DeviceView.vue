@@ -20,8 +20,6 @@ const route = useRoute()
 const router = useRouter()
 const deviceStore = useDeviceStore()
 
-const serial = ref('---')
-const firmware = ref('---')
 const activeSettingsTab = ref<number>(0)
 const visitedTabs = reactive(new Set<number>())
 
@@ -30,7 +28,7 @@ const currentDevice = computed(() => {
 })
 
 // Define async components for each tab content
-// DPI Stages
+// Performance - DPI Stages
 const DpiStagesComp = defineAsyncComponent(() => import('./components/DpiStages.vue'))
 const hasDpiControl = useTypedCapabilityDevice('mouse', currentDevice.value, [
 	'getDpiStages',
@@ -38,7 +36,7 @@ const hasDpiControl = useTypedCapabilityDevice('mouse', currentDevice.value, [
 	'setActivateDpiStage',
 ] as const)
 
-// Polling Rate
+// Performance - Polling Rate
 const PollingRateComp = defineAsyncComponent(() => import('./components/PollingRate.vue'))
 const hasPollingControl = useCapabilityDevice(currentDevice.value, ['getPollingRate', 'setPollingRate'] as const)
 
@@ -129,18 +127,6 @@ onMounted(async () => {
 		router.replace('/')
 		return
 	}
-
-	try {
-		serial.value = await currentDevice.value.config.getSerial(currentDevice.value.instance)
-	} catch {
-		serial.value = 'Unavailable'
-	}
-
-	try {
-		firmware.value = await currentDevice.value.config.getFirmware(currentDevice.value.instance)
-	} catch {
-		firmware.value = 'Unavailable'
-	}
 })
 
 // ── resolved tabs ─────────────────────────────────────────────────
@@ -154,37 +140,7 @@ function resolve(
 
 <template>
 	<div v-if="currentDevice" p="6" max-w="7xl" mx="auto" flex="~ col" gap="6">
-		<section
-			relative="~"
-			overflow="hidden"
-			rounded="3xl"
-			p="6 md:8"
-			:style="{ backgroundImage: 'linear-gradient(135deg,#111111 0%,#132014 50%,#101710 100%)' }"
-			un-border="1 emerald-500/35"
-		>
-			<div
-				absolute="~"
-				inset="0"
-				op="60"
-				:style="{ backgroundImage: 'radial-gradient(circle at 18% 18%,#86ff8e55,transparent 44%)' }"
-			></div>
-			<div relative="~" grid="~ cols-1 lg:cols-[1.4fr_0.8fr]" gap="6" items="center">
-				<div>
-					<p text="emerald-300/90 xs" tracking="[0.24em]" uppercase="~" mb="2">Razer Device Center</p>
-					<h2 text="3xl md:4xl emerald-50" font="black" leading="tight">
-						{{ currentDevice.config.ui.name }}
-					</h2>
-					<div m="t2">
-						<span text="sm emerald-100/75" m="r3">SN: {{ serial }}</span>
-						<span text="sm emerald-100/75" m="r3">Firmware: {{ firmware }}</span>
-					</div>
-				</div>
-
-				<div rounded="2xl" p="4" bg="black/30" un-border="1 emerald-100/12" flex="~" items="center" justify="center">
-					<Image :src="currentDevice.config.ui.image" :alt="currentDevice.config.ui.name" width="210" />
-				</div>
-			</div>
-		</section>
+		<DeviceHero :device="currentDevice" />
 
 		<section gap="6" v-if="visibleTabs.length > 0">
 			<Tabs
@@ -206,7 +162,6 @@ function resolve(
 				<TabPanels rounded="2xl">
 					<TabPanel v-for="tab in visibleTabs" :key="tab.value" :value="tab.value">
 						<template v-if="visitedTabs.has(tab.value) && activeSettingsTab === tab.value">
-							<!-- 有內容配置的組件列表 -->
 							<template v-if="tab.contents.length > 0">
 								<div flex="~ col" gap="3">
 									<component
