@@ -14,18 +14,18 @@ onMounted(async () => {
 	}
 })
 
-/*async function setIdleTime() {
-	if (!device.config.setIdleTime) {
-		throw new Error('Device does not support setting idle time')
+async function setLowBatteryThreshold() {
+	if (!device.config.setLowBatteryThreshold) {
+		throw new Error('Device does not support setting low battery threshold')
 	}
 
-	const summary = 'Set Idle Time'
+	const summary = 'Set Low Battery Threshold'
 	try {
-		await device.config.setIdleTime(device.instance, idleTimeMinutes.value)
+		await device.config.setLowBatteryThreshold(device.instance, lowBatteryThreshold.value)
 		toast.add({
 			severity: 'success',
 			summary: summary,
-			detail: `Idle time set to ${idleTimeMinutes.value} minutes`,
+			detail: `Low battery threshold set to ${lowBatteryThreshold.value}%`,
 			life: 3000,
 		})
 	} catch (e) {
@@ -36,7 +36,7 @@ onMounted(async () => {
 			life: 3000,
 		})
 	}
-}*/
+}
 </script>
 
 <template>
@@ -66,7 +66,7 @@ onMounted(async () => {
 					</div>
 				</div>
 
-				<Slider mt="4" v-model="lowBatteryThreshold" :min="5" :max="100" :step="5" />
+				<Slider mt="4" v-model="lowBatteryThreshold" :min="5" :max="100" :step="5" @slideend="setLowBatteryThreshold" />
 			</div>
 		</template>
 	</Card>

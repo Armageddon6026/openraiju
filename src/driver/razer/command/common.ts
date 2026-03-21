@@ -185,6 +185,22 @@ export const common_command = {
 		return Math.round((response.getUint8(0) / 255) * 100)
 	},
 
+	async setLowBatteryThreshold(this: RazerBaseDeviceConfig, instance: HIDDevice, threshold: number): Promise<void> {
+		if (threshold < 5 || threshold > 100) {
+			throw new Error('Low battery threshold must be between 5 and 100 percent')
+		}
+		if (threshold % 5 !== 0) {
+			throw new Error('Low battery threshold must be in increments of 5 percent')
+		}
+		const setVal = Math.floor((threshold / 100) * 255)
+
+		await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x01, 0x07, 0x01, [setVal]),
+			this.hardware.wait_min,
+		)
+	},
+
 	async getIdleTime(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<number> {
 		const response = await sendCommand(
 			instance,
@@ -197,12 +213,11 @@ export const common_command = {
 	},
 
 	async setIdleTime(this: RazerBaseDeviceConfig, instance: HIDDevice, minutes: number): Promise<void> {
-		const roundedMinutes = Math.round(minutes)
-		if (roundedMinutes < 1 || roundedMinutes > 15) {
+		if (minutes < 1 || minutes > 15) {
 			throw new Error('Idle time must be between 1 and 15 minutes')
 		}
 
-		const setVal = roundedMinutes * 60
+		const setVal = minutes * 60
 		const args: number[] = []
 		let offset = 0
 		args[offset++] = (setVal >> 8) & 0xff
