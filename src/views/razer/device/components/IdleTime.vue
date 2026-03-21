@@ -66,15 +66,7 @@ async function setIdleTime() {
 					</div>
 				</div>
 
-				<Slider
-					mt="4"
-					v-model="idleTimeMinutes"
-					:min="1"
-					:max="15"
-					:step="1"
-					@slideend.stop="setIdleTime"
-					@click.stop="setIdleTime"
-				/>
+				<Slider mt="4" v-model="idleTimeMinutes" :min="1" :max="15" :step="1" @slideend="setIdleTime" />
 			</div>
 		</template>
 	</Card>

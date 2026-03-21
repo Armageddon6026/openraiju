@@ -10,97 +10,110 @@ const serial = ref('---')
 const firmware = ref('---')
 const activeSettingsTab = ref<number>(0)
 const visitedTabs = reactive(new Set<number>())
-
-const allTabs = [
-	{
-		value: 0,
-		icon: 'i-material-symbols-performance-max',
-		label: 'Performance',
-		condition: () => !!hasDpiControl.value || !!hasPollingControl.value,
-		contentComponents: [
-			{
-				component: defineAsyncComponent(() => import('./components/DpiStages.vue')),
-				condition: () => !!hasDpiControl.value,
-				get props() {
-					return { device: hasDpiControl.value! }
-				},
-			},
-			{
-				component: defineAsyncComponent(() => import('./components/PollingRate.vue')),
-				condition: () => !!hasPollingControl.value,
-				get props() {
-					return { device: hasPollingControl.value! }
-				},
-			},
-		],
-		emptyContent: undefined,
-	},
-	{
-		value: 1,
-		icon: 'i-material-symbols-light-mode',
-		label: 'Lighting',
-		condition: () => false,
-		contentComponents: undefined,
-		emptyContent: {
-			icon: 'material-symbols-lightbulb-outline',
-			text: 'Lighting control feature coming soon',
-		},
-	},
-	{
-		value: 2,
-		icon: 'i-material-symbols-power-settings-new-rounded',
-		label: 'Power',
-		condition: () => !!hasIdleTimeControl.value || !!hasBatteryThresholdControl.value,
-		contentComponents: [
-			{
-				component: defineAsyncComponent(() => import('./components/IdleTime.vue')),
-				condition: () => !!hasIdleTimeControl.value,
-				get props() {
-					return { device: hasIdleTimeControl.value! }
-				},
-			},
-			{
-				component: defineAsyncComponent(() => import('./components/BatteryThreshold.vue')),
-				condition: () => !!hasBatteryThresholdControl.value,
-				get props() {
-					return { device: hasBatteryThresholdControl.value! }
-				},
-			},
-		],
-		emptyContent: undefined,
-	},
-	{
-		value: 3,
-		icon: 'i-material-symbols-settings-input-component-outline-rounded',
-		label: 'Calibration',
-		condition: () => false,
-		contentComponents: undefined,
-		emptyContent: {
-			icon: 'material-symbols-settings-input-component',
-			text: 'Calibration tools coming soon',
-		},
-	},
-	{
-		value: 4,
-		icon: 'i-material-symbols-add-link-rounded',
-		label: 'Pairing',
-		condition: () => !!hasHyperpollingControl.value,
-		contentComponents: [
-			{
-				component: defineAsyncComponent(() => import('./components/DonglePairing.vue')),
-				condition: () => !!hasHyperpollingControl.value,
-				get props() {
-					return { device: hasHyperpollingControl.value! }
-				},
-			},
-		],
-		emptyContent: undefined,
-	},
-] as const
-
 const currentDevice = computed(() => {
 	return deviceStore.getDevice(route.params.instanceId as string)
 })
+
+const performanceTab = {
+	value: 0,
+	icon: 'i-material-symbols-performance-max',
+	label: 'Performance',
+	get condition() {
+		return this.contentComponents.some((c) => c.condition())
+	},
+	contentComponents: [
+		{
+			component: defineAsyncComponent(() => import('./components/DpiStages.vue')),
+			condition: () => !!hasDpiControl.value,
+			get props() {
+				return { device: hasDpiControl.value! }
+			},
+		},
+		{
+			component: defineAsyncComponent(() => import('./components/PollingRate.vue')),
+			condition: () => !!hasPollingControl.value,
+			get props() {
+				return { device: hasPollingControl.value! }
+			},
+		},
+	],
+	emptyContent: undefined,
+}
+
+const lightingTab = {
+	value: 1,
+	icon: 'i-material-symbols-light-mode',
+	label: 'Lighting',
+	get condition() {
+		return this.contentComponents
+	},
+	contentComponents: undefined,
+	emptyContent: {
+		icon: 'material-symbols-lightbulb-outline',
+		text: 'Lighting control feature coming soon',
+	},
+}
+
+const powerTab = {
+	value: 2,
+	icon: 'i-material-symbols-power-settings-new-rounded',
+	label: 'Power',
+	get condition() {
+		return this.contentComponents.some((c) => c.condition())
+	},
+	contentComponents: [
+		{
+			component: defineAsyncComponent(() => import('./components/IdleTime.vue')),
+			condition: () => !!hasIdleTimeControl.value,
+			get props() {
+				return { device: hasIdleTimeControl.value! }
+			},
+		},
+		{
+			component: defineAsyncComponent(() => import('./components/BatteryThreshold.vue')),
+			condition: () => !!hasBatteryThresholdControl.value,
+			get props() {
+				return { device: hasBatteryThresholdControl.value! }
+			},
+		},
+	],
+	emptyContent: undefined,
+}
+
+const calibrationTab = {
+	value: 3,
+	icon: 'i-material-symbols-settings-input-component-outline-rounded',
+	label: 'Calibration',
+	get condition() {
+		return this.contentComponents
+	},
+	contentComponents: undefined,
+	emptyContent: {
+		icon: 'material-symbols-settings-input-component',
+		text: 'Calibration tools coming soon',
+	},
+}
+
+const pairingTab = {
+	value: 4,
+	icon: 'i-material-symbols-add-link-rounded',
+	label: 'Pairing',
+	get condition() {
+		return this.contentComponents.some((c) => c.condition())
+	},
+	contentComponents: [
+		{
+			component: defineAsyncComponent(() => import('./components/DonglePairing.vue')),
+			condition: () => !!hasHyperpollingControl.value,
+			get props() {
+				return { device: hasHyperpollingControl.value! }
+			},
+		},
+	],
+	emptyContent: undefined,
+}
+
+const allTabs = [performanceTab, lightingTab, powerTab, calibrationTab, pairingTab]
 
 const hasDpiControl = computed(() => {
 	if (
@@ -146,7 +159,7 @@ const hasHyperpollingControl = computed(() => {
 	}
 })
 
-const visibleTabs = computed(() => allTabs.filter((tab) => tab.condition()))
+const visibleTabs = computed(() => allTabs.filter((tab) => tab.condition))
 
 // Ensure active tab is valid when available tabs change
 watchEffect(() => {
