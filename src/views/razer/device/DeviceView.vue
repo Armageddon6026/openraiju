@@ -1,10 +1,5 @@
 <script setup lang="ts">
 import { useDeviceStore } from '@/stores'
-import DpiStages from './components/DpiStages.vue'
-import PollingRate from './components/PollingRate.vue'
-import DonglePairing from './components/DonglePairing.vue'
-import IdleTime from './components/IdleTime.vue'
-import BatteryThreshold from './components/BatteryThreshold.vue'
 
 const toast = useToast()
 const route = useRoute()
@@ -14,6 +9,7 @@ const deviceStore = useDeviceStore()
 const serial = ref('---')
 const firmware = ref('---')
 const activeSettingsTab = ref<number>(0)
+const visitedTabs = reactive(new Set<number>())
 
 const allTabs = [
 	{
@@ -23,14 +19,14 @@ const allTabs = [
 		condition: () => !!hasDpiControl.value || !!hasPollingControl.value,
 		contentComponents: [
 			{
-				component: DpiStages,
+				component: defineAsyncComponent(() => import('./components/DpiStages.vue')),
 				condition: () => !!hasDpiControl.value,
 				get props() {
 					return { device: hasDpiControl.value! }
 				},
 			},
 			{
-				component: PollingRate,
+				component: defineAsyncComponent(() => import('./components/PollingRate.vue')),
 				condition: () => !!hasPollingControl.value,
 				get props() {
 					return { device: hasPollingControl.value! }
@@ -57,14 +53,14 @@ const allTabs = [
 		condition: () => !!hasIdleTimeControl.value || !!hasBatteryThresholdControl.value,
 		contentComponents: [
 			{
-				component: IdleTime,
+				component: defineAsyncComponent(() => import('./components/IdleTime.vue')),
 				condition: () => !!hasIdleTimeControl.value,
 				get props() {
 					return { device: hasIdleTimeControl.value! }
 				},
 			},
 			{
-				component: BatteryThreshold,
+				component: defineAsyncComponent(() => import('./components/BatteryThreshold.vue')),
 				condition: () => !!hasBatteryThresholdControl.value,
 				get props() {
 					return { device: hasBatteryThresholdControl.value! }
@@ -91,7 +87,7 @@ const allTabs = [
 		condition: () => !!hasHyperpollingControl.value,
 		contentComponents: [
 			{
-				component: DonglePairing,
+				component: defineAsyncComponent(() => import('./components/DonglePairing.vue')),
 				condition: () => !!hasHyperpollingControl.value,
 				get props() {
 					return { device: hasHyperpollingControl.value! }
@@ -158,6 +154,14 @@ watchEffect(() => {
 		activeSettingsTab.value = visibleTabs.value[0]?.value ?? 0
 	}
 })
+
+watch(
+	activeSettingsTab,
+	(value) => {
+		visitedTabs.add(value)
+	},
+	{ immediate: true },
+)
 
 onMounted(async () => {
 	if (!currentDevice.value) {
@@ -238,21 +242,23 @@ onMounted(async () => {
 
 				<TabPanels rounded="2xl">
 					<TabPanel v-for="tab in visibleTabs" :key="tab.value" :value="tab.value">
-						<!-- 有內容配置的組件列表 -->
-						<template v-if="tab.contentComponents && tab.contentComponents.length > 0">
-							<div flex="~ col" gap="3">
-								<template v-for="(content, idx) in tab.contentComponents" :key="idx">
-									<component v-if="content.condition()" :is="content.component" v-bind="content.props" />
-								</template>
-							</div>
-						</template>
+						<template v-if="visitedTabs.has(tab.value) && activeSettingsTab === tab.value">
+							<!-- 有內容配置的組件列表 -->
+							<template v-if="tab.contentComponents && tab.contentComponents.length > 0">
+								<div flex="~ col" gap="3">
+									<template v-for="(content, idx) in tab.contentComponents" :key="idx">
+										<component v-if="content.condition()" :is="content.component" v-bind="content.props" />
+									</template>
+								</div>
+							</template>
 
-						<!-- 空狀態：coming soon -->
-						<template v-else-if="tab.emptyContent">
-							<div flex="~ col" items="center" justify="center" h="48" text="gray-500">
-								<span :i="tab.emptyContent.icon" text="3xl mb-4"></span>
-								<p>{{ tab.emptyContent.text }}</p>
-							</div>
+							<!-- 空狀態：coming soon -->
+							<template v-else-if="tab.emptyContent">
+								<div flex="~ col" items="center" justify="center" h="48" text="gray-500">
+									<span :i="tab.emptyContent.icon" text="3xl mb-4"></span>
+									<p>{{ tab.emptyContent.text }}</p>
+								</div>
+							</template>
 						</template>
 					</TabPanel>
 				</TabPanels>
