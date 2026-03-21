@@ -146,8 +146,8 @@ async function setDpi(dpi: number) {
 					v-model="dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X"
 					:max="device.config.hardware.optical_sensor.max_dpi"
 					:step="device.config.hardware.optical_sensor.dpi_step"
-					@slideend="setDpi(dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X)"
-					@click="setDpi(dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X)"
+					@slideend.stop="setDpi(dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X)"
+					@click.stop="setDpi(dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X)"
 				/>
 			</div>
 		</template>

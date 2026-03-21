@@ -72,8 +72,8 @@ async function setIdleTime() {
 					:min="1"
 					:max="15"
 					:step="1"
-					@slideend="setIdleTime"
-					@click="setIdleTime"
+					@slideend.stop="setIdleTime"
+					@click.stop="setIdleTime"
 				/>
 			</div>
 		</template>
