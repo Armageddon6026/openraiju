@@ -1,30 +1,57 @@
 <script setup lang="ts">
 import { useDeviceStore } from '@/stores'
+import { valibotResolver } from '@primevue/forms/resolvers/valibot'
+import * as v from 'valibot'
+
+type hyperpolling_device = {
+	productId: number
+	name: string
+}
 
 const { device } = defineProps<{
 	device: TypedDeviceWith<'accessory', 'pairHyperpollingDevice' | 'unpairHyperpollingDevice' | 'getPairDevices'>
 }>()
 
+type PairFormValues = {
+	product_id?: number
+}
+
 const toast = useToast()
 const deviceStore = useDeviceStore()
 const pairedDevicePid = ref<number | null>(null)
+const hyperpolling_device_list = ref<hyperpolling_device[]>([])
+const resolver = valibotResolver(
+	v.object({
+		product_id: v.pipe(v.number('Please select a device first')),
+	}),
+)
 
-async function pairDevice() {
+onMounted(async () => {
+	const res = await fetch('/razer/hyperpolling_device.json')
+	const data = await res.json()
+	hyperpolling_device_list.value = data
+})
+
+async function pairDevice({ valid, values }: { valid: boolean; values: PairFormValues }) {
+	if (!valid || !values.product_id) {
+		return
+	}
+
 	const summary = 'Pairing Device'
-	const pid = 0x00b0
 	try {
-		await device.config.pairHyperpollingDevice(device.instance, pid)
+		await device.config.pairHyperpollingDevice(device.instance, values.product_id)
+
 		toast.add({
 			severity: 'success',
-			summary: summary,
-			detail: `success`,
+			summary,
+			detail: 'success',
 			life: 3000,
 		})
 	} catch (e) {
 		toast.add({
 			severity: 'error',
-			summary: summary,
-			detail: `${e}`,
+			summary,
+			detail: String(e),
 			life: 3000,
 		})
 	}
@@ -102,14 +129,28 @@ async function connectPairedDevice() {
 	<div rounded="2xl" un-border="1 emerald-500/35" bg="#121212" overflow="hidden" p="6">
 		<div flex="~ col" gap="4">
 			<div grid="~ cols-1 md:cols-3" gap="3">
-				<Button w="full" label="Pair" icon="i-material-symbols-link" severity="success" @click="pairDevice()"></Button>
-				<Button
-					w="full"
-					label="Fetch Paired Device"
-					icon="i-material-symbols-cable"
-					severity="contrast"
-					@click="connectPairedDevice()"
-				></Button>
+				<Form
+					v-slot="$form"
+					:initial-values="{ product_id: null }"
+					:resolver="resolver"
+					w="full md:col-span-1"
+					flex="~ col"
+					gap="2"
+					@submit="pairDevice"
+				>
+					<Select
+						name="product_id"
+						:options="hyperpolling_device_list"
+						optionLabel="name"
+						optionValue="productId"
+						placeholder="Select HyperPolling Device"
+						w="full"
+					></Select>
+					<Message v-if="$form.product_id?.invalid" severity="error" size="small" variant="simple">{{
+						$form.product_id.error?.message
+					}}</Message>
+					<Button w="full" label="Pair" icon="i-material-symbols-link" severity="success" type="submit"></Button>
+				</Form>
 				<Button
 					w="full"
 					label="Unpair"

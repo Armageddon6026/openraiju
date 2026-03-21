@@ -15,10 +15,12 @@
 		"format:check": "oxfmt --check"
 	},
 	"dependencies": {
+		"@primevue/forms": "^4.5.4",
 		"pinia": "^3.0.4",
 		"primevue": "^4.5.4",
+		"valibot": "^1.3.1",
 		"vue": "^3.5.30",
-		"vue-router": "^5.0.3"
+		"vue-router": "^5.0.4"
 	},
 	"devDependencies": {
 		"@iconify-json/material-symbols": "^1.2.63",
@@ -36,7 +38,7 @@
 		"unocss": "^66.6.7",
 		"unplugin-auto-import": "^21.0.0",
 		"unplugin-vue-components": "^31.0.0",
-		"vite": "^8.0.0",
+		"vite": "^8.0.1",
 		"vite-plugin-vue-devtools": "^8.1.0",
 		"vue-tsc": "^3.2.6"
 	},
