@@ -5,18 +5,29 @@ const { device } = defineProps<{
 
 const toast = useToast()
 
-type IdleTimeSetter = (this: RazerBaseDeviceConfig, instance: HIDDevice, minutes: number) => Promise<void>
-
 const idleTimeMinutes = ref(1)
 
-const setIdleTimeFn = computed<IdleTimeSetter | undefined>(() => {
-	const candidate = (device.config as RazerBaseDeviceConfig & { setIdleTime?: IdleTimeSetter }).setIdleTime
-	return typeof candidate === 'function' ? candidate : undefined
-})
-
 async function setIdleTime() {
-	if (!setIdleTimeFn.value) {
-		return
+	if (!device.config.setIdleTime) {
+		throw new Error('Device does not support setting idle time')
+	}
+
+	const summary = 'Set Idle Time'
+	try {
+		await device.config.setIdleTime(device.instance, idleTimeMinutes.value)
+		toast.add({
+			severity: 'success',
+			summary: summary,
+			detail: `Idle time set to ${idleTimeMinutes.value} minutes`,
+			life: 3000,
+		})
+	} catch (e) {
+		toast.add({
+			severity: 'error',
+			summary: summary,
+			detail: `${e}`,
+			life: 3000,
+		})
 	}
 }
 

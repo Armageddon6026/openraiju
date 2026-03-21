@@ -181,7 +181,27 @@ export const common_command = {
 			this.hardware.wait_min,
 		)
 
+		// idle time located at args_index (total 2 bytes), unit is seconds, convert to minutes
 		return Math.round(response.getUint16(0, false) / 60)
+	},
+
+	async setIdleTime(this: RazerBaseDeviceConfig, instance: HIDDevice, minutes: number): Promise<void> {
+		const roundedMinutes = Math.round(minutes)
+		if (roundedMinutes < 1 || roundedMinutes > 15) {
+			throw new Error('Idle time must be between 1 and 15 minutes')
+		}
+
+		const setVal = roundedMinutes * 60
+		const args: number[] = []
+		let offset = 0
+		args[offset++] = (setVal >> 8) & 0xff
+		args[offset++] = setVal & 0xff
+
+		await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x03, args),
+			this.hardware.wait_min,
+		)
 	},
 }
 

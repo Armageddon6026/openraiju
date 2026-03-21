@@ -20,6 +20,7 @@ export default {
 	getBatteryLevel: common_command.getBatteryLevel,
 	getChargeState: common_command.getChargeState,
 	getIdleTime: common_command.getIdleTime,
+	setIdleTime: common_command.setIdleTime,
 	getDpiStages: mouse_command.getDpiStages,
 	setDpiStages: mouse_command.setDpiStages,
 	setActivateDpiStage: mouse_command.setActivateDpiStage,
