@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { device } = defineProps<{
-	device: RazerDevice<RazerBaseDeviceConfig>
+	device: DeviceWith<'getPollingRate' | 'setPollingRate'>
 }>()
 
 const toast = useToast()
@@ -22,9 +22,6 @@ const pollingRateOptions = computed(() => {
 })
 
 async function setPollingRate(rate: number) {
-	if (!device.config.setPollingRate) {
-		throw new Error('Device does not support setting polling rate')
-	}
 	if (!rate || pollingRate.value === rate) return
 
 	const summary = 'Set Polling Rate'
@@ -50,9 +47,7 @@ async function setPollingRate(rate: number) {
 }
 
 onMounted(async () => {
-	if (device.config.getPollingRate) {
-		pollingRate.value = await device.config.getPollingRate(device.instance)
-	}
+	pollingRate.value = await device.config.getPollingRate(device.instance)
 })
 </script>
 

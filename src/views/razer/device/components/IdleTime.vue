@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { device } = defineProps<{
-	device: RazerDevice<RazerBaseDeviceConfig>
+	device: DeviceWith<'getIdleTime' | 'setIdleTime'>
 }>()
 
 const toast = useToast()
@@ -8,17 +8,10 @@ const toast = useToast()
 const idleTimeMinutes = ref(1)
 
 onMounted(async () => {
-	if (device.config.getIdleTime) {
-		const rawIdleTime = await device.config.getIdleTime(device.instance)
-		idleTimeMinutes.value = rawIdleTime
-	}
+	idleTimeMinutes.value = await device.config.getIdleTime(device.instance)
 })
 
 async function setIdleTime() {
-	if (!device.config.setIdleTime) {
-		throw new Error('Device does not support setting idle time')
-	}
-
 	const summary = 'Set Idle Time'
 	try {
 		await device.config.setIdleTime(device.instance, idleTimeMinutes.value)

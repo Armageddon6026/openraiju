@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { device } = defineProps<{
-	device: RazerDevice<RazerDeviceConfig<'mouse'>>
+	device: TypedDeviceWith<'mouse', 'getDpiStages' | 'setDpiStages' | 'setActivateDpiStage'>
 }>()
 
 const toast = useToast()
@@ -13,15 +13,10 @@ const activeStage = computed(() => {
 })
 
 onMounted(async () => {
-	if (device.config.getDpiStages) {
-		dpiStages.value = await device.config.getDpiStages(device.instance)
-	}
+	dpiStages.value = await device.config.getDpiStages(device.instance)
 })
 
 async function setActivateDpiStage(selectStageId: number) {
-	if (!device.config.setActivateDpiStage) {
-		throw new Error('Device does not support setting DPI stages')
-	}
 	if (!dpiStages.value || dpiStages.value.ActivateID === selectStageId) {
 		return
 	}
@@ -47,9 +42,6 @@ async function setActivateDpiStage(selectStageId: number) {
 }
 
 async function setDpi(dpi: number) {
-	if (!device.config.setDpiStages) {
-		throw new Error('Device does not support setting DPI')
-	}
 	if (!dpiStages.value) {
 		return
 	}

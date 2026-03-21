@@ -82,3 +82,11 @@ declare interface RazerDeviceFeature {
 	unpairHyperpollingDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
 	getPairDevices?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number[]>
 }
+
+type DeviceWith<K extends keyof RazerDeviceFeature> = RazerDevice<
+	RazerBaseDeviceConfig & Required<Pick<RazerDeviceFeature, K>>
+>
+
+type TypedDeviceWith<T extends RazerDeviceType, K extends keyof RazerDeviceFeature> = RazerDevice<
+	RazerDeviceConfig<T> & Required<Pick<RazerDeviceFeature, K>>
+>

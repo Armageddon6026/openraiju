@@ -2,7 +2,7 @@
 import { useDeviceStore } from '@/stores'
 
 const { device } = defineProps<{
-	device: RazerDevice<RazerDeviceConfig<'accessory'>>
+	device: TypedDeviceWith<'accessory', 'pairHyperpollingDevice' | 'unpairHyperpollingDevice' | 'getPairDevices'>
 }>()
 
 const toast = useToast()
@@ -13,10 +13,6 @@ async function pairDevice() {
 	const summary = 'Pairing Device'
 	const pid = 0x00b0
 	try {
-		if (!device.config.pairHyperpollingDevice) {
-			throw new Error('not supported')
-		}
-
 		await device.config.pairHyperpollingDevice(device.instance, pid)
 		toast.add({
 			severity: 'success',
@@ -37,10 +33,6 @@ async function pairDevice() {
 async function unpairDevice() {
 	const summary = 'Unpairing Device'
 	try {
-		if (!device.config.unpairHyperpollingDevice) {
-			throw new Error('not supported')
-		}
-
 		await device.config.unpairHyperpollingDevice(device.instance, 0x00b0)
 		pairedDevicePid.value = null
 		toast.add({
@@ -62,10 +54,6 @@ async function unpairDevice() {
 async function connectPairedDevice() {
 	const summary = 'Pairing Device'
 	try {
-		if (!device.config.getPairDevices) {
-			throw new Error('not supported')
-		}
-
 		const devices = await device.config.getPairDevices(device.instance)
 		if (devices.length !== 1 || !devices[0]) {
 			throw new Error('no devices found')

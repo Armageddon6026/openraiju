@@ -1,6 +1,19 @@
 <script setup lang="ts">
 import { useDeviceStore } from '@/stores'
 
+type TabContent = {
+	component: ReturnType<typeof defineAsyncComponent>
+	props: Record<string, unknown>
+}
+
+type ResolvedTab = {
+	value: number
+	icon: string
+	label: string
+	contents: TabContent[]
+	emptyContent?: { icon: string; text: string }
+}
+
 const toast = useToast()
 const route = useRoute()
 const router = useRouter()
@@ -10,156 +23,115 @@ const serial = ref('---')
 const firmware = ref('---')
 const activeSettingsTab = ref<number>(0)
 const visitedTabs = reactive(new Set<number>())
+
 const currentDevice = computed(() => {
 	return deviceStore.getDevice(route.params.instanceId as string)
 })
 
-const performanceTab = {
-	value: 0,
-	icon: 'i-material-symbols-performance-max',
-	label: 'Performance',
-	get condition() {
-		return this.contentComponents.some((c) => c.condition())
-	},
-	contentComponents: [
-		{
-			component: defineAsyncComponent(() => import('./components/DpiStages.vue')),
-			condition: () => !!hasDpiControl.value,
-			get props() {
-				return { device: hasDpiControl.value! }
-			},
-		},
-		{
-			component: defineAsyncComponent(() => import('./components/PollingRate.vue')),
-			condition: () => !!hasPollingControl.value,
-			get props() {
-				return { device: hasPollingControl.value! }
-			},
-		},
-	],
-	emptyContent: undefined,
+// ── capability helpers ────────────────────────────────────────────
+function deviceHasFeatures<K extends keyof RazerDeviceFeature>(
+	device: RazerDevice<RazerBaseDeviceConfig> | undefined,
+	features: readonly K[],
+): device is DeviceWith<K> {
+	if (!device) return false
+	return features.every((k) => typeof (device.config as unknown as Record<string, unknown>)[k] === 'function')
 }
 
-const lightingTab = {
-	value: 1,
-	icon: 'i-material-symbols-light-mode',
-	label: 'Lighting',
-	get condition() {
-		return this.contentComponents
-	},
-	contentComponents: undefined,
-	emptyContent: {
-		icon: 'material-symbols-lightbulb-outline',
-		text: 'Lighting control feature coming soon',
-	},
+function deviceHasTypeAndFeatures<T extends RazerDeviceType, K extends keyof RazerDeviceFeature>(
+	device: RazerDevice<RazerBaseDeviceConfig> | undefined,
+	type: T,
+	features: readonly K[],
+): device is TypedDeviceWith<T, K> {
+	if (!device || device.config.ui.type !== type) return false
+	return features.every((k) => typeof (device.config as unknown as Record<string, unknown>)[k] === 'function')
 }
 
-const powerTab = {
-	value: 2,
-	icon: 'i-material-symbols-power-settings-new-rounded',
-	label: 'Power',
-	get condition() {
-		return this.contentComponents.some((c) => c.condition())
-	},
-	contentComponents: [
+function capabilityDevice<K extends keyof RazerDeviceFeature>(features: readonly K[]) {
+	return computed((): DeviceWith<K> | undefined => {
+		const d = currentDevice.value
+		return deviceHasFeatures(d, features) ? d : undefined
+	})
+}
+
+function typedCapabilityDevice<T extends RazerDeviceType, K extends keyof RazerDeviceFeature>(
+	type: T,
+	features: readonly K[],
+) {
+	return computed((): TypedDeviceWith<T, K> | undefined => {
+		const d = currentDevice.value
+		return deviceHasTypeAndFeatures(d, type, features) ? d : undefined
+	})
+}
+
+// ── capabilities ──────────────────────────────────────────────────
+const hasDpiControl = typedCapabilityDevice('mouse', ['getDpiStages', 'setDpiStages', 'setActivateDpiStage'] as const)
+
+const hasPollingControl = capabilityDevice(['getPollingRate', 'setPollingRate'] as const)
+const hasIdleTimeControl = capabilityDevice(['getIdleTime', 'setIdleTime'] as const)
+const hasBatteryThresholdControl = capabilityDevice(['getLowBatteryThreshold', 'setLowBatteryThreshold'] as const)
+
+const hasHyperpollingControl = typedCapabilityDevice('accessory', [
+	'pairHyperpollingDevice',
+	'unpairHyperpollingDevice',
+	'getPairDevices',
+] as const)
+
+// ── async components（宣告一次，不放進 computed 裡）───────────────
+const DpiStagesComp = defineAsyncComponent(() => import('./components/DpiStages.vue'))
+const PollingRateComp = defineAsyncComponent(() => import('./components/PollingRate.vue'))
+const IdleTimeComp = defineAsyncComponent(() => import('./components/IdleTime.vue'))
+const BatteryThresholdComp = defineAsyncComponent(() => import('./components/BatteryThreshold.vue'))
+const DonglePairingComp = defineAsyncComponent(() => import('./components/DonglePairing.vue'))
+
+// ── resolved tabs ─────────────────────────────────────────────────
+function resolve(
+	device: RazerDevice<RazerBaseDeviceConfig> | undefined,
+	comp: ReturnType<typeof defineAsyncComponent>,
+): TabContent | null {
+	return device != null ? { component: comp, props: { device } } : null
+}
+
+const visibleTabs = computed((): ResolvedTab[] => {
+	const tabs: ResolvedTab[] = [
 		{
-			component: defineAsyncComponent(() => import('./components/IdleTime.vue')),
-			condition: () => !!hasIdleTimeControl.value,
-			get props() {
-				return { device: hasIdleTimeControl.value! }
-			},
+			value: 0,
+			icon: 'i-material-symbols-performance-max',
+			label: 'Performance',
+			contents: [resolve(hasDpiControl.value, DpiStagesComp), resolve(hasPollingControl.value, PollingRateComp)].filter(
+				Boolean,
+			) as TabContent[],
 		},
 		{
-			component: defineAsyncComponent(() => import('./components/BatteryThreshold.vue')),
-			condition: () => !!hasBatteryThresholdControl.value,
-			get props() {
-				return { device: hasBatteryThresholdControl.value! }
-			},
+			value: 1,
+			icon: 'i-material-symbols-light-mode',
+			label: 'Lighting',
+			contents: [],
 		},
-	],
-	emptyContent: undefined,
-}
-
-const calibrationTab = {
-	value: 3,
-	icon: 'i-material-symbols-settings-input-component-outline-rounded',
-	label: 'Calibration',
-	get condition() {
-		return this.contentComponents
-	},
-	contentComponents: undefined,
-	emptyContent: {
-		icon: 'material-symbols-settings-input-component',
-		text: 'Calibration tools coming soon',
-	},
-}
-
-const pairingTab = {
-	value: 4,
-	icon: 'i-material-symbols-add-link-rounded',
-	label: 'Pairing',
-	get condition() {
-		return this.contentComponents.some((c) => c.condition())
-	},
-	contentComponents: [
 		{
-			component: defineAsyncComponent(() => import('./components/DonglePairing.vue')),
-			condition: () => !!hasHyperpollingControl.value,
-			get props() {
-				return { device: hasHyperpollingControl.value! }
-			},
+			value: 2,
+			icon: 'i-material-symbols-power-settings-new-rounded',
+			label: 'Power',
+			contents: [
+				resolve(hasIdleTimeControl.value, IdleTimeComp),
+				resolve(hasBatteryThresholdControl.value, BatteryThresholdComp),
+			].filter(Boolean) as TabContent[],
 		},
-	],
-	emptyContent: undefined,
-}
+		{
+			value: 3,
+			icon: 'i-material-symbols-settings-input-component-outline-rounded',
+			label: 'Calibration',
+			contents: [],
+		},
+		{
+			value: 4,
+			icon: 'i-material-symbols-add-link-rounded',
+			label: 'Pairing',
+			contents: [resolve(hasHyperpollingControl.value, DonglePairingComp)].filter(Boolean) as TabContent[],
+		},
+	]
 
-const allTabs = [performanceTab, lightingTab, powerTab, calibrationTab, pairingTab]
-
-const hasDpiControl = computed(() => {
-	if (
-		currentDevice.value &&
-		currentDevice.value.config.getDpiStages &&
-		currentDevice.value.config.ui.type === 'mouse'
-	) {
-		return currentDevice.value as RazerDevice<RazerDeviceConfig<'mouse'>>
-	}
+	return tabs.filter((t) => t.contents.length > 0 || t.emptyContent)
 })
-
-const hasPollingControl = computed(() => {
-	if (!currentDevice.value || !currentDevice.value.config.getPollingRate) {
-		return undefined
-	}
-
-	return currentDevice.value
-})
-
-const hasIdleTimeControl = computed(() => {
-	if (!currentDevice.value || !currentDevice.value.config.getIdleTime) {
-		return undefined
-	}
-
-	return currentDevice.value
-})
-
-const hasBatteryThresholdControl = computed(() => {
-	if (!currentDevice.value || !currentDevice.value.config.getLowBatteryThreshold) {
-		return undefined
-	}
-
-	return currentDevice.value
-})
-
-const hasHyperpollingControl = computed(() => {
-	if (
-		currentDevice.value &&
-		currentDevice.value.config.pairHyperpollingDevice &&
-		currentDevice.value.config.ui.type === 'accessory'
-	) {
-		return currentDevice.value as RazerDevice<RazerDeviceConfig<'accessory'>>
-	}
-})
-
-const visibleTabs = computed(() => allTabs.filter((tab) => tab.condition))
 
 // Ensure active tab is valid when available tabs change
 watchEffect(() => {
@@ -257,19 +229,14 @@ onMounted(async () => {
 					<TabPanel v-for="tab in visibleTabs" :key="tab.value" :value="tab.value">
 						<template v-if="visitedTabs.has(tab.value) && activeSettingsTab === tab.value">
 							<!-- 有內容配置的組件列表 -->
-							<template v-if="tab.contentComponents && tab.contentComponents.length > 0">
+							<template v-if="tab.contents.length > 0">
 								<div flex="~ col" gap="3">
-									<template v-for="(content, idx) in tab.contentComponents" :key="idx">
-										<component v-if="content.condition()" :is="content.component" v-bind="content.props" />
-									</template>
-								</div>
-							</template>
-
-							<!-- 空狀態：coming soon -->
-							<template v-else-if="tab.emptyContent">
-								<div flex="~ col" items="center" justify="center" h="48" text="gray-500">
-									<span :i="tab.emptyContent.icon" text="3xl mb-4"></span>
-									<p>{{ tab.emptyContent.text }}</p>
+									<component
+										v-for="(content, idx) in tab.contents"
+										:key="idx"
+										:is="content.component"
+										v-bind="content.props"
+									/>
 								</div>
 							</template>
 						</template>

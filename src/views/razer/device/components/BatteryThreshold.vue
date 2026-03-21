@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { device } = defineProps<{
-	device: RazerDevice<RazerBaseDeviceConfig>
+	device: DeviceWith<'getLowBatteryThreshold' | 'setLowBatteryThreshold'>
 }>()
 
 const toast = useToast()
@@ -8,17 +8,10 @@ const toast = useToast()
 const lowBatteryThreshold = ref(5)
 
 onMounted(async () => {
-	if (device.config.getLowBatteryThreshold) {
-		const rawLowBatteryThreshold = await device.config.getLowBatteryThreshold(device.instance)
-		lowBatteryThreshold.value = rawLowBatteryThreshold
-	}
+	lowBatteryThreshold.value = await device.config.getLowBatteryThreshold(device.instance)
 })
 
 async function setLowBatteryThreshold() {
-	if (!device.config.setLowBatteryThreshold) {
-		throw new Error('Device does not support setting low battery threshold')
-	}
-
 	const summary = 'Set Low Battery Threshold'
 	try {
 		await device.config.setLowBatteryThreshold(device.instance, lowBatteryThreshold.value)
