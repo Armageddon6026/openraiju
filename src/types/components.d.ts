@@ -25,6 +25,7 @@ declare module 'vue' {
     Image: typeof import('primevue/image')['default']
     Message: typeof import('primevue/message')['default']
     PollingRate: typeof import('./../views/razer/device/components/PollingRate.vue')['default']
+    ProgressBar: typeof import('primevue/progressbar')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Select: typeof import('primevue/select')['default']

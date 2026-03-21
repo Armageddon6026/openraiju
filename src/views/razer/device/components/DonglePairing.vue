@@ -20,6 +20,7 @@ const toast = useToast()
 const deviceStore = useDeviceStore()
 const pairedDevicePid = ref<number | null>(null)
 const hyperpolling_device_list = ref<hyperpolling_device[]>([])
+const isConnecting = ref(false)
 const resolver = valibotResolver(
 	v.object({
 		product_id: v.pipe(v.number('Please select a device first')),
@@ -47,7 +48,14 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 			detail: 'success',
 			life: 3000,
 		})
+
+		// 等待3秒後自動連接，同時顯示進度條
+		isConnecting.value = true
+		setTimeout(() => {
+			connectWithRetry()
+		}, 3000)
 	} catch (e) {
+		isConnecting.value = false
 		toast.add({
 			severity: 'error',
 			summary,
@@ -121,6 +129,30 @@ async function connectPairedDevice() {
 			detail: `${e}`,
 			life: 3000,
 		})
+		throw e
+	}
+}
+
+async function connectWithRetry() {
+	const maxRetryTime = 10000
+	const retryInterval = 1000
+	const startTime = Date.now()
+
+	while (Date.now() - startTime < maxRetryTime) {
+		try {
+			await connectPairedDevice()
+			isConnecting.value = false
+			return
+		} catch (e) {
+			const elapsed = Date.now() - startTime
+			if (elapsed >= maxRetryTime) {
+				isConnecting.value = false
+				console.error('Failed to connect paired device after 10 seconds')
+				break
+			}
+			// 等待後重試
+			await new Promise((resolve) => setTimeout(resolve, retryInterval))
+		}
 	}
 }
 </script>
@@ -128,6 +160,8 @@ async function connectPairedDevice() {
 <template>
 	<div rounded="2xl" un-border="1 emerald-500/35" bg="#121212" overflow="hidden" p="6">
 		<div flex="~ col" gap="4">
+			<ProgressBar v-if="isConnecting" mode="indeterminate" style="height: 6px"></ProgressBar>
+
 			<div grid="~ cols-1 md:cols-3" gap="3">
 				<Form
 					v-slot="$form"
@@ -145,17 +179,26 @@ async function connectPairedDevice() {
 						optionValue="productId"
 						placeholder="Select HyperPolling Device"
 						w="full"
+						:disabled="isConnecting"
 					></Select>
 					<Message v-if="$form.product_id?.invalid" severity="error" size="small" variant="simple">{{
 						$form.product_id.error?.message
 					}}</Message>
-					<Button w="full" label="Pair" icon="i-material-symbols-link" severity="success" type="submit"></Button>
+					<Button
+						w="full"
+						label="Pair"
+						icon="i-material-symbols-link"
+						severity="success"
+						type="submit"
+						:disabled="isConnecting"
+					></Button>
 				</Form>
 				<Button
 					w="full"
 					label="Unpair"
 					icon="i-material-symbols-link-off"
 					severity="danger"
+					:disabled="isConnecting"
 					@click="unpairDevice()"
 				></Button>
 			</div>
