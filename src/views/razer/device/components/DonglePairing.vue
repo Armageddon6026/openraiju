@@ -102,22 +102,16 @@ async function connectPairedDevice() {
 	<div rounded="2xl" un-border="1 emerald-500/35" bg="#121212" overflow="hidden" p="6">
 		<div flex="~ col" gap="4">
 			<div grid="~ cols-1 md:cols-3" gap="3">
+				<Button w="full" label="Pair" icon="i-material-symbols-link" severity="success" @click="pairDevice()"></Button>
 				<Button
-					class="w-full"
-					label="Pair"
-					icon="i-material-symbols-link"
-					severity="success"
-					@click="pairDevice()"
-				></Button>
-				<Button
-					class="w-full"
+					w="full"
 					label="Fetch Paired Device"
 					icon="i-material-symbols-cable"
 					severity="contrast"
 					@click="connectPairedDevice()"
 				></Button>
 				<Button
-					class="w-full"
+					w="full"
 					label="Unpair"
 					icon="i-material-symbols-link-off"
 					severity="danger"

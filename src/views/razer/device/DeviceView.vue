@@ -65,7 +65,7 @@ const visibleTabs = computed((): ResolvedTab[] => {
 			value: 0,
 			icon: 'i-material-symbols-performance-max',
 			label: 'Performance',
-			contents: [resolve(hasDpiControl.value, DpiStagesComp), resolve(hasPollingControl.value, PollingRateComp)].filter(
+			contents: [resolve(DpiStagesComp, hasDpiControl.value), resolve(PollingRateComp, hasPollingControl.value)].filter(
 				Boolean,
 			) as TabContent[],
 		},
@@ -80,8 +80,8 @@ const visibleTabs = computed((): ResolvedTab[] => {
 			icon: 'i-material-symbols-power-settings-new-rounded',
 			label: 'Power',
 			contents: [
-				resolve(hasIdleTimeControl.value, IdleTimeComp),
-				resolve(hasBatteryThresholdControl.value, BatteryThresholdComp),
+				resolve(IdleTimeComp, hasIdleTimeControl.value),
+				resolve(BatteryThresholdComp, hasBatteryThresholdControl.value),
 			].filter(Boolean) as TabContent[],
 		},
 		{
@@ -94,7 +94,7 @@ const visibleTabs = computed((): ResolvedTab[] => {
 			value: 4,
 			icon: 'i-material-symbols-add-link-rounded',
 			label: 'Pairing',
-			contents: [resolve(hasHyperpollingControl.value, DonglePairingComp)].filter(Boolean) as TabContent[],
+			contents: [resolve(DonglePairingComp, hasHyperpollingControl.value)].filter(Boolean) as TabContent[],
 		},
 	]
 
@@ -131,8 +131,8 @@ onMounted(async () => {
 
 // ── resolved tabs ─────────────────────────────────────────────────
 function resolve(
-	device: RazerDevice<RazerBaseDeviceConfig> | undefined,
 	comp: ReturnType<typeof defineAsyncComponent>,
+	device: RazerDevice<RazerBaseDeviceConfig> | undefined,
 ): TabContent | null {
 	return device != null ? { component: comp, props: { device } } : null
 }

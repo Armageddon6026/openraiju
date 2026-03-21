@@ -1,8 +1,8 @@
 <script setup lang="ts"></script>
 
 <template>
-	<aside class="w-18 bg-[#0f0f0f] border-r border-[#222] flex flex-col items-center py-6 gap-4">
-		<div class="w-10 h-10 flex items-center justify-center text-white" i="commons-ophiophagus"></div>
+	<aside w="18" bg="[#0f0f0f]" un-border="r [#222]" flex="~ col" items="center" py="6" gap="4">
+		<div w="10" h="10" flex="~" items="center" justify="center" text="white" i="commons-ophiophagus"></div>
 
 		<nav flex="~ 1 col" gap="4" p="3">
 			<Button as="router-link" to="/razer" icon="i-brands-razer" variant="outlined"> </Button>
