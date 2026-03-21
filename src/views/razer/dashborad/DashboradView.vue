@@ -21,13 +21,16 @@ onMounted(async () => {
 	if (!deviceStore.hasDevices) await getHidDevices()
 })
 
+// Razer always use the usage page 0x0001, usage 0x0002 and collections length 1 for their devices, so we can filter the devices by this.
 async function connectDevice() {
 	const summary = 'hid device connect'
 
 	try {
-		const instances = await navigator.hid.requestDevice({
-			filters: razer_support_list.value,
-		})
+		const instances = (
+			await navigator.hid.requestDevice({
+				filters: razer_support_list.value,
+			})
+		).filter((d) => d.collections.length == 1)
 
 		for (const instance of instances) {
 			const deviceConf = await deviceStore.getConfig(instance.productId)
@@ -56,6 +59,7 @@ async function connectDevice() {
 }
 
 async function getHidDevices() {
+	// getDevices only need to filter by collections length, because we have already filtered the devices by usage page and usage in the requestDevice.
 	const instances = (await navigator.hid.getDevices()).filter((d) => d.collections.length == 1)
 
 	instances.forEach(async (instance) => {

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useDeviceStore } from '@/stores'
-import { useDeviceTabs } from '@/views/razer/device/composables/useDeviceTabs'
 import DpiStages from './components/DpiStages.vue'
 import PollingRate from './components/PollingRate.vue'
 import DonglePairing from './components/DonglePairing.vue'
@@ -13,6 +12,81 @@ const deviceStore = useDeviceStore()
 const serial = ref('---')
 const firmware = ref('---')
 const activeSettingsTab = ref<number>(0)
+
+const allTabs = [
+	{
+		value: 0,
+		icon: 'i-material-symbols-performance-max',
+		label: 'Performance',
+		condition: () => !!hasDpiControl.value || !!hasPollingControl.value,
+		contentComponents: [
+			{
+				component: DpiStages,
+				condition: () => !!hasDpiControl.value,
+				get props() {
+					return { device: hasDpiControl.value! }
+				},
+			},
+			{
+				component: PollingRate,
+				condition: () => !!hasPollingControl.value,
+				get props() {
+					return { device: hasPollingControl.value! }
+				},
+			},
+		],
+		emptyContent: undefined,
+	},
+	{
+		value: 1,
+		icon: 'i-material-symbols-light-mode',
+		label: 'Lighting',
+		condition: () => false,
+		contentComponents: undefined,
+		emptyContent: {
+			icon: 'material-symbols-lightbulb-outline',
+			text: 'Lighting control feature coming soon',
+		},
+	},
+	{
+		value: 2,
+		icon: 'i-material-symbols-power-settings-new-rounded',
+		label: 'Power',
+		condition: () => false,
+		contentComponents: undefined,
+		emptyContent: {
+			icon: 'material-symbols-battery-charging-20',
+			text: 'Power management feature coming soon',
+		},
+	},
+	{
+		value: 3,
+		icon: 'i-material-symbols-settings-input-component-outline-rounded',
+		label: 'Calibration',
+		condition: () => false,
+		contentComponents: undefined,
+		emptyContent: {
+			icon: 'material-symbols-settings-input-component',
+			text: 'Calibration tools coming soon',
+		},
+	},
+	{
+		value: 4,
+		icon: 'i-material-symbols-add-link-rounded',
+		label: 'Pairing',
+		condition: () => !!hasHyperpollingControl.value,
+		contentComponents: [
+			{
+				component: DonglePairing,
+				condition: () => !!hasHyperpollingControl.value,
+				get props() {
+					return { device: hasHyperpollingControl.value! }
+				},
+			},
+		],
+		emptyContent: undefined,
+	},
+] as const
 
 const currentDevice = computed(() => {
 	return deviceStore.getDevice(route.params.instanceId as string)
@@ -53,35 +127,7 @@ const hasHyperpollingControl = computed(() => {
 	}
 })
 
-const tabContents = {
-	0: [
-		{
-			component: DpiStages,
-			condition: () => !!hasDpiControl.value,
-			get props() {
-				return { device: hasDpiControl.value }
-			},
-		},
-		{
-			component: PollingRate,
-			condition: () => !!hasPollingControl.value,
-			get props() {
-				return { device: hasPollingControl.value }
-			},
-		},
-	],
-	4: [
-		{
-			component: DonglePairing,
-			condition: () => !!hasHyperpollingControl.value,
-			get props() {
-				return { device: hasHyperpollingControl.value }
-			},
-		},
-	],
-} as const
-
-const { visibleTabs } = useDeviceTabs(hasDpiControl, hasPollingControl, hasHyperpollingControl, tabContents)
+const visibleTabs = computed(() => allTabs.filter((tab) => tab.condition()))
 
 // Ensure active tab is valid when available tabs change
 watchEffect(() => {
