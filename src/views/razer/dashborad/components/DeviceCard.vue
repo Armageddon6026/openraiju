@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { test } from '@/driver/razer/command'
-
 const { device } = defineProps<{ device: RazerDevice }>()
 const emits = defineEmits<{
 	disconnect: [productId: number]

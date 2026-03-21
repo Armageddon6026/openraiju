@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { device } = defineProps<{
-	device: RazerDevice<RazerDeviceConfig<'mouse'>> | RazerDevice<RazerDeviceConfig<'keyboard'>>
+	device: RazerDevice<RazerBaseDeviceConfig>
 }>()
 
 const toast = useToast()
@@ -11,7 +11,8 @@ const pollingRateOptions = computed(() => {
 	if (!device.config.hardware) {
 		return []
 	}
-	const maxPollingRate = device.config.hardware.hyper_polling ? 8000 : 1000
+
+	const maxPollingRate = 'hyper_polling' in device.config.hardware && device.config.hardware.hyper_polling ? 8000 : 1000
 	const rates = []
 	for (let rate = 125; rate <= maxPollingRate; rate *= 2) {
 		if (rate === 250) continue // Skip 250 Hz

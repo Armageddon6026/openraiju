@@ -105,34 +105,7 @@ export function buildRazerReport(
 	return data
 }
 
-function getRazerReportStatus(status: number): string {
-	switch (status) {
-		case razer_report_status.new_command:
-			return 'New Command'
-		case razer_report_status.command_busy:
-			return 'Command Busy'
-		case razer_report_status.command_successful:
-			return 'Command Successful'
-		case razer_report_status.command_failure:
-			return 'Command Failure'
-		case razer_report_status.command_timeout:
-			return 'Command Timeout'
-		case razer_report_status.command_not_supported:
-			return 'Command Not Supported'
-		default:
-			return 'Unknown Status'
-	}
-}
-
-function calculateCRC(data: Uint8Array<ArrayBuffer>) {
-	let crc = 0
-	for (let i = razer_report_type.remaining_packets_msb_index; i < razer_report_type.crc_index; i++) {
-		crc ^= data[i]!
-	}
-	return crc
-}
-
-export async function test(
+export async function razerTestCommand(
 	device: RazerDevice,
 	data_size: number,
 	command_class: number,
@@ -208,6 +181,35 @@ export const common_command = {
 			this.hardware.wait_min,
 		)
 
-		return response.getUint16(0, false)
+		return Math.round(response.getUint16(0, false) / 60)
 	},
+}
+
+// Private helper functions --
+
+function calculateCRC(data: Uint8Array<ArrayBuffer>) {
+	let crc = 0
+	for (let i = razer_report_type.remaining_packets_msb_index; i < razer_report_type.crc_index; i++) {
+		crc ^= data[i]!
+	}
+	return crc
+}
+
+function getRazerReportStatus(status: number): string {
+	switch (status) {
+		case razer_report_status.new_command:
+			return 'New Command'
+		case razer_report_status.command_busy:
+			return 'Command Busy'
+		case razer_report_status.command_successful:
+			return 'Command Successful'
+		case razer_report_status.command_failure:
+			return 'Command Failure'
+		case razer_report_status.command_timeout:
+			return 'Command Timeout'
+		case razer_report_status.command_not_supported:
+			return 'Command Not Supported'
+		default:
+			return 'Unknown Status'
+	}
 }

@@ -3,6 +3,7 @@ import { useDeviceStore } from '@/stores'
 import DpiStages from './components/DpiStages.vue'
 import PollingRate from './components/PollingRate.vue'
 import DonglePairing from './components/DonglePairing.vue'
+import IdleTime from './components/IdleTime.vue'
 
 const toast = useToast()
 const route = useRoute()
@@ -52,12 +53,17 @@ const allTabs = [
 		value: 2,
 		icon: 'i-material-symbols-power-settings-new-rounded',
 		label: 'Power',
-		condition: () => false,
-		contentComponents: undefined,
-		emptyContent: {
-			icon: 'material-symbols-battery-charging-20',
-			text: 'Power management feature coming soon',
-		},
+		condition: () => !!hasIdleTimeControl.value,
+		contentComponents: [
+			{
+				component: IdleTime,
+				condition: () => !!hasIdleTimeControl.value,
+				get props() {
+					return { device: hasIdleTimeControl.value! }
+				},
+			},
+		],
+		emptyContent: undefined,
 	},
 	{
 		value: 3,
@@ -107,14 +113,15 @@ const hasPollingControl = computed(() => {
 		return undefined
 	}
 
-	switch (currentDevice.value.config.ui.type) {
-		case 'mouse':
-			return currentDevice.value as RazerDevice<RazerDeviceConfig<'mouse'>>
-		case 'keyboard':
-			return currentDevice.value as RazerDevice<RazerDeviceConfig<'keyboard'>>
-		default:
-			return undefined
+	return currentDevice.value
+})
+
+const hasIdleTimeControl = computed(() => {
+	if (!currentDevice.value || !currentDevice.value.config.getIdleTime) {
+		return undefined
 	}
+
+	return currentDevice.value
 })
 
 const hasHyperpollingControl = computed(() => {

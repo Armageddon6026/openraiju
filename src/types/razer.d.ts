@@ -69,12 +69,12 @@ declare interface RazerDeviceFeature {
 	// option
 	getBatteryLevel?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	getChargeState?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<boolean>
-	getDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<DpiStagesInfo>
-	setDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice, dpi: DpiStagesInfo) => Promise<void>
+	getIdleTime?: (this: RazerBaseDeviceConfig, instance: HIDDevice) => Promise<number>
+	getDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<RazerDpiStageInfo>
+	setDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice, dpi: RazerDpiStageInfo) => Promise<void>
 	setActivateDpiStage?: (this: RazerDeviceConfig, instance: HIDDevice, stageId: number) => Promise<void>
 	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	setPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) => Promise<void>
-	getTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	pairHyperpollingDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
 	unpairHyperpollingDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
 	getPairDevices?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number[]>

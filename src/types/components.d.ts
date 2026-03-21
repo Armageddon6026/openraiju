@@ -18,6 +18,7 @@ declare module 'vue' {
     DeviceCard: typeof import('./../views/razer/dashborad/components/DeviceCard.vue')['default']
     DonglePairing: typeof import('./../views/razer/device/components/DonglePairing.vue')['default']
     DpiStages: typeof import('./../views/razer/device/components/DpiStages.vue')['default']
+    IdleTime: typeof import('./../views/razer/device/components/IdleTime.vue')['default']
     Image: typeof import('primevue/image')['default']
     PollingRate: typeof import('./../views/razer/device/components/PollingRate.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

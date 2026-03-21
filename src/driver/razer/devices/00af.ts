@@ -19,10 +19,10 @@ export default {
 	getFirmware: common_command.getFirmware,
 	getBatteryLevel: common_command.getBatteryLevel,
 	getChargeState: common_command.getChargeState,
+	getIdleTime: common_command.getIdleTime,
 	getDpiStages: mouse_command.getDpiStages,
 	setDpiStages: mouse_command.setDpiStages,
 	setActivateDpiStage: mouse_command.setActivateDpiStage,
 	getPollingRate: mouse_command.getPollingRate,
 	setPollingRate: mouse_command.setPollingRate,
-	getTrackingStep: mouse_command.getTrackingStep,
 } as const satisfies RazerDeviceConfig<'mouse'>
