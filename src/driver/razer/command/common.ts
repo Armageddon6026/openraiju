@@ -174,6 +174,17 @@ export const common_command = {
 		return response.getUint8(1) === 1
 	},
 
+	async getLowBatteryThreshold(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<number> {
+		const response = await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x01, 0x07, 0x81),
+			this.hardware.wait_min,
+		)
+
+		// Same as battery level response format
+		return Math.round((response.getUint8(0) / 255) * 100)
+	},
+
 	async getIdleTime(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<number> {
 		const response = await sendCommand(
 			instance,

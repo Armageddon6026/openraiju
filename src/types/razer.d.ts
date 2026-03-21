@@ -69,6 +69,7 @@ declare interface RazerDeviceFeature {
 	// option
 	getBatteryLevel?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	getChargeState?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<boolean>
+	getLowBatteryThreshold?: (this: RazerBaseDeviceConfig, instance: HIDDevice) => Promise<number>
 	getIdleTime?: (this: RazerBaseDeviceConfig, instance: HIDDevice) => Promise<number>
 	setIdleTime?: (this: RazerBaseDeviceConfig, instance: HIDDevice, minutes: number) => Promise<void>
 	getDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<RazerDpiStageInfo>

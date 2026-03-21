@@ -4,6 +4,7 @@ import DpiStages from './components/DpiStages.vue'
 import PollingRate from './components/PollingRate.vue'
 import DonglePairing from './components/DonglePairing.vue'
 import IdleTime from './components/IdleTime.vue'
+import BatteryThreshold from './components/BatteryThreshold.vue'
 
 const toast = useToast()
 const route = useRoute()
@@ -53,13 +54,20 @@ const allTabs = [
 		value: 2,
 		icon: 'i-material-symbols-power-settings-new-rounded',
 		label: 'Power',
-		condition: () => !!hasIdleTimeControl.value,
+		condition: () => !!hasIdleTimeControl.value || !!hasBatteryThresholdControl.value,
 		contentComponents: [
 			{
 				component: IdleTime,
 				condition: () => !!hasIdleTimeControl.value,
 				get props() {
 					return { device: hasIdleTimeControl.value! }
+				},
+			},
+			{
+				component: BatteryThreshold,
+				condition: () => !!hasBatteryThresholdControl.value,
+				get props() {
+					return { device: hasBatteryThresholdControl.value! }
 				},
 			},
 		],
@@ -118,6 +126,14 @@ const hasPollingControl = computed(() => {
 
 const hasIdleTimeControl = computed(() => {
 	if (!currentDevice.value || !currentDevice.value.config.getIdleTime) {
+		return undefined
+	}
+
+	return currentDevice.value
+})
+
+const hasBatteryThresholdControl = computed(() => {
+	if (!currentDevice.value || !currentDevice.value.config.getLowBatteryThreshold) {
 		return undefined
 	}
 

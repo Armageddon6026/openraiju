@@ -7,6 +7,13 @@ const toast = useToast()
 
 const idleTimeMinutes = ref(1)
 
+onMounted(async () => {
+	if (device.config.getIdleTime) {
+		const rawIdleTime = await device.config.getIdleTime(device.instance)
+		idleTimeMinutes.value = rawIdleTime
+	}
+})
+
 async function setIdleTime() {
 	if (!device.config.setIdleTime) {
 		throw new Error('Device does not support setting idle time')
@@ -30,13 +37,6 @@ async function setIdleTime() {
 		})
 	}
 }
-
-onMounted(async () => {
-	if (device.config.getIdleTime) {
-		const rawIdleTime = await device.config.getIdleTime(device.instance)
-		idleTimeMinutes.value = rawIdleTime
-	}
-})
 </script>
 
 <template>
@@ -45,7 +45,7 @@ onMounted(async () => {
 			<div flex="~" items="center" justify="between">
 				<div>
 					<label block="~" text="xs gray-400" m="b1" font="semibold" uppercase="~">Power</label>
-					<h3 text="xl emerald-50" font="bold">Idle Time</h3>
+					<h3 text="xl emerald-50" font="bold">Wireless Idle Time</h3>
 				</div>
 				<div rounded="lg" p="x3 y2" bg="emerald-500/10" un-border="1 emerald-500/30" text="right">
 					<p text="xs emerald-200/85">Current</p>
