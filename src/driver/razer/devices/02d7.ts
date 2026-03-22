@@ -10,7 +10,9 @@ export default {
 	hardware: {
 		transaction_id: 0x80,
 		wait_min: 31,
-		hyper_polling: false,
+		max_polling_rate: {
+			native: 1000,
+		},
 	},
 	getSerial: common_command.getSerial,
 	getFirmware: common_command.getFirmware,

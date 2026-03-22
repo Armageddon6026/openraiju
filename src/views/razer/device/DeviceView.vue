@@ -54,9 +54,9 @@ const hasBatteryThresholdControl = useCapabilityDevice(currentDevice.value, [
 // Pairing - Hyperpolling Dongle
 const DonglePairingComp = defineAsyncComponent(() => import('./components/DonglePairing.vue'))
 const hasHyperpollingControl = useCapabilityDevice(currentDevice.value, [
-	'pairHyperpollingDevice',
-	'unpairHyperpollingDevice',
-	'getPairDevices',
+	'pairDevice',
+	'unpairDevice',
+	'getPairedDevices',
 ] as const)
 
 const visibleTabs = computed((): ResolvedTab[] => {

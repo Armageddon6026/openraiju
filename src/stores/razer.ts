@@ -31,6 +31,38 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		const id = `${RAZER_VENDOR_ID}-${device.config.productId}-${sn}`
 
 		devicesMap.value.set(id, device)
+
+		// check for paired sub devices
+		if (!device.config.getPairedDevices) {
+			return
+		}
+		const pids = await device.config.getPairedDevices(device.instance)
+		for (const pid of pids) {
+			if (pid === device.config.productId) {
+				continue
+			}
+
+			try {
+				const pairConf = await getConfig(pid)
+				if (!pairConf) {
+					continue
+				}
+
+				const pairSn = await pairConf.getSerial(device.instance)
+				if (!pairSn) {
+					throw new Error('No serial number found')
+				}
+
+				const pairId = `${RAZER_VENDOR_ID}-${pid}-${pairSn}`
+				devicesMap.value.set(pairId, {
+					instance: device.instance,
+					config: pairConf,
+				})
+			} catch (e) {
+				console.warn(`Failed to add paired device with PID ${pid}:`, e)
+				continue
+			}
+		}
 	}
 
 	function removeDevice(instanceId: string) {

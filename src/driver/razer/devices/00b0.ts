@@ -8,7 +8,14 @@ export default {
 		...RAZER_COBRA_PRO_WIRED.ui,
 		name: 'Razer Cobra Pro Wireless',
 	},
-	pairHyperpollingDevice: accessory_command.pairHyperpollingDevice,
-	unpairHyperpollingDevice: accessory_command.unpairHyperpollingDevice,
-	getPairDevices: accessory_command.getPairDevices,
+	hardware: {
+		...RAZER_COBRA_PRO_WIRED.hardware,
+		max_polling_rate: {
+			native: 1000,
+			hyper: 8000,
+		},
+	},
+	pairDevice: accessory_command.pairDevice,
+	unpairDevice: accessory_command.unpairDevice,
+	getPairedDevices: accessory_command.getPairedDevices,
 } as const satisfies RazerDeviceConfig<'mouse'>

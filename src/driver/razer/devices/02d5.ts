@@ -8,5 +8,9 @@ export default {
 	},
 	hardware: {
 		...RAZER_BLACKWIDOW_V4_TKL_HYPERSPEED_WIRED.hardware,
+		max_polling_rate: {
+			native: 1000,
+			hyper: 4000,
+		},
 	},
 } as const satisfies RazerDeviceConfig<'keyboard'>

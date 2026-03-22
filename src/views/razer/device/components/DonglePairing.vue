@@ -9,7 +9,7 @@ type hyperpolling_device = {
 }
 
 const { device } = defineProps<{
-	device: DeviceWith<'pairHyperpollingDevice' | 'unpairHyperpollingDevice' | 'getPairDevices'>
+	device: DeviceWith<'pairDevice' | 'unpairDevice' | 'getPairedDevices'>
 }>()
 
 type PairFormValues = {
@@ -40,7 +40,11 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 
 	const summary = 'Pairing Device'
 	try {
-		await device.config.pairHyperpollingDevice(device.instance, values.product_id)
+		const pairConfig = await deviceStore.getConfig(values.product_id)
+		if (!pairConfig) {
+			throw new Error('device config not found')
+		}
+		await device.config.pairDevice(device.instance, pairConfig.hardware.transaction_id, values.product_id)
 
 		toast.add({
 			severity: 'success',
@@ -78,7 +82,7 @@ async function unpairDevice() {
 
 	const summary = 'Unpairing Device'
 	try {
-		await device.config.unpairHyperpollingDevice(device.instance, pairedDevicePid.value)
+		await device.config.unpairDevice(device.instance, pairedDevicePid.value)
 		pairedDevicePid.value = null
 		toast.add({
 			severity: 'success',
@@ -99,7 +103,7 @@ async function unpairDevice() {
 async function connectPairedDevice() {
 	const summary = 'Pairing Device'
 	try {
-		const devices = await device.config.getPairDevices(device.instance)
+		const devices = await device.config.getPairedDevices(device.instance)
 		console.log('Paired devices:', devices)
 		if (devices.length < 1 || !devices[devices.length - 1]) {
 			throw new Error('no devices found')

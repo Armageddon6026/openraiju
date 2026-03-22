@@ -13,8 +13,9 @@ export default {
 		wait_min: 31,
 		max_dpi_stages: 5,
 		optical_sensor: RAZER_OPTICAL_SENSORS.focus_pro_30K,
-		hyper_polling: false,
-		transaction_device_id: 0x80,
+		max_polling_rate: {
+			native: 1000,
+		},
 	},
 	getSerial: common_command.getSerial,
 	getFirmware: common_command.getFirmware,

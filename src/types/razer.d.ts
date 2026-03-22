@@ -26,15 +26,18 @@ declare interface RazerBaseDeviceConfig extends RazerDeviceFeature {
 
 type RazerHardwareMap = {
 	keyboard: {
-		hyper_polling: boolean // Indicates whether the device supports 8K polling rate.
+		max_polling_rate?: {
+			native: number
+			hyper?: number // Indicates whether the device supports 8K polling rate.
+		}
 	}
 	mouse: {
 		max_dpi_stages: number
+		max_polling_rate: {
+			native: number
+			hyper?: number
+		}
 		optical_sensor: RazerOpticalSensor
-		hyper_polling: boolean
-	}
-	accessory: {
-		nonce: number
 	}
 }
 
@@ -84,9 +87,14 @@ declare interface RazerDeviceFeature {
 	setActivateDpiStage?: (this: RazerDeviceConfig, instance: HIDDevice, stageId: number) => Promise<void>
 	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	setPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) => Promise<void>
-	pairHyperpollingDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
-	unpairHyperpollingDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
-	getPairDevices?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number[]>
+	pairDevice?: (
+		this: RazerDeviceConfig,
+		instance: HIDDevice,
+		device_transaction_id: number,
+		pid: number,
+	) => Promise<void>
+	unpairDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
+	getPairedDevices?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number[]>
 }
 
 type DeviceWith<K extends keyof RazerDeviceFeature> = RazerDevice<

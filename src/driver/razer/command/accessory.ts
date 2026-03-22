@@ -1,11 +1,16 @@
 import { buildRazerReport, sendCommand } from './common'
 
 export const accessory_command = {
-	async pairHyperpollingDevice(this: RazerDeviceConfig<'accessory' | 'mouse'>, instance: HIDDevice, pid: number) {
+	async pairDevice(
+		this: RazerDeviceConfig<'accessory' | 'mouse'>,
+		instance: HIDDevice,
+		device_transaction_id: number,
+		pid: number,
+	) {
 		// start pair mode
 		await sendCommand(
 			instance,
-			buildRazerReport(this.hardware.transaction_device_id, 0x01, 0x00, 0x46, [0x01]),
+			buildRazerReport(device_transaction_id, 0x01, 0x00, 0x46, [0x01]),
 			this.hardware.wait_min,
 		)
 
@@ -17,14 +22,10 @@ export const accessory_command = {
 		args[offset++] = pid & 0xff
 
 		// scan device
-		await sendCommand(
-			instance,
-			buildRazerReport(this.hardware.transaction_device_id, 0x03, 0x00, 0x41, args),
-			this.hardware.wait_min,
-		)
+		await sendCommand(instance, buildRazerReport(device_transaction_id, 0x03, 0x00, 0x41, args), this.hardware.wait_min)
 	},
 
-	async unpairHyperpollingDevice(this: RazerDeviceConfig<'accessory' | 'mouse'>, instance: HIDDevice, pid: number) {
+	async unpairDevice(this: RazerDeviceConfig<'accessory' | 'mouse'>, instance: HIDDevice, pid: number) {
 		const args: number[] = []
 		let offset = 0
 
@@ -32,15 +33,15 @@ export const accessory_command = {
 		args[offset++] = pid & 0xff
 		await sendCommand(
 			instance,
-			buildRazerReport(this.hardware.transaction_device_id, 0x02, 0x00, 0x42, args),
+			buildRazerReport(this.hardware.transaction_id, 0x02, 0x00, 0x42, args),
 			this.hardware.wait_min,
 		)
 	},
 
-	async getPairDevices(this: RazerDeviceConfig<'accessory' | 'mouse'>, instance: HIDDevice): Promise<number[]> {
+	async getPairedDevices(this: RazerDeviceConfig<'accessory' | 'mouse'>, instance: HIDDevice): Promise<number[]> {
 		const response = await sendCommand(
 			instance,
-			buildRazerReport(this.hardware.transaction_device_id, 0x00, 0x00, 0xbf),
+			buildRazerReport(this.hardware.transaction_id, 0x00, 0x00, 0xbf),
 			this.hardware.wait_min,
 		)
 
