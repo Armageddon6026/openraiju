@@ -14,6 +14,12 @@ declare interface RazerBaseDeviceConfig extends RazerDeviceFeature {
 	}
 	readonly hardware: {
 		wait_min: number
+		/**
+		 * Transaction ID (Index 1): Defines the target routing of the HID report.
+		 * - 0xFF-0xE0: Other command (Hyperpolling Dongle etc.).
+		 * - 0x80-0xDF: Routes command to the connected Keyboard.
+		 * - 0x00-0x7F: Routes command to the connected Mouse.
+		 */
 		transaction_id: number
 	}
 }
@@ -26,10 +32,9 @@ type RazerHardwareMap = {
 		max_dpi_stages: number
 		optical_sensor: RazerOpticalSensor
 		hyper_polling: boolean
-		transaction_device_id: number
 	}
 	accessory: {
-		transaction_device_id: number
+		nonce: number
 	}
 }
 
