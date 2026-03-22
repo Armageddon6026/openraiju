@@ -26,6 +26,7 @@ type RazerHardwareMap = {
 		max_dpi_stages: number
 		optical_sensor: RazerOpticalSensor
 		hyper_polling: boolean
+		transaction_device_id: number
 	}
 	accessory: {
 		transaction_device_id: number

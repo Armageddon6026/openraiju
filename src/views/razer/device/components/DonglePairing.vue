@@ -100,11 +100,12 @@ async function connectPairedDevice() {
 	const summary = 'Pairing Device'
 	try {
 		const devices = await device.config.getPairDevices(device.instance)
-		if (devices.length !== 1 || !devices[0]) {
+		console.log('Paired devices:', devices)
+		if (devices.length < 1 || !devices[devices.length - 1]) {
 			throw new Error('no devices found')
 		}
 
-		const pid = devices[0]
+		const pid = devices[devices.length - 1]!
 		pairedDevicePid.value = pid
 		const deviceInfo = await deviceStore.getConfig(pid)
 		if (!deviceInfo) {

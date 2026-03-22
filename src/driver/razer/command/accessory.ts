@@ -1,7 +1,7 @@
 import { buildRazerReport, sendCommand } from './common'
 
 export const accessory_command = {
-	async pairHyperpollingDevice(this: RazerDeviceConfig<'accessory'>, instance: HIDDevice, pid: number) {
+	async pairHyperpollingDevice(this: RazerDeviceConfig<'accessory' | 'mouse'>, instance: HIDDevice, pid: number) {
 		// start pair mode
 		await sendCommand(
 			instance,
@@ -24,7 +24,7 @@ export const accessory_command = {
 		)
 	},
 
-	async unpairHyperpollingDevice(this: RazerDeviceConfig<'accessory'>, instance: HIDDevice, pid: number) {
+	async unpairHyperpollingDevice(this: RazerDeviceConfig<'accessory' | 'mouse'>, instance: HIDDevice, pid: number) {
 		const args: number[] = []
 		let offset = 0
 
@@ -37,7 +37,7 @@ export const accessory_command = {
 		)
 	},
 
-	async getPairDevices(this: RazerDeviceConfig<'accessory'>, instance: HIDDevice): Promise<number[]> {
+	async getPairDevices(this: RazerDeviceConfig<'accessory' | 'mouse'>, instance: HIDDevice): Promise<number[]> {
 		const response = await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_device_id, 0x00, 0x00, 0xbf),
