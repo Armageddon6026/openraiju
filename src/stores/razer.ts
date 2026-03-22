@@ -54,6 +54,10 @@ export const useDeviceStore = defineStore('razerStore', () => {
 				}
 
 				const pairId = `${RAZER_VENDOR_ID}-${pid}-${pairSn}`
+				// due to sub devices being paired to the same host device, overwrite the pairing related functions to prevent confusion
+				pairConf.getPairedDevices = undefined
+				pairConf.pairDevice = undefined
+				pairConf.unpairDevice = undefined
 				devicesMap.value.set(pairId, {
 					instance: device.instance,
 					config: pairConf,

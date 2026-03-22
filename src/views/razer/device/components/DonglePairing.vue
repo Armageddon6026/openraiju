@@ -103,41 +103,31 @@ async function unpairDevice() {
 async function connectPairedDevice() {
 	const summary = 'Pairing Device'
 	try {
-		const devices = await device.config.getPairedDevices(device.instance)
-		console.log('Paired devices:', devices)
-		if (devices.length < 1 || !devices[devices.length - 1]) {
-			throw new Error('no devices found')
-		}
+		const pids = await device.config.getPairedDevices(device.instance)
+		for (const pid of pids) {
+			if (pid === device.instance.productId) continue
 
-		const pid = devices[devices.length - 1]!
-		pairedDevicePid.value = pid
-		const deviceInfo = await deviceStore.getConfig(pid)
-		if (!deviceInfo) {
-			throw new Error('device not found')
-		}
+			const pairConf = await deviceStore.getConfig(pid)
+			if (!pairConf) {
+				throw new Error('device not found')
+			}
 
-		const newDeviceInfo = {
-			...deviceInfo,
-			hardware: {
-				...deviceInfo.hardware,
-			},
-		}
-		if ('hyper_polling' in newDeviceInfo.hardware) {
-			newDeviceInfo.hardware.hyper_polling = true
-		}
+			deviceStore.addDevice({
+				config: pairConf,
+				instance: device.instance,
+			})
 
-		deviceStore.addDevice({
-			config: newDeviceInfo,
-			instance: device.instance,
-		})
+			pairedDevicePid.value = pid
+		}
 
 		toast.add({
 			severity: 'success',
 			summary: summary,
-			detail: `pid ${devices[0]!}`,
+			detail: `pid ${pairedDevicePid.value}`,
 			life: 3000,
 		})
 	} catch (e) {
+		pairedDevicePid.value = null
 		toast.add({
 			severity: 'error',
 			summary: summary,
