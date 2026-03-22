@@ -1,4 +1,4 @@
-import { common_command } from '../command/index'
+import { common_command, mouse_command } from '../command/index'
 
 export default {
 	productId: 0x02d7,
@@ -16,4 +16,10 @@ export default {
 	getFirmware: common_command.getFirmware,
 	getBatteryLevel: common_command.getBatteryLevel,
 	getChargeState: common_command.getChargeState,
+	getLowBatteryThreshold: common_command.getLowBatteryThreshold,
+	setLowBatteryThreshold: common_command.setLowBatteryThreshold,
+	getIdleTime: common_command.getIdleTime,
+	setIdleTime: common_command.setIdleTime,
+	getPollingRate: mouse_command.getPollingRate,
+	setPollingRate: mouse_command.setPollingRate,
 } as const satisfies RazerDeviceConfig<'keyboard'>

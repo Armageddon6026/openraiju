@@ -123,7 +123,7 @@ export const mouse_command = {
 		)
 	},
 
-	async getPollingRate(this: RazerDeviceConfig<'mouse'>, instance: HIDDevice): Promise<number> {
+	async getPollingRate(this: RazerDeviceConfig<'mouse' | 'keyboard'>, instance: HIDDevice): Promise<number> {
 		const hyper = this.hardware.hyper_polling
 		const commandId = hyper ? 0xc0 : 0x85
 		const maxPollingRate = hyper ? 8000 : 1000
@@ -145,7 +145,7 @@ export const mouse_command = {
 		return maxPollingRate / pollingIndex
 	},
 
-	async setPollingRate(this: RazerDeviceConfig<'mouse'>, instance: HIDDevice, pollingRate: number) {
+	async setPollingRate(this: RazerDeviceConfig<'mouse' | 'keyboard'>, instance: HIDDevice, pollingRate: number) {
 		const hyper = this.hardware.hyper_polling
 		const commandId = hyper ? 0x40 : 0x05
 		const maxPollingRate = hyper ? 8000 : 1000

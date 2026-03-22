@@ -66,9 +66,19 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 }
 
 async function unpairDevice() {
+	if (!pairedDevicePid.value) {
+		toast.add({
+			severity: 'warn',
+			summary: 'Unpairing Device',
+			detail: 'No paired device',
+			life: 3000,
+		})
+		return
+	}
+
 	const summary = 'Unpairing Device'
 	try {
-		await device.config.unpairHyperpollingDevice(device.instance, 0x00b0)
+		await device.config.unpairHyperpollingDevice(device.instance, pairedDevicePid.value)
 		pairedDevicePid.value = null
 		toast.add({
 			severity: 'success',
@@ -193,6 +203,14 @@ async function connectWithRetry() {
 						:disabled="isConnecting"
 					></Button>
 				</Form>
+				<Button
+					w="full"
+					label="Connect Paired Device"
+					icon="i-material-symbols-link-off"
+					severity="help"
+					:disabled="isConnecting"
+					@click="connectPairedDevice()"
+				></Button>
 				<Button
 					w="full"
 					label="Unpair"
