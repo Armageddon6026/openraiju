@@ -124,9 +124,12 @@ export const mouse_command = {
 	},
 
 	async getPollingRate(this: RazerDeviceConfig<'mouse' | 'keyboard'>, instance: HIDDevice): Promise<number> {
-		const hyper = this.hardware.hyper_polling
+		if (!this.hardware.max_polling_rate) {
+			throw new Error('Device does not support polling rate configuration')
+		}
+
+		const hyper = this.hardware.max_polling_rate.native === this.hardware.max_polling_rate.hyper
 		const commandId = hyper ? 0xc0 : 0x85
-		const maxPollingRate = hyper ? 8000 : 1000
 		const response = await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x01, 0x00, commandId),
@@ -137,18 +140,22 @@ export const mouse_command = {
 		// Ex:
 		// - If pollingIndex = 0x10 (16 in decimal) and HyperPolling is enabled,
 		// - pollingRate = maxPollingRate (8000) / pollingIndex (16) = 8000 / 12 = 500 Hz
-		const pollingIndex = response.getUint8(this.hardware.hyper_polling ? 1 : 0)
+		const pollingIndex = response.getUint8(hyper ? 1 : 0)
 		if (pollingIndex === 0) {
 			throw new Error('Failed to get polling rate')
 		}
 
-		return maxPollingRate / pollingIndex
+		return this.hardware.max_polling_rate.native / pollingIndex
 	},
 
 	async setPollingRate(this: RazerDeviceConfig<'mouse' | 'keyboard'>, instance: HIDDevice, pollingRate: number) {
-		const hyper = this.hardware.hyper_polling
+		if (!this.hardware.max_polling_rate) {
+			throw new Error('Device does not support polling rate configuration')
+		}
+
+		const hyper = this.hardware.max_polling_rate.native === this.hardware.max_polling_rate.hyper
+		const maxPollingRate = this.hardware.max_polling_rate.native
 		const commandId = hyper ? 0x40 : 0x05
-		const maxPollingRate = hyper ? 8000 : 1000
 		const data_size = hyper ? 0x02 : 0x01
 
 		if (pollingRate > maxPollingRate) {
