@@ -9,7 +9,7 @@ type hyperpolling_device = {
 }
 
 const { device } = defineProps<{
-	device: TypedDeviceWith<'accessory', 'pairHyperpollingDevice' | 'unpairHyperpollingDevice' | 'getPairDevices'>
+	device: DeviceWith<'pairHyperpollingDevice' | 'unpairHyperpollingDevice' | 'getPairDevices'>
 }>()
 
 type PairFormValues = {

@@ -11,11 +11,11 @@ const razer_support_list = ref<HIDDeviceFilter[]>([])
 onMounted(async () => {
 	const res = await fetch('/razer/support_devices.json')
 	const data = await res.json()
-	razer_support_list.value = data.map((d: { productId: number }) => ({
+	razer_support_list.value = data.map((d: { productId: number; usagePage: number; usage: number }) => ({
 		vendorId: RAZER_VENDOR_ID,
 		productId: d.productId,
-		usagePage: 0x0001,
-		usage: 0x0002,
+		usagePage: d.usagePage,
+		usage: d.usage,
 	}))
 
 	if (!deviceStore.hasDevices) await getHidDevices()
@@ -31,6 +31,8 @@ async function connectDevice() {
 				filters: razer_support_list.value,
 			})
 		).filter((d) => d.collections.length == 1)
+
+		console.log(instances)
 
 		for (const instance of instances) {
 			const deviceConf = await deviceStore.getConfig(instance.productId)

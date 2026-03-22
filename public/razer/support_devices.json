@@ -1,14 +1,32 @@
 [
 	{
-		"productId": 175
+		"productId": 175,
+		"usagePage": 1,
+		"usage": 2
 	},
 	{
-		"productId": 176
+		"productId": 176,
+		"usagePage": 1,
+		"usage": 2
 	},
 	{
-		"productId": 179
+		"productId": 179,
+		"usagePage": 1,
+		"usage": 2
 	},
 	{
-		"productId": 551
+		"productId": 551,
+		"usagePage": 1,
+		"usage": 2
+	},
+	{
+		"productId": 725,
+		"usagePage": 1,
+		"usage": 2
+	},
+	{
+		"productId": 727,
+		"usagePage": 12,
+		"usage": 1
 	}
 ]
