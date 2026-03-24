@@ -132,7 +132,7 @@ export const mouse_command = {
 		const commandId = hyper ? 0xc0 : 0x85
 		const response = await sendCommand(
 			instance,
-			buildRazerReport(this.hardware.transaction_id, 0x01, 0x00, commandId),
+			buildRazerReport(this.hardware.transaction_id, 0x01, 0x00, commandId, [razer_storage_type.profile_slot_default]),
 			this.hardware.wait_min,
 		)
 

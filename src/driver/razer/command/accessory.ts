@@ -4,15 +4,11 @@ export const accessory_command = {
 	async pairDevice(
 		this: RazerDeviceConfig<'accessory' | 'mouse'>,
 		instance: HIDDevice,
-		device_transaction_id: number,
+		transaction_id: number, // used the transaction_id from the pairing device's config
 		pid: number,
 	) {
 		// start pair mode
-		await sendCommand(
-			instance,
-			buildRazerReport(device_transaction_id, 0x01, 0x00, 0x46, [0x01]),
-			this.hardware.wait_min,
-		)
+		await sendCommand(instance, buildRazerReport(transaction_id, 0x01, 0x00, 0x46, [0x01]), this.hardware.wait_min)
 
 		const args: number[] = []
 		let offset = 0
@@ -22,7 +18,7 @@ export const accessory_command = {
 		args[offset++] = pid & 0xff
 
 		// scan device
-		await sendCommand(instance, buildRazerReport(device_transaction_id, 0x03, 0x00, 0x41, args), this.hardware.wait_min)
+		await sendCommand(instance, buildRazerReport(transaction_id, 0x03, 0x00, 0x41, args), this.hardware.wait_min)
 	},
 
 	async unpairDevice(this: RazerDeviceConfig<'accessory' | 'mouse'>, instance: HIDDevice, pid: number) {

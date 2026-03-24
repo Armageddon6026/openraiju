@@ -87,12 +87,7 @@ declare interface RazerDeviceFeature {
 	setActivateDpiStage?: (this: RazerDeviceConfig, instance: HIDDevice, stageId: number) => Promise<void>
 	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	setPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) => Promise<void>
-	pairDevice?: (
-		this: RazerDeviceConfig,
-		instance: HIDDevice,
-		device_transaction_id: number,
-		pid: number,
-	) => Promise<void>
+	pairDevice?: (this: RazerDeviceConfig, instance: HIDDevice, transaction_id: number, pid: number) => Promise<void>
 	unpairDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
 	getPairedDevices?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number[]>
 }
