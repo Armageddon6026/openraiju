@@ -53,7 +53,7 @@ type RazerDeviceConfig<T extends RazerDeviceType> = RazerBaseDeviceConfig & {
 declare interface RazerOpticalSensor {
 	readonly max_dpi: number
 	readonly dpi_step: number
-	readonly smart_tracking_step: 3 | 2
+	readonly max_tracking_step: 2 | 1
 	readonly motion_sync?: boolean
 	readonly asymmetric_cutoff_levels?: 26
 	readonly sensitivity_matcher?: boolean
@@ -85,6 +85,8 @@ declare interface RazerDeviceFeature {
 	getDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<RazerDpiStageInfo>
 	setDpiStages?: (this: RazerDeviceConfig, instance: HIDDevice, dpi: RazerDpiStageInfo) => Promise<void>
 	setActivateDpiStage?: (this: RazerDeviceConfig, instance: HIDDevice, stageId: number) => Promise<void>
+	getTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
+	setTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice, step: number) => Promise<void>
 	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	setPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) => Promise<void>
 	pairDevice?: (this: RazerDeviceConfig, instance: HIDDevice, transaction_id: number, pid: number) => Promise<void>

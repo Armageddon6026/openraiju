@@ -194,11 +194,31 @@ export const mouse_command = {
 	async getTrackingStep(this: RazerDeviceConfig<'mouse'>, instance: HIDDevice): Promise<number> {
 		const response = await sendCommand(
 			instance,
-			buildRazerReport(this.hardware.transaction_id, 0x03, 0x0b, 0x85),
+			buildRazerReport(this.hardware.transaction_id, 0x02, 0x0b, 0x8b, [0x00, 0x04]),
 			this.hardware.wait_min,
 		)
 
-		// response fomat 00 00 01
-		return response.getUint8(2)
+		// response fomat
+		// 0x00,0x04 -> sencor id
+		// 0x01 -> tracking mode (0x01: Symmetric , 0x04: Asymmetric)
+		// 0x01 -> if tracking mode is symmetric, this byte indicates the tracking step.
+		const mode = response.getUint8(2)
+		if (mode === 0x01) {
+			return response.getUint8(3)
+		} else {
+			throw new Error('Asymmetric tracking mode is not supported')
+		}
+	},
+
+	async setTrackingStep(this: RazerDeviceConfig<'mouse'>, instance: HIDDevice, step: number) {
+		if (this.hardware.optical_sensor.max_tracking_step < step || step < 0) {
+			throw new Error(`Tracking step ${step} is not supported`)
+		}
+
+		await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x04, 0x0b, 0x0b, [0x00, 0x04, 0x01, step]),
+			this.hardware.wait_min,
+		)
 	},
 }

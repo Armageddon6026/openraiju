@@ -59,6 +59,13 @@ const hasHyperpollingControl = useCapabilityDevice(currentDevice.value, [
 	'getPairedDevices',
 ] as const)
 
+// Smart Tracking - Calibration
+const SmartTracking = defineAsyncComponent(() => import('./components/SmartTracking.vue'))
+const hasSmartTrackingControl = useTypedCapabilityDevice('mouse', currentDevice.value, [
+	'getTrackingStep',
+	'setTrackingStep',
+] as const)
+
 const visibleTabs = computed((): ResolvedTab[] => {
 	const tabs: ResolvedTab[] = [
 		{
@@ -88,7 +95,7 @@ const visibleTabs = computed((): ResolvedTab[] => {
 			value: 3,
 			icon: 'i-material-symbols-settings-input-component-outline-rounded',
 			label: 'Calibration',
-			contents: [],
+			contents: [resolve(SmartTracking, hasSmartTrackingControl.value)].filter(Boolean) as TabContent[],
 		},
 		{
 			value: 4,
