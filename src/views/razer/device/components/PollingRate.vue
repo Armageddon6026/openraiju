@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { device } = defineProps<{
-	device: DeviceWith<'getPollingRate' | 'setPollingRate'>
+	device: TypedDeviceWith<'mouse' | 'keyboard', 'getPollingRate' | 'setPollingRate'>
 }>()
 
 const toast = useToast()
@@ -12,7 +12,7 @@ const pollingRateOptions = computed(() => {
 		return []
 	}
 
-	const maxPollingRate = 'hyper_polling' in device.config.hardware && device.config.hardware.hyper_polling ? 8000 : 1000
+	const maxPollingRate = device.config.hardware.max_polling_rate?.native || 1000
 	const rates = []
 	for (let rate = 125; rate <= maxPollingRate; rate *= 2) {
 		if (rate === 250) continue // Skip 250 Hz

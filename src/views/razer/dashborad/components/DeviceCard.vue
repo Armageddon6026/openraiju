@@ -118,7 +118,7 @@ function getBatteryColor(): string {
 			</div>
 		</template>
 		<template #title>
-			<h2 text="lg gray-200" font="bold">{{ device.config.ui.name }}</h2>
+			<h2 text="lg gray-200" font="bold" truncate :title="device.config.ui.name">{{ device.config.ui.name }}</h2>
 		</template>
 		<template #subtitle>
 			<div flex="~" items="center" gap="1" text="gray-400">
