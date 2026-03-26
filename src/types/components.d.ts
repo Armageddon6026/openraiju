@@ -23,6 +23,7 @@ declare module 'vue' {
     Form: typeof import('@primevue/forms/form')['default']
     IdleTime: typeof import('./../views/razer/device/components/IdleTime.vue')['default']
     Image: typeof import('primevue/image')['default']
+    InputNumber: typeof import('primevue/inputnumber')['default']
     Message: typeof import('primevue/message')['default']
     PollingRate: typeof import('./../views/razer/device/components/PollingRate.vue')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']
@@ -32,12 +33,14 @@ declare module 'vue' {
     Sidebar: typeof import('./../components/Sidebar.vue')['default']
     Slider: typeof import('primevue/slider')['default']
     SmartTracking: typeof import('./../views/razer/device/components/SmartTracking.vue')['default']
+    SnapTap: typeof import('./../views/razer/device/components/SnapTap.vue')['default']
     Tab: typeof import('primevue/tab')['default']
     TabList: typeof import('primevue/tablist')['default']
     TabPanel: typeof import('primevue/tabpanel')['default']
     TabPanels: typeof import('primevue/tabpanels')['default']
     Tabs: typeof import('primevue/tabs')['default']
     Toast: typeof import('primevue/toast')['default']
+    ToggleSwitch: typeof import('primevue/toggleswitch')['default']
   }
   export interface GlobalDirectives {
     Tooltip: typeof import('primevue/tooltip')['default']

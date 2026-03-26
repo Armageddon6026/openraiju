@@ -36,6 +36,9 @@ const hasDpiControl = useTypedCapabilityDevice('mouse', currentDevice.value, [
 	'setActivateDpiStage',
 ] as const)
 
+const SnapTapComp = defineAsyncComponent(() => import('./components/SnapTap.vue'))
+const hasSnapTapControl = useTypedCapabilityDevice('keyboard', currentDevice.value, ['getSnapTapSetting'] as const)
+
 // Performance - Polling Rate
 const PollingRateComp = defineAsyncComponent(() => import('./components/PollingRate.vue'))
 const hasPollingControl = useCapabilityDevice(currentDevice.value, ['getPollingRate', 'setPollingRate'] as const)
@@ -72,9 +75,11 @@ const visibleTabs = computed((): ResolvedTab[] => {
 			value: 0,
 			icon: 'i-material-symbols-performance-max',
 			label: 'Performance',
-			contents: [resolve(DpiStagesComp, hasDpiControl.value), resolve(PollingRateComp, hasPollingControl.value)].filter(
-				Boolean,
-			) as TabContent[],
+			contents: [
+				resolve(DpiStagesComp, hasDpiControl.value),
+				resolve(PollingRateComp, hasPollingControl.value),
+				resolve(SnapTapComp, hasSnapTapControl.value),
+			].filter(Boolean) as TabContent[],
 		},
 		{
 			value: 1,
