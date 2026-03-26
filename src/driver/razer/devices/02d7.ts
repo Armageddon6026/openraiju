@@ -1,4 +1,5 @@
 import { common_command, mouse_command } from '../command/index'
+import { keyboard_command } from '../command/keyboard'
 
 export default {
 	productId: 0x02d7,
@@ -24,4 +25,5 @@ export default {
 	setIdleTime: common_command.setIdleTime,
 	getPollingRate: mouse_command.getPollingRate,
 	setPollingRate: mouse_command.setPollingRate,
+	getSnapTapSetting: keyboard_command.getSnapTapSetting,
 } as const satisfies RazerDeviceConfig<'keyboard'>

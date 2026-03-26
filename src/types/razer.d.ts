@@ -3,6 +3,14 @@ declare interface RazerDevice<TConfig extends RazerDeviceConfig = RazerDeviceCon
 	readonly instance: HIDDevice
 }
 
+type DeviceWith<K extends keyof RazerDeviceFeature> = RazerDevice<
+	RazerBaseDeviceConfig & Required<Pick<RazerDeviceFeature, K>>
+>
+
+type TypedDeviceWith<T extends RazerDeviceType, K extends keyof RazerDeviceFeature> = RazerDevice<
+	RazerDeviceConfig<T> & Required<Pick<RazerDeviceFeature, K>>
+>
+
 type RazerDeviceType = 'keyboard' | 'mouse' | 'accessory'
 
 declare interface RazerBaseDeviceConfig extends RazerDeviceFeature {
@@ -63,13 +71,19 @@ declare interface RazerOpticalSensor {
 
 declare interface RazerDpiStageInfo {
 	ActivateID: number
-	DpiStages: RazerDpiInfo[]
+	DpiStages: {
+		ID: number
+		X: number
+		Y: number
+	}[]
 }
 
-declare interface RazerDpiInfo {
-	ID: number
-	X: number
-	Y: number
+declare interface RazerSnapTapInfo {
+	Enabled: boolean
+	KeyPair: {
+		Key1: number
+		Key2: number
+	}[]
 }
 
 declare interface RazerDeviceFeature {
@@ -92,12 +106,5 @@ declare interface RazerDeviceFeature {
 	pairDevice?: (this: RazerDeviceConfig, instance: HIDDevice, transaction_id: number, pid: number) => Promise<void>
 	unpairDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
 	getPairedDevices?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number[]>
+	getSnapTapSetting?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<RazerSnapTapInfo>
 }
-
-type DeviceWith<K extends keyof RazerDeviceFeature> = RazerDevice<
-	RazerBaseDeviceConfig & Required<Pick<RazerDeviceFeature, K>>
->
-
-type TypedDeviceWith<T extends RazerDeviceType, K extends keyof RazerDeviceFeature> = RazerDevice<
-	RazerDeviceConfig<T> & Required<Pick<RazerDeviceFeature, K>>
->
