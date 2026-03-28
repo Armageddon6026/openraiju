@@ -1,4 +1,4 @@
-import { accessory_command, common_command } from '../command/index'
+import { hardware_command } from '../command/index'
 
 export default {
 	productId: 0x00b3,
@@ -11,9 +11,9 @@ export default {
 		transaction_id: 0xff,
 		wait_min: 60,
 	},
-	getSerial: common_command.getSerial,
-	getFirmware: common_command.getFirmware,
-	pairDevice: accessory_command.pairDevice,
-	unpairDevice: accessory_command.unpairDevice,
-	getPairedDevices: accessory_command.getPairedDevices,
+	getSerial: hardware_command.getSerial,
+	getFirmware: hardware_command.getFirmware,
+	pairDevice: hardware_command.pairDevice,
+	unpairDevice: hardware_command.unpairDevice,
+	getPairedDevices: hardware_command.getPairedDevices,
 } as const satisfies RazerDeviceConfig<'accessory'>

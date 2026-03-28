@@ -1,4 +1,4 @@
-import { accessory_command } from '../command/accessory.ts'
+import { hardware_command } from '../command/index'
 import RAZER_COBRA_PRO_WIRED from './00af.ts'
 
 export default {
@@ -15,7 +15,7 @@ export default {
 			hyper: 8000,
 		},
 	},
-	pairDevice: accessory_command.pairDevice,
-	unpairDevice: accessory_command.unpairDevice,
-	getPairedDevices: accessory_command.getPairedDevices,
+	pairDevice: hardware_command.pairDevice,
+	unpairDevice: hardware_command.unpairDevice,
+	getPairedDevices: hardware_command.getPairedDevices,
 } as const satisfies RazerDeviceConfig<'mouse'>

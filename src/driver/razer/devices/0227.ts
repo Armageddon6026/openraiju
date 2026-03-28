@@ -1,4 +1,4 @@
-import { common_command } from '../command/index'
+import { hardware_command } from '../command/index'
 
 export default {
 	productId: 0x0227,
@@ -11,6 +11,6 @@ export default {
 		transaction_id: 0x00,
 		wait_min: 31,
 	},
-	getSerial: common_command.getSerial,
-	getFirmware: common_command.getFirmware,
+	getSerial: hardware_command.getSerial,
+	getFirmware: hardware_command.getFirmware,
 } as const satisfies RazerDeviceConfig<'keyboard'>

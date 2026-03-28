@@ -1,5 +1,4 @@
-import { common_command, mouse_command } from '../command/index'
-import { keyboard_command } from '../command/keyboard'
+import { mouse_command, power_command, keyboard_command, hardware_command } from '../command/index'
 
 export default {
 	productId: 0x02d7,
@@ -15,14 +14,14 @@ export default {
 			native: 1000,
 		},
 	},
-	getSerial: common_command.getSerial,
-	getFirmware: common_command.getFirmware,
-	getBatteryLevel: common_command.getBatteryLevel,
-	getChargeState: common_command.getChargeState,
-	getLowBatteryThreshold: common_command.getLowBatteryThreshold,
-	setLowBatteryThreshold: common_command.setLowBatteryThreshold,
-	getIdleTime: common_command.getIdleTime,
-	setIdleTime: common_command.setIdleTime,
+	getSerial: hardware_command.getSerial,
+	getFirmware: hardware_command.getFirmware,
+	getBatteryLevel: power_command.getBatteryLevel,
+	getChargeState: power_command.getChargeState,
+	getLowBatteryThreshold: power_command.getLowBatteryThreshold,
+	setLowBatteryThreshold: power_command.setLowBatteryThreshold,
+	getIdleTime: power_command.getIdleTime,
+	setIdleTime: power_command.setIdleTime,
 	getPollingRate: mouse_command.getPollingRate,
 	setPollingRate: mouse_command.setPollingRate,
 	getSnapTapSetting: keyboard_command.getSnapTapSetting,
