@@ -103,7 +103,12 @@ declare interface RazerDeviceFeature {
 	setTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice, step: number) => Promise<void>
 	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	setPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) => Promise<void>
-	pairDevice?: (this: RazerDeviceConfig, instance: HIDDevice, transaction_id: number, pid: number) => Promise<void>
+	pairDevice?: (
+		this: RazerDeviceConfig,
+		instance: HIDDevice,
+		transaction_id: number,
+		pid: number,
+	) => Promise<() => Promise<void>>
 	unpairDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
 	getPairedDevices?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number[]>
 	getSnapTapSetting?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<RazerSnapTapInfo>

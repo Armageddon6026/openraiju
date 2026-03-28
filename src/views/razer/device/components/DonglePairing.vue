@@ -44,7 +44,11 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 		if (!pairConfig) {
 			throw new Error('device config not found')
 		}
-		await device.config.pairDevice(device.instance, pairConfig.hardware.transaction_id, values.product_id)
+		const cancelPairing = await device.config.pairDevice(
+			device.instance,
+			pairConfig.hardware.transaction_id,
+			values.product_id,
+		)
 
 		toast.add({
 			severity: 'success',
@@ -55,8 +59,10 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 
 		// 等待3秒後自動連接，同時顯示進度條
 		isConnecting.value = true
-		setTimeout(() => {
-			connectWithRetry()
+		setTimeout(async () => {
+			await connectWithRetry()
+
+			await cancelPairing()
 		}, 3000)
 	} catch (e) {
 		isConnecting.value = false

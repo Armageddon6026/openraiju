@@ -29,9 +29,15 @@ export const hardware_command = {
 		instance: HIDDevice,
 		transaction_id: number, // used the transaction_id from the pairing device's config
 		pid: number,
-	) {
+	): Promise<() => Promise<void>> {
+		const start_pair = 0x01
+		const cancel_pair = 0x04
 		// start pair mode
-		await sendCommand(instance, buildRazerReport(transaction_id, 0x01, 0x00, 0x46, [0x01]), this.hardware.wait_min)
+		await sendCommand(
+			instance,
+			buildRazerReport(transaction_id, 0x01, 0x00, 0x46, [start_pair]),
+			this.hardware.wait_min,
+		)
 
 		const args: number[] = []
 		let offset = 0
@@ -42,6 +48,15 @@ export const hardware_command = {
 
 		// scan device
 		await sendCommand(instance, buildRazerReport(transaction_id, 0x03, 0x00, 0x41, args), this.hardware.wait_min)
+
+		return async () => {
+			// cancel pair mode
+			await sendCommand(
+				instance,
+				buildRazerReport(transaction_id, 0x01, 0x00, 0x46, [cancel_pair]),
+				this.hardware.wait_min,
+			)
+		}
 	},
 
 	async unpairDevice(this: RazerBaseDeviceConfig, instance: HIDDevice, pid: number) {
