@@ -1,3 +1,4 @@
+import { calcMaxPollingRate } from '@/driver/utils'
 import { buildRazerReport, sendCommand, razer_storage_type } from './common'
 
 // ref: https://github.com/openrazer/openrazer/blob/master/driver/razermouse_driver.c
@@ -132,9 +133,7 @@ export const mouse_command = {
 			throw new Error('Device does not support polling rate configuration')
 		}
 
-		const { hyper, native } = this.hardware.max_polling_rate
-
-		const maxPollingRate = isHyperpolling ? (hyper ?? native) : native
+		const maxPollingRate = calcMaxPollingRate(isHyperpolling, this.hardware.max_polling_rate)
 		const commandId = isHyperpolling ? 0xc0 : 0x85
 		const response = await sendCommand(
 			instance,
@@ -164,9 +163,7 @@ export const mouse_command = {
 			throw new Error('Device does not support polling rate configuration')
 		}
 
-		const { hyper, native } = this.hardware.max_polling_rate
-
-		const maxPollingRate = isHyperpolling ? (hyper ?? native) : native
+		const maxPollingRate = calcMaxPollingRate(isHyperpolling, this.hardware.max_polling_rate)
 		const commandId = isHyperpolling ? 0x40 : 0x05
 		const data_size = isHyperpolling ? 0x02 : 0x01
 

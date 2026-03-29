@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { calcMaxPollingRate } from '@/driver/utils'
+
 const { device } = defineProps<{
 	device: TypedDeviceWith<'mouse' | 'keyboard', 'getPollingRate' | 'setPollingRate'>
 }>()
@@ -12,9 +14,7 @@ const pollingRateOptions = computed(() => {
 		return []
 	}
 
-	const { hyper, native } = device.config.hardware.max_polling_rate
-
-	const maxPollingRate = device.status.isHyperpolling ? (hyper ?? native) : native
+	const maxPollingRate = calcMaxPollingRate(device.status.isHyperpolling!, device.config.hardware.max_polling_rate)
 	const rates = []
 	for (let rate = 125; rate <= maxPollingRate; rate *= 2) {
 		if (rate === 250) continue // Skip 250 Hz
