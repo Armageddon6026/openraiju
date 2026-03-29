@@ -121,6 +121,7 @@ function getBatteryColor(): string {
 		<template #footer>
 			<div flex="~" justify="end">
 				<Button
+					v-if="!device.status.isSubDevice"
 					icon="i-material-symbols-delete-outline"
 					severity="danger"
 					variant="text"

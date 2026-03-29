@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises'
 import {
 	defineConfig,
 	presetWind4,
@@ -23,7 +22,6 @@ export default defineConfig({
 					},
 				},
 				commons: {
-					ophiophagus: () => fs.readFile('./src/assets/icons/ophiophagus.svg', 'utf-8'),
 					github: async () => {
 						return await fetch(`https://api.iconify.design/grommet-icons:github.svg`).then((res) => res.text())
 					},

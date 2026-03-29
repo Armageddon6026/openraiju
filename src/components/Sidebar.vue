@@ -2,7 +2,9 @@
 
 <template>
 	<aside w="18" bg="[#0f0f0f]" un-border="r [#222]" flex="~ col" items="center" py="6" gap="4">
-		<div w="10" h="10" flex="~" items="center" justify="center" text="white" i="commons-ophiophagus"></div>
+		<div w="10" h="10" flex="~" items="center" justify="center" un-border="solid 1px sky-500" rounded="6px">
+			<img src="../assets/icons/openraiju.png" class="w-full h-full object-contain" />
+		</div>
 
 		<nav flex="~ 1 col" gap="4" p="3">
 			<Button as="router-link" to="/razer" icon="i-brands-razer" variant="outlined"> </Button>

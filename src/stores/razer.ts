@@ -48,6 +48,9 @@ export const useDeviceStore = defineStore('razerStore', () => {
 				continue
 			}
 
+			// copy the wait_min value from the parent device to ensure proper pairing behavior
+			pairConf.hardware.wait_min = device.config.hardware.wait_min
+
 			// hyperpolling dongle, Enable hyperpolling mode
 			const isHyperPolling =
 				device.config.productId === 0x00b3 && (pairConf.ui.type === 'mouse' || pairConf.ui.type === 'keyboard')

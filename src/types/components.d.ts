@@ -11,7 +11,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Badge: typeof import('primevue/badge')['default']
     BatteryThreshold: typeof import('./../views/razer/device/components/BatteryThreshold.vue')['default']
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
@@ -23,7 +22,6 @@ declare module 'vue' {
     Form: typeof import('@primevue/forms/form')['default']
     IdleTime: typeof import('./../views/razer/device/components/IdleTime.vue')['default']
     Image: typeof import('primevue/image')['default']
-    InputNumber: typeof import('primevue/inputnumber')['default']
     Message: typeof import('primevue/message')['default']
     PollingRate: typeof import('./../views/razer/device/components/PollingRate.vue')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']
