@@ -21,7 +21,6 @@ onMounted(async () => {
 	if (!deviceStore.hasDevices) await getHidDevices()
 })
 
-// Razer always use the usage page 0x0001, usage 0x0002 and collections length 1 for their devices.
 async function connectDevice() {
 	const summary = 'hid device connect'
 
