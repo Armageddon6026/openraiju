@@ -1,6 +1,10 @@
 declare interface RazerDevice<TConfig extends RazerDeviceConfig = RazerDeviceConfig> {
 	readonly config: TConfig
 	readonly instance: HIDDevice
+	readonly status: {
+		isSubDevice?: boolean
+		isHyperpolling?: boolean
+	}
 }
 
 type DeviceWith<K extends keyof RazerDeviceFeature> = RazerDevice<

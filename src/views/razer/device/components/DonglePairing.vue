@@ -118,9 +118,10 @@ async function connectPairedDevice() {
 				throw new Error('device not found')
 			}
 
-			deviceStore.addDevice({
+			await deviceStore.addDevice({
 				config: pairConf,
 				instance: device.instance,
+				status: {},
 			})
 
 			pairedDevicePid.value = pid

@@ -48,13 +48,6 @@ export const useDeviceStore = defineStore('razerStore', () => {
 					continue
 				}
 
-				const pairSn = await pairConf.getSerial(device.instance)
-				if (!pairSn) {
-					throw new Error('No serial number found')
-				}
-
-				const pairId = `${RAZER_VENDOR_ID}-${pid}-${pairSn}`
-
 				// hyperpolling dongle, Enable hyperpolling mode
 				if (device.config.productId === 0x00b3 && (pairConf.ui.type === 'mouse' || pairConf.ui.type === 'keyboard')) {
 					const conf = pairConf as RazerDeviceConfig<'mouse' | 'keyboard'>
@@ -67,9 +60,11 @@ export const useDeviceStore = defineStore('razerStore', () => {
 				pairConf.getPairedDevices = undefined
 				pairConf.pairDevice = undefined
 				pairConf.unpairDevice = undefined
-				devicesMap.value.set(pairId, {
+
+				await addDevice({
 					instance: device.instance,
 					config: pairConf,
+					status: {},
 				})
 			} catch (e) {
 				console.warn(`Failed to add paired device with PID ${pid}:`, e)
@@ -78,7 +73,17 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		}
 	}
 
-	function removeDevice(instanceId: string) {
+	async function removeDevice(instanceId: string) {
+		const device = devicesMap.value.get(instanceId)
+		if (!device) {
+			return
+		}
+
+		if (device.instance.opened) {
+			await device.instance.close()
+		}
+
+		await device.instance.forget()
 		devicesMap.value.delete(instanceId)
 	}
 

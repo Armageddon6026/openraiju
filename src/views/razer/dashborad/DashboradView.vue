@@ -41,6 +41,7 @@ async function connectDevice() {
 			await deviceStore.addDevice({
 				config: deviceConf,
 				instance: instance,
+				status: {},
 			})
 			toast.add({
 				severity: 'success',
@@ -71,6 +72,7 @@ async function getHidDevices() {
 		await deviceStore.addDevice({
 			config: deviceConf,
 			instance: instance,
+			status: {},
 		})
 	})
 }

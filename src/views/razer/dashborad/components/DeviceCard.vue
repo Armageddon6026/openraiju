@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { device } = defineProps<{ device: RazerDevice }>()
+const { device } = defineProps<{ device: RazerDevice<RazerBaseDeviceConfig> }>()
 const emits = defineEmits<{
 	disconnect: [productId: number]
 }>()
@@ -38,23 +38,13 @@ async function disconnectDevice(device: RazerDevice) {
 		},
 		accept: async () => {
 			try {
-				if (device.instance.opened) {
-					await device.instance.close()
-				}
-
-				await device.instance.forget()
+				emits('disconnect', device.config.productId)
 				toast.add({
 					severity: 'success',
 					summary: summary,
 					detail: `${device.instance.productName} disconnected`,
 					life: 3000,
 				})
-
-				if (!device.config.productId) {
-					return
-				}
-
-				emits('disconnect', device.config.productId)
 			} catch (e) {
 				toast.add({
 					severity: 'error',
@@ -90,8 +80,6 @@ function getTypeIcon(): string {
 			return 'i-material-symbols-mouse-outline'
 		case 'keyboard':
 			return 'i-material-symbols-keyboard-outline'
-		case 'headset':
-			return 'i-material-symbols-headset-mic-outline'
 		case 'accessory':
 			return 'i-material-symbols-usb-rounded'
 		default:
@@ -124,7 +112,7 @@ function getBatteryColor(): string {
 			<div flex="~" items="center" gap="1" text="gray-400">
 				<div :class="[getTypeIcon()]" v-tooltip="device.config.ui.type"></div>
 				<div
-					v-if="device.config.hardware.hyper_polling"
+					v-if="device.status.isHyperpolling"
 					i="material-symbols-h-plus-mobiledata-badge-outline-rounded"
 					v-tooltip="'support hyper polling'"
 				></div>
