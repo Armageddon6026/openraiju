@@ -8,11 +8,13 @@ const toast = useToast()
 const pollingRate = ref<number>()
 
 const pollingRateOptions = computed(() => {
-	if (!device.config.hardware) {
+	if (!device.config.hardware || !device.config.hardware.max_polling_rate) {
 		return []
 	}
 
-	const maxPollingRate = device.config.hardware.max_polling_rate?.native || 1000
+	const { hyper, native } = device.config.hardware.max_polling_rate
+
+	const maxPollingRate = device.status.isHyperpolling ? (hyper ?? native) : native
 	const rates = []
 	for (let rate = 125; rate <= maxPollingRate; rate *= 2) {
 		if (rate === 250) continue // Skip 250 Hz
@@ -28,7 +30,7 @@ async function setPollingRate(rate: number) {
 	const oldRate = pollingRate.value
 	pollingRate.value = rate
 	try {
-		await device.config.setPollingRate(device.instance, rate)
+		await device.config.setPollingRate(device.instance, rate, device.status.isHyperpolling!)
 		toast.add({
 			severity: 'success',
 			summary: summary,
@@ -47,7 +49,7 @@ async function setPollingRate(rate: number) {
 }
 
 onMounted(async () => {
-	pollingRate.value = await device.config.getPollingRate(device.instance)
+	pollingRate.value = await device.config.getPollingRate(device.instance, device.status.isHyperpolling!)
 })
 </script>
 
