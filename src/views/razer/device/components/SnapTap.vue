@@ -151,7 +151,7 @@ async function saveSnapTap() {
 		toast.add({
 			severity: 'success',
 			summary,
-			detail: 'Snap Tap setting saved (mock).',
+			detail: 'Snap Tap setting saved.',
 			life: 2500,
 		})
 	} catch (e) {
@@ -183,8 +183,8 @@ async function saveSnapTap() {
 		</template>
 
 		<template #content>
-			<div rounded="xl" p="4" bg="[#171717]" un-border="1 sky-500/20">
-				<div flex="~" items="center" justify="between" gap="3">
+			<div rounded="xl" p="3" bg="[#171717]" un-border="1 sky-500/20">
+				<div flex="~" items="center" justify="between" gap="2">
 					<div>
 						<p text="sm sky-100" font="bold">Enable Snap Tap</p>
 						<p text="xs gray-400">Allow quick directional overwrite between paired keys.</p>
@@ -193,8 +193,8 @@ async function saveSnapTap() {
 				</div>
 			</div>
 
-			<div mt="4" rounded="xl" p="4" bg="[#171717]" un-border="1 sky-500/20">
-				<div flex="~" items="center" justify="between" m="b3">
+			<div v-if="snapTapInfo.Enabled" mt="3" rounded="xl" p="3" bg="[#171717]" un-border="1 sky-500/20">
+				<div flex="~" items="center" justify="between" m="b2">
 					<div>
 						<p text="sm sky-100" font="bold">Key Pairs</p>
 						<p text="xs gray-400">Click a field then press a key. Esc clears current field.</p>
@@ -202,9 +202,9 @@ async function saveSnapTap() {
 					<Button label="Add Pair" severity="info" outlined size="small" @click="addPair" />
 				</div>
 
-				<div v-if="editingPairs.length === 0" text="xs gray-500" p="y2">No key pair configured.</div>
+				<div v-if="editingPairs.length === 0" text="xs gray-500" p="y1">No key pair configured.</div>
 
-				<div class="flex flex-col gap-2">
+				<div class="grid grid-cols-2 gap-2">
 					<div
 						v-for="(pair, index) in editingPairs"
 						:key="index"
@@ -213,7 +213,7 @@ async function saveSnapTap() {
 						<input
 							:value="formatKey(pair.Key1)"
 							readonly
-							class="w-full rounded-md border border-gray-700 bg-[#1a1a1a] px-3 py-2 text-sm text-white outline-none transition-colors focus:border-sky-400"
+							class="w-full rounded-md border border-gray-700 bg-[#1a1a1a] px-3 py-1 text-sm text-white outline-none transition-colors focus:border-sky-400"
 							:class="listeningTarget?.index === index && listeningTarget?.side === 'Key1' ? 'ring-1 ring-sky-400' : ''"
 							@focus="startListen(index, 'Key1')"
 							@blur="stopListen"
@@ -223,7 +223,7 @@ async function saveSnapTap() {
 						<input
 							:value="formatKey(pair.Key2)"
 							readonly
-							class="w-full rounded-md border border-gray-700 bg-[#1a1a1a] px-3 py-2 text-sm text-white outline-none transition-colors focus:border-sky-400"
+							class="w-full rounded-md border border-gray-700 bg-[#1a1a1a] px-3 py-1 text-sm text-white outline-none transition-colors focus:border-sky-400"
 							:class="listeningTarget?.index === index && listeningTarget?.side === 'Key2' ? 'ring-1 ring-sky-400' : ''"
 							@focus="startListen(index, 'Key2')"
 							@blur="stopListen"
@@ -235,18 +235,18 @@ async function saveSnapTap() {
 							text
 							size="small"
 							@click="removePair(index)"
-						/>
+						></Button>
 					</div>
 				</div>
 
-				<div v-if="hasSameKeyInPair" mt="3" text="xs amber-300">A pair cannot use the same key code on both sides.</div>
+				<div v-if="hasSameKeyInPair" mt="2" text="xs amber-300">A pair cannot use the same key code on both sides.</div>
 				<div v-if="hasDuplicatePair" mt="1" text="xs amber-300">
 					Duplicate pairs detected. Remove duplicates before saving.
 				</div>
 
-				<div mt="4" flex="~" justify="end" gap="2">
+				<div mt="3" flex="~" justify="end" gap="2">
 					<Button label="Reset" severity="secondary" outlined @click="resetPairs" />
-					<Button label="Save (Mock)" severity="info" :disabled="!canSave" @click="saveSnapTap" />
+					<Button label="Save" severity="info" :disabled="!canSave" @click="saveSnapTap" />
 				</div>
 			</div>
 		</template>
