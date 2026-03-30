@@ -58,7 +58,6 @@ export const useDeviceStore = defineStore('razerStore', () => {
 			// due to sub devices being paired to the same host device, overwrite the pairing related functions to prevent confusion
 			pairConf.getPairedDevices = undefined
 			pairConf.pairDevice = undefined
-			pairConf.unpairDevice = undefined
 
 			try {
 				const subdid = await addDevice({

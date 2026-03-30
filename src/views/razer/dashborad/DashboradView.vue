@@ -31,8 +31,6 @@ async function connectDevice() {
 			})
 		).filter((d) => d.collections.length == 1)
 
-		console.log(instances)
-
 		for (const instance of instances) {
 			const deviceConf = await deviceStore.getConfig(instance.productId)
 			if (!deviceConf || !(await ping(instance, deviceConf.hardware.wait_min))) continue

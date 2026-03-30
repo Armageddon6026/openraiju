@@ -20,7 +20,7 @@ onMounted(async () => {
 	}
 })
 
-async function disconnectDevice(device: RazerDevice) {
+async function disconnectDevice() {
 	const summary = 'hid device disconnect'
 
 	confirm.require({
@@ -43,6 +43,48 @@ async function disconnectDevice(device: RazerDevice) {
 					severity: 'success',
 					summary: summary,
 					detail: `${device.instance.productName} disconnected`,
+					life: 3000,
+				})
+			} catch (e) {
+				toast.add({
+					severity: 'error',
+					summary: summary,
+					detail: `${e}`,
+					life: 3000,
+				})
+			}
+		},
+	})
+}
+
+async function unpairDevice() {
+	const summary = 'Unpairing Device'
+
+	confirm.require({
+		message: 'Do you want to unpair this sub device?',
+		header: 'Unpair Sub Device',
+		rejectLabel: 'Cancel',
+		rejectProps: {
+			label: 'Cancel',
+			severity: 'secondary',
+			outlined: true,
+		},
+		acceptProps: {
+			label: 'Unpair',
+			severity: 'danger',
+		},
+		accept: async () => {
+			if (!device.config.unpairDevice) {
+				return
+			}
+
+			try {
+				await device.config.unpairDevice(device.instance, device.config.productId)
+				emits('disconnect', device.config.productId)
+				toast.add({
+					severity: 'success',
+					summary: summary,
+					detail: `${device.config.ui.name} disconnected`,
 					life: 3000,
 				})
 			} catch (e) {
@@ -116,6 +158,7 @@ function getBatteryColor(): string {
 					i="material-symbols-h-plus-mobiledata-badge-outline-rounded"
 					v-tooltip="'support hyper polling'"
 				></div>
+				<div v-if="device.status.isSubDevice" i="material-symbols-link-rounded" v-tooltip="'sub device'"></div>
 			</div>
 		</template>
 		<template #footer>
@@ -125,7 +168,14 @@ function getBatteryColor(): string {
 					icon="i-material-symbols-delete-outline"
 					severity="danger"
 					variant="text"
-					@click.stop="disconnectDevice(device)"
+					@click.stop="disconnectDevice"
+				></Button>
+				<Button
+					v-else
+					severity="danger"
+					variant="text"
+					icon="i-material-symbols-link-off-rounded"
+					@click.stop="unpairDevice"
 				></Button>
 			</div>
 		</template>
