@@ -86,16 +86,10 @@ export const mouse_command = {
 		args[offset++] = dpiInfo.ActivateID
 		args[offset++] = numberOfStages
 
-		for (let i = 0; i < numberOfStages; i++) {
-			if (!dpiInfo.DpiStages[i]) {
-				throw new Error(`DPI stage at index ${i} is undefined`)
-			}
+		for (const stage of dpiInfo.DpiStages) {
+			const { ID, X: dpiX, Y: dpiY } = stage
 
-			args[offset++] = dpiInfo.DpiStages[i]!.ID
-
-			const dpiX = dpiInfo.DpiStages[i]!.X
-			const dpiY = dpiInfo.DpiStages[i]!.Y
-
+			args[offset++] = ID
 			if (
 				dpiX > this.hardware.optical_sensor.max_dpi ||
 				dpiY > this.hardware.optical_sensor.max_dpi ||

@@ -56,9 +56,14 @@ export const keyboard_command = {
 		args[offset++] = 0 // reserved
 		args[offset++] = info.Enabled ? 1 : 0
 
-		for (let i = 0; i < keyPairLength; i++) {
-			args[offset++] = info.KeyPair[i]!.Key1
-			args[offset++] = info.KeyPair[i]!.Key2
+		for (const pair of info.KeyPair) {
+			const { Key1, Key2 } = pair
+			if (Key1 === 0 || Key2 === 0) {
+				throw new Error('Key codes in pairs cannot be 0.')
+			}
+
+			args[offset++] = Key1
+			args[offset++] = Key2
 			args[offset++] = 0 // reserved
 		}
 

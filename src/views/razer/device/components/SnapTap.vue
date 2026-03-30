@@ -199,7 +199,17 @@ async function saveSnapTap() {
 						<p text="sm sky-100" font="bold">Key Pairs</p>
 						<p text="xs gray-400">Click a field then press a key. Esc clears current field.</p>
 					</div>
-					<Button label="Add Pair" severity="info" outlined size="small" @click="addPair" />
+					<div flex="~" items="center" gap="2">
+						<Button label="Add Pair" severity="info" outlined size="small" @click="addPair" />
+						<Button
+							label="Save Pairs"
+							severity="success"
+							outlined
+							:disabled="!canSave"
+							size="small"
+							@click="saveSnapTap"
+						/>
+					</div>
 				</div>
 
 				<div v-if="editingPairs.length === 0" text="xs gray-500" p="y1">No key pair configured.</div>
@@ -242,11 +252,6 @@ async function saveSnapTap() {
 				<div v-if="hasSameKeyInPair" mt="2" text="xs amber-300">A pair cannot use the same key code on both sides.</div>
 				<div v-if="hasDuplicatePair" mt="1" text="xs amber-300">
 					Duplicate pairs detected. Remove duplicates before saving.
-				</div>
-
-				<div mt="3" flex="~" justify="end" gap="2">
-					<Button label="Reset" severity="secondary" outlined @click="resetPairs" />
-					<Button label="Save" severity="info" :disabled="!canSave" @click="saveSnapTap" />
 				</div>
 			</div>
 		</template>
