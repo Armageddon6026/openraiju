@@ -25,4 +25,5 @@ export default {
 	getPollingRate: mouse_command.getPollingRate,
 	setPollingRate: mouse_command.setPollingRate,
 	getSnapTapSetting: keyboard_command.getSnapTapSetting,
+	setSnapTapSetting: keyboard_command.setSnapTapSetting,
 } as const satisfies RazerDeviceConfig<'keyboard'>

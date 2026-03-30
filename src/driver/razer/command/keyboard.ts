@@ -43,4 +43,29 @@ export const keyboard_command = {
 
 		return info
 	},
+
+	async setSnapTapSetting(this: RazerDeviceConfig<'keyboard'>, instance: HIDDevice, info: RazerSnapTapInfo) {
+		const keyPairLength = info.KeyPair.length
+		if (keyPairLength > max_snap_tap_pairs || keyPairLength <= 0) {
+			throw new Error(`Invalid number of key pairs. Must be between 1 and ${max_snap_tap_pairs}.`)
+		}
+
+		const args: number[] = []
+		let offset = 0
+		args[offset++] = razer_storage_type.profile_slot_default
+		args[offset++] = 0 // reserved
+		args[offset++] = info.Enabled ? 1 : 0
+
+		for (let i = 0; i < keyPairLength; i++) {
+			args[offset++] = info.KeyPair[i]!.Key1
+			args[offset++] = info.KeyPair[i]!.Key2
+			args[offset++] = 0 // reserved
+		}
+
+		await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x0f, 0x02, 0x27, args),
+			this.hardware.wait_min,
+		)
+	},
 }

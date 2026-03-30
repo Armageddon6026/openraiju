@@ -2,7 +2,7 @@
 import { RAZER_KEY_MAP } from '@/driver/razer/define'
 
 const { device } = defineProps<{
-	device: TypedDeviceWith<'keyboard', 'getSnapTapSetting'>
+	device: TypedDeviceWith<'keyboard', 'getSnapTapSetting' | 'setSnapTapSetting'>
 }>()
 
 const toast = useToast()
@@ -12,14 +12,6 @@ const editingPairs = ref<RazerSnapTapInfo['KeyPair']>([])
 
 type PairSide = 'Key1' | 'Key2'
 const listeningTarget = ref<{ index: number; side: PairSide } | null>(null)
-
-/**
- * Temporary mock writer for Snap Tap until real driver command exists.
- * Replace this with device.config.setSnapTapSetting(...) when implemented.
- */
-async function mockSetSnapTapSetting(_instance: HIDDevice, _payload: RazerSnapTapInfo): Promise<void> {
-	await new Promise((resolve) => setTimeout(resolve, 250))
-}
 
 function clonePairs(pairs: RazerSnapTapInfo['KeyPair']) {
 	return pairs.map((pair) => ({
@@ -151,7 +143,7 @@ async function saveSnapTap() {
 	}
 
 	try {
-		await mockSetSnapTapSetting(device.instance, payload)
+		await device.config.setSnapTapSetting(device.instance, payload)
 		snapTapInfo.value = {
 			Enabled: payload.Enabled,
 			KeyPair: clonePairs(payload.KeyPair),
@@ -197,7 +189,7 @@ async function saveSnapTap() {
 						<p text="sm sky-100" font="bold">Enable Snap Tap</p>
 						<p text="xs gray-400">Allow quick directional overwrite between paired keys.</p>
 					</div>
-					<ToggleSwitch v-model="snapTapInfo.Enabled" />
+					<ToggleSwitch v-model="snapTapInfo.Enabled" @change="saveSnapTap" />
 				</div>
 			</div>
 

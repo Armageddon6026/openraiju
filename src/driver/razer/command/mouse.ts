@@ -73,6 +73,10 @@ export const mouse_command = {
 		if (dpiInfo.ActivateID > this.hardware.max_dpi_stages) {
 			throw new Error('Active DPI stage ID exceeds the number of available stages')
 		}
+		const numberOfStages = dpiInfo.DpiStages.length
+		if (numberOfStages > this.hardware.max_dpi_stages || numberOfStages <= 0) {
+			throw new Error(`Number of DPI stages must be between 1 and ${this.hardware.max_dpi_stages}`)
+		}
 
 		// The request uses the same format as the response from getDpiStages
 		const args: number[] = []
@@ -80,9 +84,9 @@ export const mouse_command = {
 
 		args[offset++] = razer_storage_type.profile_slot_default
 		args[offset++] = dpiInfo.ActivateID
-		args[offset++] = dpiInfo.DpiStages.length
+		args[offset++] = numberOfStages
 
-		for (let i = 0; i < dpiInfo.DpiStages.length; i++) {
+		for (let i = 0; i < numberOfStages; i++) {
 			if (!dpiInfo.DpiStages[i]) {
 				throw new Error(`DPI stage at index ${i} is undefined`)
 			}
