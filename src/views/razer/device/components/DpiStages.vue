@@ -79,10 +79,11 @@ async function setDpi(dpi: number) {
 				<div text="right" rounded="lg" p="x3 y2" bg="emerald-500/10" un-border="1 emerald-500/30">
 					<p text="xs emerald-200/85">Active Stage</p>
 					<p text="sm emerald-100" font="bold">
-						{{ activeStage ? `Stage ${activeStage.ID} · ${activeStage.X.toLocaleString()} DPI` : '---' }}
+						{{ activeStage ? `Stage ${activeStage.ID} · ${activeStage.X} DPI` : '---' }}
 					</p>
 				</div>
 			</div>
+			``
 		</template>
 		<template #content>
 			<div class="flex flex-wrap gap-3">
@@ -108,7 +109,7 @@ async function setDpi(dpi: number) {
 						<div>
 							<p text="xs gray-400" m="b1">STAGE {{ stage.ID }}</p>
 							<p text="xl" font="black" :class="dpiStages.ActivateID === stage.ID ? 'text-emerald-100' : 'text-white'">
-								{{ stage.X.toLocaleString() }}
+								{{ stage.X }}
 							</p>
 							<p text="xs gray-500" m="t1">DPI</p>
 						</div>
@@ -124,13 +125,11 @@ async function setDpi(dpi: number) {
 				<div flex="~" items="center" justify="between" gap="3">
 					<div>
 						<p text="xs gray-400">Sensitivity</p>
-						<p text="sm emerald-100" font="bold">
-							{{ dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X.toLocaleString() }} DPI
-						</p>
+						<p text="sm emerald-100" font="bold">{{ dpiStages.DpiStages[dpiStages.ActivateID - 1]!.X }} DPI</p>
 					</div>
 					<div text="xs gray-500 right">
-						<p>{{ device.config.hardware.optical_sensor.dpi_step.toLocaleString() }} min</p>
-						<p>{{ device.config.hardware.optical_sensor.max_dpi.toLocaleString() }} max</p>
+						<p>{{ device.config.hardware.optical_sensor.dpi_step }} min</p>
+						<p>{{ device.config.hardware.optical_sensor.max_dpi }} max</p>
 					</div>
 				</div>
 				<Slider
