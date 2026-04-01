@@ -1,4 +1,4 @@
-| 指令名稱 (Description)                 | a (Size) | b (Class) | c (ID) |
+| command (Description)                  | a (Size) | b (Class) | c (ID) |
 | :------------------------------------- | :------- | :-------- | :----- |
 | Get Battery Level                      | 0x02     | 0x07      | 0x80   |
 | Get Battery Critical Level             | 0x01     | 0x07      | 0x81   |

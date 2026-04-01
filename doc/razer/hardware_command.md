@@ -1,4 +1,4 @@
-| 指令名稱 (Description)                            | a (Size) | b (Class) | c (ID) |
+| command (Description)                             | a (Size) | b (Class) | c (ID) |
 | :------------------------------------------------ | :------- | :-------- | :----- |
 | Get Firmware Version                              | 0x02     | 0x00      | 0x81   |
 | Get Serial Number                                 | 0x16     | 0x00      | 0x82   |

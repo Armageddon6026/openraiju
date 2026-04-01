@@ -1,4 +1,4 @@
-| 指令名稱 (Description)                         | a (Size) | b (Class) | c (ID) |
+| command (Description)                          | a (Size) | b (Class) | c (ID) |
 | :--------------------------------------------- | :------- | :-------- | :----- |
 | Set Function Key Swap                          | 0x01     | 0x02      | 0x28   |
 | Get Function Key Swap                          | 0x01     | 0x02      | 0xA8   |
