@@ -1,4 +1,4 @@
-import { hardware_command } from '../command/index'
+import { hardware_command, power_command } from '../command/index'
 
 export default {
 	productId: 0x00b3,
@@ -16,4 +16,6 @@ export default {
 	pairDevice: hardware_command.pairDevice,
 	unpairDevice: hardware_command.unpairDevice,
 	getPairedDevices: hardware_command.getPairedDevices,
+	getLedIndicatorMode: power_command.getLedIndicatorMode,
+	setLedIndicatorMode: power_command.setLedIndicatorMode,
 } as const satisfies RazerDeviceConfig<'accessory'>

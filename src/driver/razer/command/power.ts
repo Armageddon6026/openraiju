@@ -1,5 +1,11 @@
 import { buildRazerReport, sendCommand } from './common'
 
+export enum RAZER_LED_INDICATOR_MODE {
+	Connection = 1,
+	BatteryLevel = 2,
+	BatteryWarning = 3,
+}
+
 export const power_command = {
 	async getBatteryLevel(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<number> {
 		const response = await sendCommand(
@@ -77,6 +83,40 @@ export const power_command = {
 		await sendCommand(
 			instance,
 			buildRazerReport(this.hardware.transaction_id, 0x02, 0x07, 0x03, args),
+			this.hardware.wait_min,
+		)
+	},
+
+	async getLedIndicatorMode(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<RAZER_LED_INDICATOR_MODE> {
+		const response = await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x01, 0x07, 0x90),
+			this.hardware.wait_min,
+		)
+		const mode = response.getUint8(0)
+		if (mode < 1 || mode > 3) {
+			throw new Error('Invalid LED indicator mode received from device')
+		}
+
+		return mode
+	},
+
+	async setLedIndicatorMode(
+		this: RazerBaseDeviceConfig,
+		instance: HIDDevice,
+		mode: RAZER_LED_INDICATOR_MODE,
+	): Promise<void> {
+		if (mode < 1 || mode > 3) {
+			throw new Error('LED indicator mode must be between 1 and 3')
+		}
+
+		// mode
+		// Connection: 1,
+		// BatteryLevel: 2,
+		// BatteryWarning: 3
+		await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x01, 0x07, 0x02, [mode]),
 			this.hardware.wait_min,
 		)
 	},

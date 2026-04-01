@@ -122,4 +122,6 @@ declare interface RazerDeviceFeature {
 	getPairedDevices?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number[]>
 	getSnapTapSetting?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<RazerSnapTapInfo>
 	setSnapTapSetting?: (this: RazerDeviceConfig, instance: HIDDevice, info: RazerSnapTapInfo) => Promise<void>
+	getLedIndicatorMode?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<RAZER_LED_INDICATOR_MODE>
+	setLedIndicatorMode?: (this: RazerDeviceConfig, instance: HIDDevice, mode: RAZER_LED_INDICATOR_MODE) => Promise<void>
 }
