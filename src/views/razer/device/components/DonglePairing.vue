@@ -49,6 +49,10 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 
 	const summary = 'Pairing Device'
 	try {
+		const knownPairedPids = (await device.config.getPairedDevices(device.instance)).filter(
+			(pid) => pid !== device.instance.productId,
+		)
+
 		const pairConfig = await deviceStore.getConfig(values.product_id)
 		if (!pairConfig) {
 			throw new Error('device config not found')
@@ -58,29 +62,33 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 			pairConfig.hardware.transaction_id,
 			values.product_id,
 		)
+		isConnecting.value = true
+
+		const pairedPid = await waitPairedDevicePid(knownPairedPids)
+		if (!pairedPid) {
+			await cancelPairing()
+			throw new Error('pairing timeout after 10 seconds, canceled pairing')
+		}
+
+		//await connectPairedDevice(pairedPid)
+		pairedDevicePid.value = pairedPid
+		paired_device_list.value = paired_device_list.value.filter((d) => d.productId !== pairedPid)
 
 		toast.add({
 			severity: 'success',
 			summary,
-			detail: 'success',
+			detail: `pid ${pairedPid}`,
 			life: 3000,
 		})
-
-		// 等待3秒後自動連接，同時顯示進度條
-		isConnecting.value = true
-		setTimeout(async () => {
-			await connectWithRetry()
-
-			await cancelPairing()
-		}, 3000)
 	} catch (e) {
-		isConnecting.value = false
 		toast.add({
 			severity: 'error',
 			summary,
 			detail: String(e),
 			life: 3000,
 		})
+	} finally {
+		isConnecting.value = false
 	}
 }
 
@@ -115,66 +123,50 @@ async function unpairDevice() {
 	}
 }
 
-async function connectPairedDevice() {
-	const summary = 'Pairing Device'
-	try {
-		const pids = await device.config.getPairedDevices(device.instance)
-		for (const pid of pids) {
-			if (pid === device.instance.productId) continue
-
-			const pairConf = await deviceStore.getConfig(pid)
-			if (!pairConf) {
-				throw new Error('device not found')
-			}
-
-			await deviceStore.addDevice({
-				config: pairConf,
-				instance: device.instance,
-				status: {},
-			})
-
-			pairedDevicePid.value = pid
-		}
-
-		toast.add({
-			severity: 'success',
-			summary: summary,
-			detail: `pid ${pairedDevicePid.value}`,
-			life: 3000,
-		})
-	} catch (e) {
-		pairedDevicePid.value = null
-		toast.add({
-			severity: 'error',
-			summary: summary,
-			detail: `${e}`,
-			life: 3000,
-		})
-		throw e
-	}
-}
-
-async function connectWithRetry() {
+async function waitPairedDevicePid(knownPairedPids: number[]) {
 	const maxRetryTime = 10000
 	const retryInterval = 1000
 	const startTime = Date.now()
 
 	while (Date.now() - startTime < maxRetryTime) {
 		try {
-			await connectPairedDevice()
-			isConnecting.value = false
-			return
-		} catch (e) {
-			const elapsed = Date.now() - startTime
-			if (elapsed >= maxRetryTime) {
-				isConnecting.value = false
-				console.error('Failed to connect paired device after 10 seconds')
-				break
+			const pids = (await device.config.getPairedDevices(device.instance)).filter(
+				(pid) => pid !== device.instance.productId,
+			)
+			const newPairedPid = pids.find((pid) => !knownPairedPids.includes(pid))
+			if (newPairedPid) {
+				return newPairedPid
 			}
-			// 等待後重試
-			await new Promise((resolve) => setTimeout(resolve, retryInterval))
+		} catch {
+			// 配對過程中可能暫時讀不到，忽略並重試
 		}
+
+		await new Promise((resolve) => setTimeout(resolve, retryInterval))
 	}
+
+	return null
+}
+
+async function connectPairedDevice(pid: number) {
+	const pairConf = await deviceStore.getConfig(pid)
+	if (!pairConf) {
+		throw new Error('device not found')
+	}
+
+	const isHyperPolling =
+		device.config.productId === 0x00b3 && (pairConf.ui.type === 'mouse' || pairConf.ui.type === 'keyboard')
+	// due to sub devices being paired to the same host device, overwrite the pairing related functions to prevent confusion
+	pairConf.getPairedDevices = undefined
+	pairConf.pairDevice = undefined
+
+	await deviceStore.addDevice({
+		config: pairConf,
+		instance: device.instance,
+		status: {
+			isSubDevice: true,
+			isHyperpolling: isHyperPolling,
+		},
+	})
 }
 </script>
 
