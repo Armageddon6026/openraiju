@@ -1,10 +1,12 @@
 [
 	{
 		"productId": 176,
+		"type": "mouse",
 		"name": "Razer Cobra Pro"
 	},
 	{
 		"productId": 725,
+		"type": "keyboard",
 		"name": "Razer BlackWidow V4 TKL Hyperspeed"
 	}
 ]

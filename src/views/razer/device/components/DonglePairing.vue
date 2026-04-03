@@ -3,13 +3,8 @@ import { useDeviceStore } from '@/stores'
 import { valibotResolver } from '@primevue/forms/resolvers/valibot'
 import * as v from 'valibot'
 
-type hyperpolling_device = {
-	productId: number
-	name: string
-}
-
 const { device } = defineProps<{
-	device: DeviceWith<'pairDevice' | 'unpairDevice' | 'getPairedDevices'>
+	device: DeviceWith<'pairDevice' | 'unpairDevice' | 'getPairedDevices' | 'getPairedList'>
 }>()
 
 type PairFormValues = {
@@ -19,7 +14,7 @@ type PairFormValues = {
 const toast = useToast()
 const deviceStore = useDeviceStore()
 const pairedDevicePid = ref<number | null>(null)
-const hyperpolling_device_list = ref<hyperpolling_device[]>([])
+const paired_device_list = ref<RazerPairedDeviceInfo[]>([])
 const isConnecting = ref(false)
 const resolver = valibotResolver(
 	v.object({
@@ -28,9 +23,23 @@ const resolver = valibotResolver(
 )
 
 onMounted(async () => {
-	const res = await fetch('/razer/hyperpolling_device.json')
-	const data = await res.json()
-	hyperpolling_device_list.value = data
+	try {
+		const pids = await device.config.getPairedDevices(device.instance)
+		if (pids.length > 1) {
+			pairedDevicePid.value = pids.find((pid) => pid !== device.instance.productId) || null
+			return
+		}
+
+		const pairedList = await device.config.getPairedList(device.instance)
+		paired_device_list.value = pairedList.filter((d) => !pids.includes(d.productId))
+	} catch (e) {
+		toast.add({
+			severity: 'error',
+			summary: 'Load Paired Devices',
+			detail: `${e}`,
+			life: 3000,
+		})
+	}
 })
 
 async function pairDevice({ valid, values }: { valid: boolean; values: PairFormValues }) {
@@ -186,7 +195,7 @@ async function connectWithRetry() {
 				>
 					<Select
 						name="product_id"
-						:options="hyperpolling_device_list"
+						:options="paired_device_list"
 						optionLabel="name"
 						optionValue="productId"
 						placeholder="Select HyperPolling Device"
@@ -205,22 +214,6 @@ async function connectWithRetry() {
 						:disabled="isConnecting"
 					></Button>
 				</Form>
-				<Button
-					w="full"
-					label="Connect Paired Device"
-					icon="i-material-symbols-link-off"
-					severity="help"
-					:disabled="isConnecting"
-					@click="connectPairedDevice()"
-				></Button>
-				<Button
-					w="full"
-					label="Unpair"
-					icon="i-material-symbols-link-off"
-					severity="danger"
-					:disabled="isConnecting"
-					@click="unpairDevice()"
-				></Button>
 			</div>
 
 			<div mt="4" rounded="xl" p="4" bg="[#1a1a1a]" un-border="1 emerald-500/20">

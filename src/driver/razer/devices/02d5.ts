@@ -16,5 +16,6 @@ export default {
 	},
 	pairDevice: hardware_command.pairDevice,
 	unpairDevice: hardware_command.unpairDevice,
+	getPairedList: hardware_command.getHyperspeedDeviceList,
 	getPairedDevices: hardware_command.getPairedDevices,
 } as const satisfies RazerDeviceConfig<'keyboard'>

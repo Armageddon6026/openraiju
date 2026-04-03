@@ -83,7 +83,6 @@ async function setDpi(dpi: number) {
 					</p>
 				</div>
 			</div>
-			``
 		</template>
 		<template #content>
 			<div class="flex flex-wrap gap-3">

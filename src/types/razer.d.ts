@@ -90,6 +90,11 @@ declare interface RazerSnapTapInfo {
 	}[]
 }
 
+declare interface RazerPairedDeviceInfo {
+	productId: number
+	name: string
+}
+
 declare interface RazerDeviceFeature {
 	getSerial(this: RazerDeviceConfig, instance: HIDDevice): Promise<string>
 	getFirmware(this: RazerDeviceConfig, instance: HIDDevice): Promise<string>
@@ -119,6 +124,7 @@ declare interface RazerDeviceFeature {
 		pid: number,
 	) => Promise<() => Promise<void>>
 	unpairDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
+	getPairedList?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<RazerPairedDeviceInfo[]>
 	getPairedDevices?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number[]>
 	getSnapTapSetting?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<RazerSnapTapInfo>
 	setSnapTapSetting?: (this: RazerDeviceConfig, instance: HIDDevice, info: RazerSnapTapInfo) => Promise<void>
