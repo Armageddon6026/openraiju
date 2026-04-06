@@ -35,6 +35,15 @@ export const RAZER_OPTICAL_SENSORS = {
 	},
 } as const satisfies Record<string, RazerOpticalSensor>
 
+export const RAZER_SENSOR_MODEL = {
+	none: 0,
+	lift_detection_sensor: 1,
+	hand_move_L2R_sensor: 2,
+	hand_move_R2L_sensor: 3,
+	avago_proximity_sensor: 4,
+	philips_proximity_sensor: 5,
+}
+
 export const RAZER_KEY_MAP: Record<string, number> = {
 	// Number keys
 	Backquote: 0, // KEY_ID_NULL

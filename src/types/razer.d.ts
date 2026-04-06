@@ -50,6 +50,7 @@ type RazerHardwareMap = {
 			hyper?: number
 		}
 		optical_sensor: RazerOpticalSensor
+		sensor_model: number
 	}
 }
 

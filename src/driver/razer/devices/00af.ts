@@ -1,5 +1,5 @@
 import { mouse_command, power_command, hardware_command } from '../command/index'
-import { RAZER_OPTICAL_SENSORS } from '../define'
+import { RAZER_OPTICAL_SENSORS, RAZER_SENSOR_MODEL } from '../define'
 
 export default {
 	productId: 0x00af,
@@ -13,6 +13,7 @@ export default {
 		wait_min: 31,
 		max_dpi_stages: 5,
 		optical_sensor: RAZER_OPTICAL_SENSORS.focus_pro_30K,
+		sensor_model: RAZER_SENSOR_MODEL.avago_proximity_sensor,
 		max_polling_rate: {
 			native: 1000,
 		},
