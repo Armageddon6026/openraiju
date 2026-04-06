@@ -47,6 +47,7 @@ export default defineConfig(({}) => {
 		},
 		server: {
 			open: true,
+			forwardConsole: true,
 		},
 		build: {
 			minify: 'oxc',
