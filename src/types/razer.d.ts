@@ -3,7 +3,6 @@ declare interface RazerDevice<TConfig extends RazerDeviceConfig = RazerDeviceCon
 	readonly instance: HIDDevice
 	readonly status: {
 		isSubDevice?: boolean
-		isHyperpolling?: boolean
 	}
 }
 

@@ -52,8 +52,9 @@ export const useDeviceStore = defineStore('razerStore', () => {
 			pairConf.hardware.wait_min = device.config.hardware.wait_min
 
 			// hyperpolling dongle, Enable hyperpolling mode
-			const isHyperPolling =
-				device.config.productId === 0x00b3 && (pairConf.ui.type === 'mouse' || pairConf.ui.type === 'keyboard')
+			if (device.config.productId === 0x00b3 && (pairConf.ui.type === 'mouse' || pairConf.ui.type === 'keyboard')) {
+				pairConf.hardware.max_polling_rate = pairConf.ui.type === 'mouse' ? 8000 : 4000
+			}
 
 			// due to sub devices being paired to the same host device, overwrite the pairing related functions to prevent confusion
 			pairConf.getPairedDevices = undefined
@@ -64,7 +65,6 @@ export const useDeviceStore = defineStore('razerStore', () => {
 					instance: device.instance,
 					config: pairConf,
 					status: {
-						isHyperpolling: isHyperPolling,
 						isSubDevice: true,
 					},
 				})

@@ -154,7 +154,7 @@ function getBatteryColor(): string {
 			<div flex="~" items="center" gap="1" text="gray-400">
 				<div :class="[getTypeIcon()]" v-tooltip="device.config.ui.type"></div>
 				<div
-					v-if="device.status.isHyperpolling"
+					v-if="(device.config?.hardware?.max_polling_rate ?? 0) > 1000"
 					i="material-symbols-h-plus-mobiledata-badge-outline-rounded"
 					v-tooltip="'support hyper polling'"
 				></div>
