@@ -13,6 +13,7 @@ type PairFormValues = {
 }
 
 const toast = useToast()
+const route = useRoute()
 const deviceStore = useDeviceStore()
 const pairedDevicePid = ref<number | null>(null)
 const paired_device_list = ref<RazerPairedDeviceInfo[]>([])
@@ -58,21 +59,24 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 		if (!pairConfig) {
 			throw new Error('device config not found')
 		}
+		isConnecting.value = true
+
 		const cancelPairing = await device.config.pairDevice(
 			device.instance,
 			pairConfig.hardware.transaction_id,
 			values.product_id,
 		)
-		isConnecting.value = true
 
 		const pairedPid = await waitPairedDevicePid(knownPairedPids)
 		if (!pairedPid) {
-			await cancelPairing()
+			cancelPairing()
 			throw new Error('pairing timeout after 10 seconds, canceled pairing')
 		}
 
 		pairedDevicePid.value = pairedPid
 		paired_device_list.value = paired_device_list.value.filter((d) => d.productId !== pairedPid)
+
+		await deviceStore.addSubDevices(route.params.instanceId as string)
 
 		toast.add({
 			severity: 'success',

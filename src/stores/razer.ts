@@ -19,18 +19,28 @@ export const useDeviceStore = defineStore('razerStore', () => {
 			throw new Error('No serial number found')
 		}
 
-		const did = `${RAZER_VENDOR_ID}-${instance.productId}-${sn}`
-		devicesMap.value.set(did, {
+		const instanceId = `${RAZER_VENDOR_ID}-${instance.productId}-${sn}`
+		devicesMap.value.set(instanceId, {
 			config: deviceConfig,
 			instance: instance,
 			status: {},
 		})
 
+		await addSubDevices(instanceId)
+	}
+
+	async function addSubDevices(instanceId: string) {
+		const device = devicesMap.value.get(instanceId)
+		if (!device) {
+			return
+		}
+
+		const deviceConfig = device.config
 		// check for paired sub devices
 		if (!deviceConfig.getPairedDevices) {
 			return
 		}
-		const pids = await deviceConfig.getPairedDevices(instance)
+		const pids = await deviceConfig.getPairedDevices(device.instance)
 		for (const pid of pids) {
 			if (pid === deviceConfig.productId) {
 				continue
@@ -41,14 +51,19 @@ export const useDeviceStore = defineStore('razerStore', () => {
 				continue
 			}
 
-			if (deviceConfig.setPairDeviceConfig) {
-				await deviceConfig.setPairDeviceConfig(subDeviceConfig)
-				console.log(subDeviceConfig)
+			const subSn = await subDeviceConfig.getSerial(device.instance)
+			if (!subSn) {
+				throw new Error('No serial number found')
 			}
 
-			const subdid = `${RAZER_VENDOR_ID}-${pid}-${sn}`
-			devicesMap.value.set(subdid, {
-				instance: instance,
+			// overwrite child device config with parent device config if supported some features like hyperspeed.
+			if (deviceConfig.setPairDeviceConfig) {
+				await deviceConfig.setPairDeviceConfig(subDeviceConfig)
+			}
+
+			const subInstanceId = `${RAZER_VENDOR_ID}-${pid}-${subSn}`
+			devicesMap.value.set(subInstanceId, {
+				instance: device.instance,
 				config: subDeviceConfig,
 				status: {
 					isSubDevice: true,
@@ -56,10 +71,10 @@ export const useDeviceStore = defineStore('razerStore', () => {
 			})
 
 			// link parent and child devices
-			if (!parentToChildren.value.has(did)) {
-				parentToChildren.value.set(did, new Set())
+			if (!parentToChildren.value.has(instanceId)) {
+				parentToChildren.value.set(instanceId, new Set())
 			}
-			parentToChildren.value.get(did)!.add(subdid)
+			parentToChildren.value.get(instanceId)!.add(subInstanceId)
 		}
 	}
 
@@ -95,7 +110,7 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		return devicesMap.value.get(instanceId)
 	}
 
-	return { deviceIterator, hasDevices, addDevice, removeDevice, getDevice }
+	return { deviceIterator, hasDevices, addDevice, addSubDevices, removeDevice, getDevice }
 })
 
 if (import.meta.hot) {
