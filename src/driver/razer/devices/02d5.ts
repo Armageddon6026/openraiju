@@ -1,4 +1,4 @@
-import { hardware_command } from '../command/index'
+import { hardware_command, getHyperspeedSupportList } from '../command/index'
 import RAZER_BLACKWIDOW_V4_TKL_HYPERSPEED_WIRED from './02d7.ts'
 export default {
 	...RAZER_BLACKWIDOW_V4_TKL_HYPERSPEED_WIRED,
@@ -13,6 +13,6 @@ export default {
 	},
 	pairDevice: hardware_command.pairDevice,
 	unpairDevice: hardware_command.unpairDevice,
-	getPairedList: hardware_command.getHyperspeedDeviceList,
+	getPairedSupportList: getHyperspeedSupportList,
 	getPairedDevices: hardware_command.getPairedDevices,
 } as const satisfies RazerDeviceConfig<'keyboard'>

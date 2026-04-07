@@ -1,4 +1,4 @@
-import { hardware_command } from '../command/index'
+import { getHyperspeedSupportList, hardware_command } from '../command/index'
 import RAZER_COBRA_PRO_WIRED from './00af.ts'
 
 export default {
@@ -14,6 +14,6 @@ export default {
 	},
 	pairDevice: hardware_command.pairDevice,
 	unpairDevice: hardware_command.unpairDevice,
-	getPairedList: hardware_command.getHyperspeedDeviceList,
+	getPairedSupportList: getHyperspeedSupportList,
 	getPairedDevices: hardware_command.getPairedDevices,
 } as const satisfies RazerDeviceConfig<'mouse'>

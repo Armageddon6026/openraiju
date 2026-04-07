@@ -18,10 +18,10 @@ export default {
 	getPairedDevices: hardware_command.getPairedDevices,
 	getLedIndicatorMode: power_command.getLedIndicatorMode,
 	setLedIndicatorMode: power_command.setLedIndicatorMode,
-	getPairedList: getHyperpollingDeviceList,
+	getPairedSupportList: getHyperpollingSupportList,
 } as const satisfies RazerDeviceConfig<'accessory'>
 
-async function getHyperpollingDeviceList(this: RazerDeviceConfig<'accessory'>, instance: HIDDevice) {
+async function getHyperpollingSupportList(this: RazerDeviceConfig<'accessory'>, instance: HIDDevice) {
 	const res = await fetch('/razer/hyperpolling_device.json')
 	const data = (await res.json()) as { productId: number; type: RazerDeviceType; name: string }[]
 
