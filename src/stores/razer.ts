@@ -56,11 +56,10 @@ export const useDeviceStore = defineStore('razerStore', () => {
 				pairConf.hardware.max_polling_rate = pairConf.ui.type === 'mouse' ? 8000 : 4000
 			}
 
-			// due to sub devices being paired to the same host device, overwrite the pairing related functions to prevent confusion
-			pairConf.getPairedDevices = undefined
-			pairConf.pairDevice = undefined
-
 			try {
+				// due to sub devices being paired to the same host device, overwrite the pairing related functions to prevent confusion
+				pairConf.getPairedDevices = undefined
+				pairConf.pairDevice = undefined
 				const subdid = await addDevice({
 					instance: device.instance,
 					config: pairConf,

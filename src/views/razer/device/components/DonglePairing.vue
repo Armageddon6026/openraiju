@@ -4,7 +4,7 @@ import { valibotResolver } from '@primevue/forms/resolvers/valibot'
 import * as v from 'valibot'
 
 const { device } = defineProps<{
-	device: DeviceWith<'pairDevice' | 'unpairDevice' | 'getPairedDevices' | 'getPairedList'>
+	device: DeviceWith<'pairDevice' | 'unpairDevice' | 'getPairedDevices' | 'getPairedSupportList'>
 }>()
 
 type PairFormValues = {
@@ -30,7 +30,7 @@ onMounted(async () => {
 			return
 		}
 
-		const pairedList = await device.config.getPairedList(device.instance)
+		const pairedList = await device.config.getPairedSupportList(device.instance)
 		paired_device_list.value = pairedList.filter((d) => !pids.includes(d.productId))
 	} catch (e) {
 		toast.add({
