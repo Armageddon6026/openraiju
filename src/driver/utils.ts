@@ -8,13 +8,13 @@ export function printBuffer(buffer: ArrayBufferLike) {
 	console.log(hexString.trim())
 }
 
-export async function ping(instance: HIDDevice, wait_min: number) {
+export async function ping(instance: HIDDevice) {
 	try {
 		if (!instance.opened) await instance.open()
 
 		await Promise.race([
 			instance.receiveFeatureReport(0x00),
-			new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), wait_min)),
+			new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 100)),
 		])
 
 		return true

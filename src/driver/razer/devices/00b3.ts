@@ -1,4 +1,5 @@
 import { hardware_command, power_command } from '../command/index'
+import { getHyperpollingSupportList } from '../helper'
 
 export default {
 	productId: 0x00b3,
@@ -20,19 +21,3 @@ export default {
 	setLedIndicatorMode: power_command.setLedIndicatorMode,
 	getPairedSupportList: getHyperpollingSupportList,
 } as const satisfies RazerDeviceConfig<'accessory'>
-
-async function getHyperpollingSupportList(this: RazerDeviceConfig<'accessory'>, instance: HIDDevice) {
-	const res = await fetch('/razer/hyperpolling_device.json')
-	const data = (await res.json()) as { productId: number; type: RazerDeviceType; name: string }[]
-
-	const firmwareVersion = await this.getFirmware(instance)
-	const major = Number(firmwareVersion.split('.')[0])
-	if (isNaN(major) || major < 1) {
-		throw new Error(`Invalid firmware version: ${firmwareVersion}`)
-	}
-
-	// Major version 3 use "keyboard" , while major version 1 and 2 use "mouse"
-	const deviceType = major === 3 ? 'keyboard' : 'mouse'
-
-	return data.filter((d) => d.type === deviceType).map((d) => ({ productId: d.productId, name: d.name }))
-}

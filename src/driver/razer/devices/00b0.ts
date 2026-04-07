@@ -1,4 +1,5 @@
-import { getHyperspeedSupportList, hardware_command } from '../command/index'
+import { hardware_command } from '../command/index'
+import { getHyperspeedSupportList } from '../helper.ts'
 import RAZER_COBRA_PRO_WIRED from './00af.ts'
 
 export default {

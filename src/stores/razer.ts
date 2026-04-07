@@ -1,4 +1,5 @@
-import { RAZER_DEVICE_CONFIGS, RAZER_VENDOR_ID } from '@/driver/razer/define'
+import { RAZER_VENDOR_ID } from '@/driver/razer/define'
+import { getRazerDeviceConfig } from '@/driver/razer/helper'
 
 export const useDeviceStore = defineStore('razerStore', () => {
 	const devicesMap = ref(new Map<string, RazerDevice>())
@@ -7,79 +8,69 @@ export const useDeviceStore = defineStore('razerStore', () => {
 	const deviceIterator = computed(() => Array.from(devicesMap.value.entries()))
 	const hasDevices = computed(() => devicesMap.value.size > 0)
 
-	async function getConfig(productId: number): Promise<RazerBaseDeviceConfig | null> {
-		const hex = productId.toString(16).padStart(4, '0')
+	async function addDevice(instance: HIDDevice) {
+		const deviceConfig = await getRazerDeviceConfig(instance.productId)
+		if (!deviceConfig) {
+			throw new Error(`Unsupported device with PID ${instance.productId}`)
+		}
 
-		// lazy loading
-		const configloader = RAZER_DEVICE_CONFIGS[`/src/driver/razer/devices/${hex}.ts`] as () =>
-			| Promise<{ default: RazerBaseDeviceConfig }>
-			| undefined
-		if (!configloader) return null
-
-		const conf = await configloader()
-		if (!conf) return null
-
-		return conf.default
-	}
-
-	async function addDevice(device: RazerDevice<RazerBaseDeviceConfig>): Promise<string> {
-		const sn = await device.config.getSerial(device.instance)
+		const sn = await deviceConfig.getSerial(instance)
 		if (!sn) {
 			throw new Error('No serial number found')
 		}
 
-		// generate ID
-		const did = `${RAZER_VENDOR_ID}-${device.config.productId}-${sn}`
-
-		devicesMap.value.set(did, device)
+		const did = `${RAZER_VENDOR_ID}-${instance.productId}-${sn}`
+		devicesMap.value.set(did, {
+			config: deviceConfig,
+			instance: instance,
+			status: {},
+		})
 
 		// check for paired sub devices
-		if (!device.config.getPairedDevices) {
-			return did
+		if (!deviceConfig.getPairedDevices) {
+			return
 		}
-		const pids = await device.config.getPairedDevices(device.instance)
+		const pids = await deviceConfig.getPairedDevices(instance)
 		for (const pid of pids) {
-			if (pid === device.config.productId) {
+			if (pid === deviceConfig.productId) {
 				continue
 			}
 
-			const pairConf = await getConfig(pid)
-			if (!pairConf) {
+			const subDeviceConfig = await getRazerDeviceConfig(pid)
+			if (!subDeviceConfig) {
 				continue
 			}
 
 			// copy the wait_min value from the parent device to ensure proper pairing behavior
-			pairConf.hardware.wait_min = device.config.hardware.wait_min
+			subDeviceConfig.hardware.wait_min = deviceConfig.hardware.wait_min
 
 			// hyperpolling dongle, Enable hyperpolling mode
-			if (device.config.productId === 0x00b3 && (pairConf.ui.type === 'mouse' || pairConf.ui.type === 'keyboard')) {
-				pairConf.hardware.max_polling_rate = pairConf.ui.type === 'mouse' ? 8000 : 4000
+			if (
+				instance.productId === 0x00b3 &&
+				(subDeviceConfig.ui.type === 'mouse' || subDeviceConfig.ui.type === 'keyboard')
+			) {
+				subDeviceConfig.hardware.max_polling_rate = subDeviceConfig.ui.type === 'mouse' ? 8000 : 4000
 			}
 
-			try {
-				// due to sub devices being paired to the same host device, overwrite the pairing related functions to prevent confusion
-				pairConf.getPairedDevices = undefined
-				pairConf.pairDevice = undefined
-				const subdid = await addDevice({
-					instance: device.instance,
-					config: pairConf,
-					status: {
-						isSubDevice: true,
-					},
-				})
+			// due to sub devices being paired to the same host device, overwrite the pairing related functions to prevent confusion
+			subDeviceConfig.getPairedDevices = undefined
+			subDeviceConfig.pairDevice = undefined
 
-				// link parent and child devices
-				if (!parentToChildren.value.has(did)) {
-					parentToChildren.value.set(did, new Set())
-				}
-				parentToChildren.value.get(did)!.add(subdid)
-			} catch (e) {
-				console.warn(`Failed to add paired device with PID ${pid}:`, e)
-				continue
+			const subdid = `${RAZER_VENDOR_ID}-${pid}-${sn}`
+			devicesMap.value.set(subdid, {
+				instance: instance,
+				config: subDeviceConfig,
+				status: {
+					isSubDevice: true,
+				},
+			})
+
+			// link parent and child devices
+			if (!parentToChildren.value.has(did)) {
+				parentToChildren.value.set(did, new Set())
 			}
+			parentToChildren.value.get(did)!.add(subdid)
 		}
-
-		return did
 	}
 
 	async function removeDevice(instanceId: string) {
@@ -114,7 +105,7 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		return devicesMap.value.get(instanceId)
 	}
 
-	return { deviceIterator, hasDevices, addDevice, removeDevice, getDevice, getConfig }
+	return { deviceIterator, hasDevices, addDevice, removeDevice, getDevice }
 })
 
 if (import.meta.hot) {

@@ -32,14 +32,9 @@ async function connectDevice() {
 		).filter((d) => d.collections.length == 1)
 
 		for (const instance of instances) {
-			const deviceConf = await deviceStore.getConfig(instance.productId)
-			if (!deviceConf || !(await ping(instance, deviceConf.hardware.wait_min))) continue
+			if (!(await ping(instance))) continue
 
-			await deviceStore.addDevice({
-				config: deviceConf,
-				instance: instance,
-				status: {},
-			})
+			await deviceStore.addDevice(instance)
 			toast.add({
 				severity: 'success',
 				summary: summary,
@@ -63,14 +58,9 @@ async function getHidDevices() {
 	const instances = (await navigator.hid.getDevices()).filter((d) => d.collections.length == 1)
 
 	instances.forEach(async (instance) => {
-		const deviceConf = await deviceStore.getConfig(instance.productId)
-		if (!deviceConf || !(await ping(instance, deviceConf.hardware.wait_min))) return
+		if (!(await ping(instance))) return
 
-		await deviceStore.addDevice({
-			config: deviceConf,
-			instance: instance,
-			status: {},
-		})
+		await deviceStore.addDevice(instance)
 	})
 }
 

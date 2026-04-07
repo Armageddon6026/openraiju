@@ -1,4 +1,5 @@
-import { hardware_command, getHyperspeedSupportList } from '../command/index'
+import { hardware_command } from '../command/index'
+import { getHyperspeedSupportList } from '../helper.ts'
 import RAZER_BLACKWIDOW_V4_TKL_HYPERSPEED_WIRED from './02d7.ts'
 export default {
 	...RAZER_BLACKWIDOW_V4_TKL_HYPERSPEED_WIRED,

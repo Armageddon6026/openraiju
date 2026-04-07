@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getRazerDeviceConfig } from '@/driver/razer/helper'
 import { useDeviceStore } from '@/stores'
 import { valibotResolver } from '@primevue/forms/resolvers/valibot'
 import * as v from 'valibot'
@@ -53,7 +54,7 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 			(pid) => pid !== device.instance.productId,
 		)
 
-		const pairConfig = await deviceStore.getConfig(values.product_id)
+		const pairConfig = await getRazerDeviceConfig(values.product_id)
 		if (!pairConfig) {
 			throw new Error('device config not found')
 		}
