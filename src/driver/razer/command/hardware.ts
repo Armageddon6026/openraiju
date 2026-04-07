@@ -24,7 +24,7 @@ export const hardware_command = {
 		return `${response.getUint8(0)}.${response.getUint8(1)}.${response.getUint8(2)}.${response.getUint8(3)}`
 	},
 
-	async getPollingRate(this: RazerDeviceConfig<'mouse' | 'keyboard'>, instance: HIDDevice): Promise<number> {
+	async getPollingRate(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<number> {
 		if (!this.hardware.max_polling_rate) {
 			throw new Error('Device does not support polling rate configuration')
 		}
@@ -51,7 +51,7 @@ export const hardware_command = {
 		return maxPollingRate / pollingIndex
 	},
 
-	async setPollingRate(this: RazerDeviceConfig<'mouse' | 'keyboard'>, instance: HIDDevice, pollingRate: number) {
+	async setPollingRate(this: RazerBaseDeviceConfig, instance: HIDDevice, pollingRate: number) {
 		if (!this.hardware.max_polling_rate) {
 			throw new Error('Device does not support polling rate configuration')
 		}

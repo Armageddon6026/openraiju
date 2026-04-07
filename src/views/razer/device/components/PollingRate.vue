@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { device } = defineProps<{
-	device: TypedDeviceWith<'mouse' | 'keyboard', 'getPollingRate' | 'setPollingRate'>
+	device: DeviceWith<'getPollingRate' | 'setPollingRate'>
 }>()
 
 const toast = useToast()

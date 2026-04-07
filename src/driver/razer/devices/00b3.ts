@@ -1,5 +1,5 @@
 import { hardware_command, power_command } from '../command/index'
-import { getHyperpollingSupportList } from '../helper'
+import { getHyperpollingSupportList, setHyperpollingHardware } from '../helper'
 
 export default {
 	productId: 0x00b3,
@@ -20,4 +20,5 @@ export default {
 	getLedIndicatorMode: power_command.getLedIndicatorMode,
 	setLedIndicatorMode: power_command.setLedIndicatorMode,
 	getPairedSupportList: getHyperpollingSupportList,
+	setPairDeviceConfig: setHyperpollingHardware,
 } as const satisfies RazerDeviceConfig<'accessory'>

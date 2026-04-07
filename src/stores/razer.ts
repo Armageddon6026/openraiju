@@ -41,20 +41,10 @@ export const useDeviceStore = defineStore('razerStore', () => {
 				continue
 			}
 
-			// copy the wait_min value from the parent device to ensure proper pairing behavior
-			subDeviceConfig.hardware.wait_min = deviceConfig.hardware.wait_min
-
-			// hyperpolling dongle, Enable hyperpolling mode
-			if (
-				instance.productId === 0x00b3 &&
-				(subDeviceConfig.ui.type === 'mouse' || subDeviceConfig.ui.type === 'keyboard')
-			) {
-				subDeviceConfig.hardware.max_polling_rate = subDeviceConfig.ui.type === 'mouse' ? 8000 : 4000
+			if (deviceConfig.setPairDeviceConfig) {
+				await deviceConfig.setPairDeviceConfig(subDeviceConfig)
+				console.log(subDeviceConfig)
 			}
-
-			// due to sub devices being paired to the same host device, overwrite the pairing related functions to prevent confusion
-			subDeviceConfig.getPairedDevices = undefined
-			subDeviceConfig.pairDevice = undefined
 
 			const subdid = `${RAZER_VENDOR_ID}-${pid}-${sn}`
 			devicesMap.value.set(subdid, {

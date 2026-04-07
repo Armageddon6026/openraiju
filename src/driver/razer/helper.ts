@@ -14,6 +14,14 @@ export async function getHyperspeedSupportList(
 	return data.filter((d) => d.type === deviceType).map((d) => ({ productId: d.productId, name: d.name }))
 }
 
+export async function setHyperspeedHardware(this: RazerBaseDeviceConfig, target: RazerBaseDeviceConfig) {
+	target.hardware.wait_min = this.hardware.wait_min
+	target.pairDevice = undefined
+	target.getPairedDevices = undefined
+	target.getPairedSupportList = undefined
+	target.setPairDeviceConfig = undefined
+}
+
 export async function getHyperpollingSupportList(this: RazerDeviceConfig<'accessory'>, instance: HIDDevice) {
 	const res = await fetch('/razer/hyperpolling_device.json')
 	const data = (await res.json()) as { productId: number; type: RazerDeviceType; name: string }[]
@@ -28,6 +36,24 @@ export async function getHyperpollingSupportList(this: RazerDeviceConfig<'access
 	const deviceType = major === 3 ? 'keyboard' : 'mouse'
 
 	return data.filter((d) => d.type === deviceType).map((d) => ({ productId: d.productId, name: d.name }))
+}
+
+export async function setHyperpollingHardware(this: RazerBaseDeviceConfig, target: RazerBaseDeviceConfig) {
+	target.hardware.wait_min = this.hardware.wait_min
+
+	switch (target.ui.type) {
+		case 'keyboard':
+			target.hardware.max_polling_rate = 4000
+			break
+		case 'mouse':
+			target.hardware.max_polling_rate = 8000
+			break
+	}
+
+	target.pairDevice = undefined
+	target.getPairedDevices = undefined
+	target.getPairedSupportList = undefined
+	target.setPairDeviceConfig = undefined
 }
 
 export async function getRazerDeviceConfig(productId: number): Promise<RazerBaseDeviceConfig | null> {

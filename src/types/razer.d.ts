@@ -111,6 +111,7 @@ declare interface RazerDeviceFeature {
 		pid: number,
 	) => Promise<() => Promise<void>>
 	unpairDevice?: (this: RazerDeviceConfig, instance: HIDDevice, pid: number) => Promise<void>
+	setPairDeviceConfig?: (this: RazerDeviceConfig, target: RazerDeviceConfig) => Promise<void>
 	getPairedSupportList?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<RazerPairedDeviceInfo[]>
 	getPairedDevices?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number[]>
 	getSnapTapSetting?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<RazerSnapTapInfo>
