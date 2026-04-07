@@ -200,7 +200,7 @@ async function saveSnapTap() {
 						<p text="xs gray-400">Click a field then press a key. Esc clears current field.</p>
 					</div>
 					<div flex="~" items="center" gap="2">
-						<Button label="Add Pair" severity="info" outlined size="small" @click="addPair" />
+						<Button label="Add Pair" severity="info" outlined size="small" @click="addPair"></Button>
 						<Button
 							label="Save Pairs"
 							severity="success"
@@ -208,7 +208,7 @@ async function saveSnapTap() {
 							:disabled="!canSave"
 							size="small"
 							@click="saveSnapTap"
-						/>
+						></Button>
 					</div>
 				</div>
 

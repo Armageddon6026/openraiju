@@ -1,4 +1,4 @@
-import { mouse_command, power_command, keyboard_command, hardware_command } from '../command/index'
+import { power_command, keyboard_command, hardware_command } from '../command/index'
 
 export default {
 	productId: 0x02d7,
@@ -10,9 +10,7 @@ export default {
 	hardware: {
 		transaction_id: 0x80,
 		wait_min: 31,
-		max_polling_rate: {
-			native: 1000,
-		},
+		max_polling_rate: 1000,
 	},
 	getSerial: hardware_command.getSerial,
 	getFirmware: hardware_command.getFirmware,
@@ -22,8 +20,8 @@ export default {
 	setLowBatteryThreshold: power_command.setLowBatteryThreshold,
 	getIdleTime: power_command.getIdleTime,
 	setIdleTime: power_command.setIdleTime,
-	getPollingRate: mouse_command.getPollingRate,
-	setPollingRate: mouse_command.setPollingRate,
+	getPollingRate: hardware_command.getPollingRate,
+	setPollingRate: hardware_command.setPollingRate,
 	getSnapTapSetting: keyboard_command.getSnapTapSetting,
 	setSnapTapSetting: keyboard_command.setSnapTapSetting,
 } as const satisfies RazerDeviceConfig<'keyboard'>

@@ -1,4 +1,4 @@
-import { buildRazerReport, sendCommand } from './common'
+import { buildRazerReport, razer_storage_type, sendCommand } from './common'
 
 export const hardware_command = {
 	async getSerial(this: RazerBaseDeviceConfig, instance: HIDDevice): Promise<string> {
@@ -22,6 +22,77 @@ export const hardware_command = {
 
 		// firmware format: 4 bytes
 		return `${response.getUint8(0)}.${response.getUint8(1)}.${response.getUint8(2)}.${response.getUint8(3)}`
+	},
+
+	async getPollingRate(this: RazerDeviceConfig<'mouse' | 'keyboard'>, instance: HIDDevice): Promise<number> {
+		if (!this.hardware.max_polling_rate) {
+			throw new Error('Device does not support polling rate configuration')
+		}
+
+		const maxPollingRate = this.hardware.max_polling_rate
+		const isHyperpolling = maxPollingRate > 1000
+
+		const commandId = isHyperpolling ? 0xc0 : 0x85
+		const response = await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, 0x01, 0x00, commandId, [razer_storage_type.profile_slot_default]),
+			this.hardware.wait_min,
+		)
+
+		// The response contains the polling index, which is used to calculate the polling rate.
+		// Ex:
+		// - If pollingIndex = 0x10 (16 in decimal) and HyperPolling is enabled,
+		// - pollingRate = maxPollingRate (8000) / pollingIndex (16) = 8000 / 16 = 500 Hz
+		const pollingIndex = response.getUint8(isHyperpolling ? 1 : 0)
+		if (pollingIndex === 0) {
+			throw new Error('Failed to get polling rate')
+		}
+
+		return maxPollingRate / pollingIndex
+	},
+
+	async setPollingRate(this: RazerDeviceConfig<'mouse' | 'keyboard'>, instance: HIDDevice, pollingRate: number) {
+		if (!this.hardware.max_polling_rate) {
+			throw new Error('Device does not support polling rate configuration')
+		}
+
+		const maxPollingRate = this.hardware.max_polling_rate
+		const isHyperpolling = maxPollingRate > 1000
+
+		const commandId = isHyperpolling ? 0x40 : 0x05
+		const data_size = isHyperpolling ? 0x02 : 0x01
+
+		if (pollingRate > maxPollingRate) {
+			throw new Error(`Polling rate exceeds the maximum supported rate of ${maxPollingRate}`)
+		}
+
+		const pollingIndex = maxPollingRate / pollingRate
+		if (
+			pollingRate === 250 /** RAZER Not supported 250  */ ||
+			maxPollingRate % pollingRate !== 0 ||
+			(pollingIndex & (pollingIndex - 1)) !== 0 /** check 2^x */
+		) {
+			throw new Error(`Polling rate ${pollingRate} is not supported`)
+		}
+
+		// HyperPolling requires two commands: runtime update (0x00) and persistent storage (0x01) write
+		const args = isHyperpolling ? [razer_storage_type.runtime, pollingIndex] : [pollingIndex]
+		await sendCommand(
+			instance,
+			buildRazerReport(this.hardware.transaction_id, data_size, 0x00, commandId, args),
+			this.hardware.wait_min,
+		)
+
+		if (isHyperpolling) {
+			await sendCommand(
+				instance,
+				buildRazerReport(this.hardware.transaction_id, data_size, 0x00, commandId, [
+					razer_storage_type.profile_slot_default,
+					pollingIndex,
+				]),
+				this.hardware.wait_min,
+			)
+		}
 	},
 
 	async getHyperspeedDeviceList(this: RazerBaseDeviceConfig, _instance: HIDDevice): Promise<RazerPairedDeviceInfo[]> {

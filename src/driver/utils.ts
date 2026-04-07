@@ -22,10 +22,3 @@ export async function ping(instance: HIDDevice, wait_min: number) {
 		return false
 	}
 }
-
-export function calcMaxPollingRate(
-	isHyperpolling: boolean,
-	pollingRateConfig: { hyper?: number; native: number },
-): number {
-	return isHyperpolling ? (pollingRateConfig.hyper ?? pollingRateConfig.native) : pollingRateConfig.native
-}

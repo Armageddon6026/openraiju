@@ -33,22 +33,14 @@ declare interface RazerBaseDeviceConfig extends RazerDeviceFeature {
 		 * - 0x00-0x7F: Routes command to the connected Mouse.
 		 */
 		transaction_id: number
+
+		max_polling_rate?: number
 	}
 }
 
 type RazerHardwareMap = {
-	keyboard: {
-		max_polling_rate?: {
-			native: number
-			hyper?: number // Indicates whether the device supports 8K polling rate.
-		}
-	}
 	mouse: {
 		max_dpi_stages: number
-		max_polling_rate: {
-			native: number
-			hyper?: number
-		}
 		optical_sensor: RazerOpticalSensor
 		sensor_model: number
 	}
@@ -111,13 +103,8 @@ declare interface RazerDeviceFeature {
 	setActivateDpiStage?: (this: RazerDeviceConfig, instance: HIDDevice, stageId: number) => Promise<void>
 	getTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	setTrackingStep?: (this: RazerDeviceConfig, instance: HIDDevice, step: number) => Promise<void>
-	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, isHyperpolling: boolean) => Promise<number>
-	setPollingRate?: (
-		this: RazerDeviceConfig,
-		instance: HIDDevice,
-		pollingRate: number,
-		isHyperpolling: boolean,
-	) => Promise<void>
+	getPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
+	setPollingRate?: (this: RazerDeviceConfig, instance: HIDDevice, pollingRate: number) => Promise<void>
 	pairDevice?: (
 		this: RazerDeviceConfig,
 		instance: HIDDevice,

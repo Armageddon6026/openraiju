@@ -9,10 +9,7 @@ export default {
 	},
 	hardware: {
 		...RAZER_BLACKWIDOW_V4_TKL_HYPERSPEED_WIRED.hardware,
-		max_polling_rate: {
-			native: 1000,
-			hyper: 4000,
-		},
+		max_polling_rate: 1000,
 	},
 	pairDevice: hardware_command.pairDevice,
 	unpairDevice: hardware_command.unpairDevice,

@@ -70,7 +70,6 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 			throw new Error('pairing timeout after 10 seconds, canceled pairing')
 		}
 
-		//await connectPairedDevice(pairedPid)
 		pairedDevicePid.value = pairedPid
 		paired_device_list.value = paired_device_list.value.filter((d) => d.productId !== pairedPid)
 
@@ -145,28 +144,6 @@ async function waitPairedDevicePid(knownPairedPids: number[]) {
 	}
 
 	return null
-}
-
-async function connectPairedDevice(pid: number) {
-	const pairConf = await deviceStore.getConfig(pid)
-	if (!pairConf) {
-		throw new Error('device not found')
-	}
-
-	const isHyperPolling =
-		device.config.productId === 0x00b3 && (pairConf.ui.type === 'mouse' || pairConf.ui.type === 'keyboard')
-	// due to sub devices being paired to the same host device, overwrite the pairing related functions to prevent confusion
-	pairConf.getPairedDevices = undefined
-	pairConf.pairDevice = undefined
-
-	await deviceStore.addDevice({
-		config: pairConf,
-		instance: device.instance,
-		status: {
-			isSubDevice: true,
-			isHyperpolling: isHyperPolling,
-		},
-	})
 }
 </script>
 

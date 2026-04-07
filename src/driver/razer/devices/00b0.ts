@@ -10,10 +10,7 @@ export default {
 	},
 	hardware: {
 		...RAZER_COBRA_PRO_WIRED.hardware,
-		max_polling_rate: {
-			native: 1000,
-			hyper: 8000,
-		},
+		max_polling_rate: 1000,
 	},
 	pairDevice: hardware_command.pairDevice,
 	unpairDevice: hardware_command.unpairDevice,

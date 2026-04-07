@@ -14,9 +14,7 @@ export default {
 		max_dpi_stages: 5,
 		optical_sensor: RAZER_OPTICAL_SENSORS.focus_pro_30K,
 		sensor_model: RAZER_SENSOR_MODEL.avago_proximity_sensor,
-		max_polling_rate: {
-			native: 1000,
-		},
+		max_polling_rate: 1000,
 	},
 	getSerial: hardware_command.getSerial,
 	getFirmware: hardware_command.getFirmware,
@@ -31,6 +29,6 @@ export default {
 	setActivateDpiStage: mouse_command.setActivateDpiStage,
 	getTrackingStep: mouse_command.getTrackingStep,
 	setTrackingStep: mouse_command.setTrackingStep,
-	getPollingRate: mouse_command.getPollingRate,
-	setPollingRate: mouse_command.setPollingRate,
+	getPollingRate: hardware_command.getPollingRate,
+	setPollingRate: hardware_command.setPollingRate,
 } as const satisfies RazerDeviceConfig<'mouse'>
