@@ -170,35 +170,55 @@ function goToDeviceSettings(instanceId: string) {
 					bg="[#171717]"
 					un-border="1 emerald-500/20"
 				>
-					<div grid="~ cols-1 md:cols-3" gap="3">
+					<div flex="~" items="center" justify="between" gap="3" m="b3">
+						<div>
+							<p text="xs gray-400" uppercase="~" tracking="[0.18em]">Available Device</p>
+							<p text="sm emerald-100" font="semibold">Select a subdevice to pair</p>
+						</div>
+						<div
+							rounded="lg"
+							p="x3 y1.5"
+							bg="emerald-500/10"
+							un-border="1 emerald-500/30"
+							text="sm emerald-200"
+							font="bold"
+						>
+							{{ supportedDeviceList.length }} Ready
+						</div>
+					</div>
+
+					<div grid="~ cols-1 md:cols-5" gap="3" items="end">
 						<Form
 							v-slot="$form"
 							:resolver="valibotResolver(pairFormSchema)"
-							w="full md:col-span-1"
+							w="full md:col-span-5"
 							flex="~ col"
 							gap="2"
 							@submit="pairDevice"
 						>
-							<Select
-								name="product_id"
-								:options="supportedDeviceList"
-								optionLabel="name"
-								optionValue="productId"
-								placeholder="Select HyperPolling Device"
-								w="full"
-								:disabled="isConnecting"
-							></Select>
+							<div grid="~ cols-1 md:cols-[1fr_auto]" gap="2" items="start md:end">
+								<Select
+									name="product_id"
+									:options="supportedDeviceList"
+									optionLabel="name"
+									optionValue="productId"
+									placeholder="Select HyperPolling Device"
+									w="full"
+									:disabled="isConnecting"
+								></Select>
+								<Button
+									w="full md:150px"
+									label="Pair Device"
+									icon="i-material-symbols-link"
+									severity="success"
+									type="submit"
+									:loading="isConnecting"
+									:disabled="isConnecting"
+								></Button>
+							</div>
 							<Message v-if="$form.product_id?.invalid" severity="error" size="small" variant="simple">{{
 								$form.product_id.error?.message
 							}}</Message>
-							<Button
-								w="full"
-								label="Pair"
-								icon="i-material-symbols-link"
-								severity="success"
-								type="submit"
-								:disabled="isConnecting"
-							></Button>
 						</Form>
 					</div>
 				</div>
@@ -223,16 +243,23 @@ function goToDeviceSettings(instanceId: string) {
 						@click="goToDeviceSettings(item.instanceId)"
 					>
 						<Image :src="item.config.ui.image" :alt="item.config.ui.name" width="100" />
-						<div>
+						<div flex="1">
 							<p text="xs emerald-300/85" uppercase="~" tracking="[0.18em]">Razer Device</p>
 							<p text="lg gray-100" font="semibold">{{ item.config.ui.name }}</p>
 							<p text="xs gray-400">Type: {{ item.config.ui.type }}</p>
 						</div>
+						<span i="material-symbols-chevron-right-rounded" text="2xl emerald-300/75" m="l-auto"></span>
 					</div>
 				</div>
 
 				<div v-else mt="2" rounded="xl" p="4" bg="[#171717]" un-border="1 emerald-500/20">
-					<p text="xs gray-400">No paired device connected.</p>
+					<div flex="~" items="center" gap="3">
+						<span i="material-symbols-devices" text="2xl emerald-300/70"></span>
+						<div>
+							<p text="sm gray-300">No paired device connected</p>
+							<p text="xs gray-500">Choose an available subdevice above to start pairing.</p>
+						</div>
+					</div>
 				</div>
 			</div>
 		</template>
