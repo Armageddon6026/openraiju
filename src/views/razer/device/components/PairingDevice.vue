@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useDeviceStore } from '@/stores'
+import type { FormSubmitEvent } from '@primevue/forms'
 import { valibotResolver } from '@primevue/forms/resolvers/valibot'
 import * as v from 'valibot'
 
@@ -7,9 +8,10 @@ const { device } = defineProps<{
 	device: DeviceWith<'pairDevice' | 'unpairDevice' | 'getPairedDevices' | 'getPairedSupportList'>
 }>()
 
-type PairFormValues = {
-	product_id?: number
-}
+const pairFormSchema = v.object({
+	product_id: v.optional(v.number('Please select a device first')),
+})
+type PairFormValues = v.InferOutput<typeof pairFormSchema>
 
 const toast = useToast()
 const route = useRoute()
@@ -18,18 +20,15 @@ const deviceStore = useDeviceStore()
 const pairedDeviceInstanceIds = ref<string[] | undefined>()
 const paired_device_list = ref<RazerPairedDeviceInfo[]>()
 const isConnecting = ref(false)
-const resolver = valibotResolver(
-	v.object({
-		product_id: v.pipe(v.number('Please select a device first')),
-	}),
-)
 
 onMounted(async () => {
 	try {
 		const children = deviceStore.getPairedDeviceInstanceIds(route.params.instanceId as string)
 		if (children && children.size > 0) {
 			pairedDeviceInstanceIds.value = Array.from(children)
+			paired_device_list.value = undefined
 		} else {
+			pairedDeviceInstanceIds.value = undefined
 			paired_device_list.value = await device.config.getPairedSupportList(device.instance)
 		}
 	} catch (e) {
@@ -42,7 +41,8 @@ onMounted(async () => {
 	}
 })
 
-async function pairDevice({ valid, values }: { valid: boolean; values: PairFormValues }) {
+async function pairDevice(event: FormSubmitEvent<PairFormValues>) {
+	const { values, valid } = event
 	if (!valid || !values.product_id) {
 		return
 	}
@@ -66,8 +66,6 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 			cancelPairingCallback()
 			throw new Error('pairing timeout after 10 seconds, canceled pairing')
 		}
-
-		console.log('newInstanceIds', newInstanceIds)
 
 		pairedDeviceInstanceIds.value = newInstanceIds
 		paired_device_list.value = undefined
@@ -120,8 +118,7 @@ async function waitPairedDevicePid() {
 			<div grid="~ cols-1 md:cols-3" gap="3">
 				<Form
 					v-slot="$form"
-					:initial-values="{ product_id: null }"
-					:resolver="resolver"
+					:resolver="valibotResolver(pairFormSchema)"
 					w="full md:col-span-1"
 					flex="~ col"
 					gap="2"
