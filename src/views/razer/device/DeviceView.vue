@@ -55,7 +55,7 @@ const hasBatteryThresholdControl = useCapabilityDevice(currentDevice.value, [
 ] as const)
 
 // Pairing - Hyperpolling Dongle
-const DonglePairingComp = defineAsyncComponent(() => import('./components/DonglePairing.vue'))
+const DonglePairingComp = defineAsyncComponent(() => import('./components/PairingDevice.vue'))
 const hasHyperpollingControl = useCapabilityDevice(currentDevice.value, [
 	'pairDevice',
 	'unpairDevice',

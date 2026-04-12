@@ -1,5 +1,3 @@
-import { RAZER_DEVICE_CONFIGS } from './define'
-
 export async function getHyperspeedSupportList(
 	this: RazerBaseDeviceConfig,
 	_instance: HIDDevice,
@@ -20,19 +18,4 @@ export async function setHyperspeedHardware(this: RazerBaseDeviceConfig, target:
 	target.getPairedDevices = undefined
 	target.getPairedSupportList = undefined
 	target.setPairDeviceConfig = undefined
-}
-
-export async function getRazerDeviceConfig(productId: number): Promise<RazerBaseDeviceConfig | null> {
-	const hex = productId.toString(16).padStart(4, '0')
-
-	// lazy loading
-	const configloader = RAZER_DEVICE_CONFIGS[`/src/driver/razer/devices/${hex}.ts`] as () =>
-		| Promise<{ default: RazerBaseDeviceConfig }>
-		| undefined
-	if (!configloader) return null
-
-	const conf = await configloader()
-	if (!conf) return null
-
-	return conf.default
 }

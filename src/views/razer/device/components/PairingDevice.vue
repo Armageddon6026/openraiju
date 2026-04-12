@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { getRazerDeviceConfig } from '@/driver/razer/helper'
 import { useDeviceStore } from '@/stores'
 import { valibotResolver } from '@primevue/forms/resolvers/valibot'
 import * as v from 'valibot'
@@ -15,6 +14,7 @@ type PairFormValues = {
 const toast = useToast()
 const route = useRoute()
 const deviceStore = useDeviceStore()
+
 const pairedDevicePid = ref<number | null>(null)
 const paired_device_list = ref<RazerPairedDeviceInfo[]>([])
 const isConnecting = ref(false)
@@ -51,11 +51,7 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 
 	const summary = 'Pairing Device'
 	try {
-		const knownPairedPids = (await device.config.getPairedDevices(device.instance)).filter(
-			(pid) => pid !== device.instance.productId,
-		)
-
-		const pairConfig = await getRazerDeviceConfig(values.product_id)
+		const pairConfig = await deviceStore.loadDeviceConfig(values.product_id)
 		if (!pairConfig) {
 			throw new Error('device config not found')
 		}
@@ -67,7 +63,7 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 			values.product_id,
 		)
 
-		const pairedPid = await waitPairedDevicePid(knownPairedPids)
+		const pairedPid = await waitPairedDevicePid()
 		if (!pairedPid) {
 			cancelPairing()
 			throw new Error('pairing timeout after 10 seconds, canceled pairing')
@@ -76,7 +72,7 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 		pairedDevicePid.value = pairedPid
 		paired_device_list.value = paired_device_list.value.filter((d) => d.productId !== pairedPid)
 
-		await deviceStore.addSubDevices(route.params.instanceId as string)
+		await deviceStore.registerSubDevices(route.params.instanceId as string)
 
 		toast.add({
 			severity: 'success',
@@ -127,17 +123,16 @@ async function unpairDevice() {
 	}
 }
 
-async function waitPairedDevicePid(knownPairedPids: number[]) {
+async function waitPairedDevicePid() {
 	const maxRetryTime = 10000
 	const retryInterval = 1000
 	const startTime = Date.now()
 
 	while (Date.now() - startTime < maxRetryTime) {
 		try {
-			const pids = (await device.config.getPairedDevices(device.instance)).filter(
+			const newPairedPid = (await device.config.getPairedDevices(device.instance)).find(
 				(pid) => pid !== device.instance.productId,
 			)
-			const newPairedPid = pids.find((pid) => !knownPairedPids.includes(pid))
 			if (newPairedPid) {
 				return newPairedPid
 			}

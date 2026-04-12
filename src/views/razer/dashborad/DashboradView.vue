@@ -34,7 +34,7 @@ async function connectDevice() {
 		for (const instance of instances) {
 			if (!(await ping(instance))) continue
 
-			await deviceStore.addDevice(instance)
+			await deviceStore.registerDevice(instance)
 			toast.add({
 				severity: 'success',
 				summary: summary,
@@ -60,7 +60,7 @@ async function getHidDevices() {
 	instances.forEach(async (instance) => {
 		if (!(await ping(instance))) return
 
-		await deviceStore.addDevice(instance)
+		await deviceStore.registerDevice(instance)
 	})
 }
 
@@ -91,10 +91,10 @@ function goToDeviceSettings(instanceId: string) {
 			</template>
 		</Card>
 		<DeviceCard
-			v-for="[id, device] in deviceStore.deviceIterator"
+			v-for="[id, device] in deviceStore.deviceEntries"
 			:device="device"
 			@click="goToDeviceSettings(id)"
-			@disconnect="deviceStore.removeDevice(id)"
+			@disconnect="deviceStore.unregisterDevice(id)"
 		></DeviceCard>
 	</div>
 </template>

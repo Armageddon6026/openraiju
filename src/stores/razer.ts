@@ -1,15 +1,29 @@
-import { RAZER_VENDOR_ID } from '@/driver/razer/define'
-import { getRazerDeviceConfig } from '@/driver/razer/helper'
+import { RAZER_DEVICE_CONFIGS, RAZER_VENDOR_ID } from '@/driver/razer/define'
 
 export const useDeviceStore = defineStore('razerStore', () => {
 	const devicesMap = ref(new Map<string, RazerDevice>())
 	const parentToChildren = ref(new Map<string, Set<string>>())
 
-	const deviceIterator = computed(() => Array.from(devicesMap.value.entries()))
+	const deviceEntries = computed(() => Array.from(devicesMap.value.entries()))
 	const hasDevices = computed(() => devicesMap.value.size > 0)
 
-	async function addDevice(instance: HIDDevice) {
-		const deviceConfig = await getRazerDeviceConfig(instance.productId)
+	async function loadDeviceConfig(productId: number): Promise<RazerBaseDeviceConfig | null> {
+		const hex = productId.toString(16).padStart(4, '0')
+
+		// lazy loading
+		const configloader = RAZER_DEVICE_CONFIGS[`/src/driver/razer/devices/${hex}.ts`] as () =>
+			| Promise<{ default: RazerBaseDeviceConfig }>
+			| undefined
+		if (!configloader) return null
+
+		const conf = await configloader()
+		if (!conf) return null
+
+		return conf.default
+	}
+
+	async function registerDevice(instance: HIDDevice) {
+		const deviceConfig = await loadDeviceConfig(instance.productId)
 		if (!deviceConfig) {
 			throw new Error(`Unsupported device with PID ${instance.productId}`)
 		}
@@ -26,10 +40,10 @@ export const useDeviceStore = defineStore('razerStore', () => {
 			status: {},
 		})
 
-		await addSubDevices(instanceId)
+		await registerSubDevices(instanceId)
 	}
 
-	async function addSubDevices(instanceId: string) {
+	async function registerSubDevices(instanceId: string) {
 		const device = devicesMap.value.get(instanceId)
 		if (!device) {
 			return
@@ -46,7 +60,7 @@ export const useDeviceStore = defineStore('razerStore', () => {
 				continue
 			}
 
-			const subDeviceConfig = await getRazerDeviceConfig(pid)
+			const subDeviceConfig = await loadDeviceConfig(pid)
 			if (!subDeviceConfig) {
 				continue
 			}
@@ -78,7 +92,7 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		}
 	}
 
-	async function removeDevice(instanceId: string) {
+	async function unregisterDevice(instanceId: string) {
 		const device = devicesMap.value.get(instanceId)
 		if (!device) {
 			return
@@ -100,7 +114,7 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		const children = parentToChildren.value.get(instanceId)
 		if (children) {
 			for (const childId of children) {
-				await removeDevice(childId)
+				await unregisterDevice(childId)
 			}
 			parentToChildren.value.delete(instanceId)
 		}
@@ -110,7 +124,15 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		return devicesMap.value.get(instanceId)
 	}
 
-	return { deviceIterator, hasDevices, addDevice, addSubDevices, removeDevice, getDevice }
+	return {
+		deviceEntries,
+		hasDevices,
+		loadDeviceConfig,
+		getDevice,
+		registerDevice,
+		registerSubDevices,
+		unregisterDevice,
+	}
 })
 
 if (import.meta.hot) {
