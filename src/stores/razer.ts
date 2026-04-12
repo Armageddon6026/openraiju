@@ -105,6 +105,17 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		devicesMap.value.delete(instanceId)
 
 		if (device.status.isSubDevice) {
+			for (const [parentInstanceId, children] of parentToChildren.value) {
+				if (children.has(instanceId)) {
+					children.delete(instanceId)
+
+					if (children.size === 0) {
+						parentToChildren.value.delete(parentInstanceId)
+					}
+
+					return // stop after finding the parent device
+				}
+			}
 			return
 		}
 

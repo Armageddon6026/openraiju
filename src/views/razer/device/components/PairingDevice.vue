@@ -24,6 +24,7 @@ const isConnecting = ref(false)
 onMounted(async () => {
 	try {
 		const children = deviceStore.getPairedDeviceInstanceIds(route.params.instanceId as string)
+		console.log('children', children)
 		if (children && children.size > 0) {
 			pairedDeviceInstanceIds.value = Array.from(children)
 			paired_device_list.value = undefined
