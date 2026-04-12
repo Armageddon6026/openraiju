@@ -12,10 +12,10 @@ export async function getHyperspeedSupportList(
 	return data.filter((d) => d.type === deviceType).map((d) => ({ productId: d.productId, name: d.name }))
 }
 
-export async function setHyperspeedHardware(this: RazerBaseDeviceConfig, target: RazerBaseDeviceConfig) {
+export async function overrideHyperspeedConfig(this: RazerBaseDeviceConfig, target: RazerBaseDeviceConfig) {
 	target.hardware.wait_min = this.hardware.wait_min
 	target.pairDevice = undefined
 	target.getPairedDevices = undefined
 	target.getPairedSupportList = undefined
-	target.setPairDeviceConfig = undefined
+	target.overridePairedDeviceConfig = undefined
 }

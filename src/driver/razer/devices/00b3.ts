@@ -45,7 +45,7 @@ export default {
 		return supportedDevices.filter((d) => d.type === deviceType).map((d) => ({ productId: d.productId, name: d.name }))
 	},
 
-	setPairDeviceConfig: async function (this: RazerDeviceConfig<'accessory'>, target: RazerBaseDeviceConfig) {
+	overridePairedDeviceConfig: async function (this: RazerDeviceConfig<'accessory'>, target: RazerBaseDeviceConfig) {
 		target.hardware.wait_min = this.hardware.wait_min
 
 		switch (target.ui.type) {
@@ -60,6 +60,6 @@ export default {
 		target.pairDevice = undefined
 		target.getPairedDevices = undefined
 		target.getPairedSupportList = undefined
-		target.setPairDeviceConfig = undefined
+		target.overridePairedDeviceConfig = undefined
 	},
 } as const satisfies RazerDeviceConfig<'accessory'>

@@ -16,7 +16,7 @@ const route = useRoute()
 const deviceStore = useDeviceStore()
 
 const pairedDevicePid = ref<number | null>(null)
-const paired_device_list = ref<RazerPairedDeviceInfo[]>([])
+const paired_device_list = ref<RazerPairedDeviceInfo[]>()
 const isConnecting = ref(false)
 const resolver = valibotResolver(
 	v.object({
@@ -29,11 +29,9 @@ onMounted(async () => {
 		const pids = await device.config.getPairedDevices(device.instance)
 		if (pids.length > 1) {
 			pairedDevicePid.value = pids.find((pid) => pid !== device.instance.productId) || null
-			return
+		} else {
+			paired_device_list.value = await device.config.getPairedSupportList(device.instance)
 		}
-
-		const pairedList = await device.config.getPairedSupportList(device.instance)
-		paired_device_list.value = pairedList.filter((d) => !pids.includes(d.productId))
 	} catch (e) {
 		toast.add({
 			severity: 'error',
@@ -57,7 +55,7 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 		}
 		isConnecting.value = true
 
-		const cancelPairing = await device.config.pairDevice(
+		const cancelPairingCallback = await device.config.pairDevice(
 			device.instance,
 			pairConfig.hardware.transaction_id,
 			values.product_id,
@@ -65,14 +63,12 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 
 		const pairedPid = await waitPairedDevicePid()
 		if (!pairedPid) {
-			cancelPairing()
+			cancelPairingCallback()
 			throw new Error('pairing timeout after 10 seconds, canceled pairing')
 		}
 
 		pairedDevicePid.value = pairedPid
-		paired_device_list.value = paired_device_list.value.filter((d) => d.productId !== pairedPid)
-
-		await deviceStore.registerSubDevices(route.params.instanceId as string)
+		paired_device_list.value = undefined
 
 		toast.add({
 			severity: 'success',
@@ -130,6 +126,8 @@ async function waitPairedDevicePid() {
 
 	while (Date.now() - startTime < maxRetryTime) {
 		try {
+			await deviceStore.registerSubDevices(route.params.instanceId as string)
+
 			const newPairedPid = (await device.config.getPairedDevices(device.instance)).find(
 				(pid) => pid !== device.instance.productId,
 			)

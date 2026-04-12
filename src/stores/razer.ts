@@ -1,7 +1,7 @@
 import { RAZER_DEVICE_CONFIGS, RAZER_VENDOR_ID } from '@/driver/razer/define'
 
 export const useDeviceStore = defineStore('razerStore', () => {
-	const devicesMap = ref(new Map<string, RazerDevice>())
+	const devicesMap = ref(new Map<string, RazerDevice<RazerBaseDeviceConfig>>())
 	const parentToChildren = ref(new Map<string, Set<string>>())
 
 	const deviceEntries = computed(() => Array.from(devicesMap.value.entries()))
@@ -44,40 +44,40 @@ export const useDeviceStore = defineStore('razerStore', () => {
 	}
 
 	async function registerSubDevices(instanceId: string) {
-		const device = devicesMap.value.get(instanceId)
-		if (!device) {
+		const parentDevice = devicesMap.value.get(instanceId)
+		if (!parentDevice) {
 			return
 		}
 
-		const deviceConfig = device.config
+		const { config: parentDeviceConfig, instance: parentDeviceInstance } = parentDevice
+
 		// check for paired sub devices
-		if (!deviceConfig.getPairedDevices) {
+		if (!parentDeviceConfig.getPairedDevices) {
 			return
 		}
-		const pids = await deviceConfig.getPairedDevices(device.instance)
-		for (const pid of pids) {
-			if (pid === deviceConfig.productId) {
-				continue
-			}
+		const pids = (await parentDeviceConfig.getPairedDevices(parentDeviceInstance)).filter(
+			(pid) => pid !== parentDeviceConfig.productId,
+		)
 
+		for (const pid of pids) {
 			const subDeviceConfig = await loadDeviceConfig(pid)
 			if (!subDeviceConfig) {
 				continue
 			}
 
-			const subSn = await subDeviceConfig.getSerial(device.instance)
+			const subSn = await subDeviceConfig.getSerial(parentDeviceInstance)
 			if (!subSn) {
 				throw new Error('No serial number found')
 			}
 
 			// overwrite child device config with parent device config if supported some features like hyperspeed.
-			if (deviceConfig.setPairDeviceConfig) {
-				await deviceConfig.setPairDeviceConfig(subDeviceConfig)
+			if (parentDeviceConfig.overridePairedDeviceConfig) {
+				await parentDeviceConfig.overridePairedDeviceConfig(subDeviceConfig)
 			}
 
 			const subInstanceId = `${RAZER_VENDOR_ID}-${pid}-${subSn}`
 			devicesMap.value.set(subInstanceId, {
-				instance: device.instance,
+				instance: parentDeviceInstance,
 				config: subDeviceConfig,
 				status: {
 					isSubDevice: true,
