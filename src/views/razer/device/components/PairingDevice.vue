@@ -17,20 +17,20 @@ const toast = useToast()
 const route = useRoute()
 const deviceStore = useDeviceStore()
 
-const pairedDeviceInstanceIds = ref<string[] | undefined>()
-const paired_device_list = ref<RazerPairedDeviceInfo[]>()
+const subDeviceInstanceIds = ref<string[] | undefined>()
+const supportedDeviceList = ref<RazerPairedDeviceInfo[]>()
 const isConnecting = ref(false)
 
 onMounted(async () => {
 	try {
 		const children = deviceStore.getPairedDeviceInstanceIds(route.params.instanceId as string)
-		console.log('children', children)
+
 		if (children && children.size > 0) {
-			pairedDeviceInstanceIds.value = Array.from(children)
-			paired_device_list.value = undefined
+			subDeviceInstanceIds.value = Array.from(children)
+			supportedDeviceList.value = undefined
 		} else {
-			pairedDeviceInstanceIds.value = undefined
-			paired_device_list.value = await device.config.getPairedSupportList(device.instance)
+			subDeviceInstanceIds.value = undefined
+			supportedDeviceList.value = await device.config.getPairedSupportList(device.instance)
 		}
 	} catch (e) {
 		toast.add({
@@ -50,31 +50,31 @@ async function pairDevice(event: FormSubmitEvent<PairFormValues>) {
 
 	const summary = 'Pairing Device'
 	try {
-		const pairConfig = await deviceStore.loadDeviceConfig(values.product_id)
-		if (!pairConfig) {
+		const targetDeviceConfig = await deviceStore.loadDeviceConfig(values.product_id)
+		if (!targetDeviceConfig) {
 			throw new Error('device config not found')
 		}
 		isConnecting.value = true
 
 		const cancelPairingCallback = await device.config.pairDevice(
 			device.instance,
-			pairConfig.hardware.transaction_id,
+			targetDeviceConfig.hardware.transaction_id,
 			values.product_id,
 		)
 
-		const newInstanceIds = await waitPairedDevicePid()
-		if (!newInstanceIds || newInstanceIds.length === 0) {
+		const pairedInstanceIds = await waitPairedDevicePid()
+		if (!pairedInstanceIds || pairedInstanceIds.length === 0) {
 			cancelPairingCallback()
 			throw new Error('pairing timeout after 10 seconds, canceled pairing')
 		}
 
-		pairedDeviceInstanceIds.value = newInstanceIds
-		paired_device_list.value = undefined
+		subDeviceInstanceIds.value = pairedInstanceIds
+		supportedDeviceList.value = undefined
 
 		toast.add({
 			severity: 'success',
 			summary,
-			detail: `${pairedDeviceInstanceIds.value.join(', ')} paired successfully`,
+			detail: `${subDeviceInstanceIds.value.join(', ')} paired successfully`,
 			life: 3000,
 		})
 	} catch (e) {
@@ -96,12 +96,12 @@ async function waitPairedDevicePid() {
 
 	while (Date.now() - startTime < maxRetryTime) {
 		try {
-			const newInstanceIds = await deviceStore.registerSubDevices(route.params.instanceId as string)
-			if (newInstanceIds && newInstanceIds.length > 0) {
-				return newInstanceIds
+			const pairedInstanceIds = await deviceStore.registerSubDevices(route.params.instanceId as string)
+			if (pairedInstanceIds && pairedInstanceIds.length > 0) {
+				return pairedInstanceIds
 			}
 		} catch {
-			// 配對過程中可能暫時讀不到，忽略並重試
+			// ignore error and retry until timeout
 		}
 
 		await new Promise((resolve) => setTimeout(resolve, retryInterval))
@@ -127,7 +127,7 @@ async function waitPairedDevicePid() {
 				>
 					<Select
 						name="product_id"
-						:options="paired_device_list"
+						:options="supportedDeviceList"
 						optionLabel="name"
 						optionValue="productId"
 						placeholder="Select HyperPolling Device"
@@ -150,7 +150,7 @@ async function waitPairedDevicePid() {
 
 			<div mt="4" rounded="xl" p="4" bg="[#1a1a1a]" un-border="1 emerald-500/20">
 				<p text="xs gray-400" mb="1">Current Paired Device</p>
-				<p text="sm gray-100">{{ pairedDeviceInstanceIds?.join(', ') }}</p>
+				<p text="sm gray-100">{{ subDeviceInstanceIds?.join(', ') }}</p>
 			</div>
 		</div>
 	</div>

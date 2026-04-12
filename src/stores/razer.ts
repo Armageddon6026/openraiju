@@ -43,8 +43,8 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		await registerSubDevices(instanceId)
 	}
 
-	async function registerSubDevices(instanceId: string) {
-		const parentDevice = devicesMap.value.get(instanceId)
+	async function registerSubDevices(parentInstanceId: string) {
+		const parentDevice = devicesMap.value.get(parentInstanceId)
 		if (!parentDevice) {
 			return
 		}
@@ -87,10 +87,10 @@ export const useDeviceStore = defineStore('razerStore', () => {
 			})
 
 			// link parent and child devices
-			if (!parentToChildren.value.has(instanceId)) {
-				parentToChildren.value.set(instanceId, new Set())
+			if (!parentToChildren.value.has(parentInstanceId)) {
+				parentToChildren.value.set(parentInstanceId, new Set())
 			}
-			parentToChildren.value.get(instanceId)!.add(subInstanceId)
+			parentToChildren.value.get(parentInstanceId)!.add(subInstanceId)
 		}
 
 		return subDeviceInstanceIds
