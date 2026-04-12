@@ -17,27 +17,21 @@ const toast = useToast()
 const route = useRoute()
 const deviceStore = useDeviceStore()
 
-const subDeviceInstanceIds = ref<string[] | undefined>()
 const supportedDeviceList = ref<RazerPairedDeviceInfo[]>()
+const pairedDevices = ref<Array<{ instanceId: string; config: RazerBaseDeviceConfig }>>([])
 const isConnecting = ref(false)
-
-const pairedDevices = computed(() => {
-	if (!subDeviceInstanceIds.value) return []
-	return subDeviceInstanceIds.value
-		.map((instanceId) => deviceStore.getDevice(instanceId))
-		.filter((device): device is RazerDevice<RazerBaseDeviceConfig> => !!device)
-})
 
 onMounted(async () => {
 	try {
 		const children = deviceStore.getPairedDeviceInstanceIds(route.params.instanceId as string)
 
 		if (children && children.size > 0) {
-			subDeviceInstanceIds.value = Array.from(children)
+			const pairedInstanceIds = Array.from(children)
 			supportedDeviceList.value = undefined
+			pairedDevices.value = await loadPairedDevices(pairedInstanceIds)
 		} else {
-			subDeviceInstanceIds.value = undefined
 			supportedDeviceList.value = await device.config.getPairedSupportList(device.instance)
+			pairedDevices.value = []
 		}
 	} catch (e) {
 		toast.add({
@@ -48,6 +42,29 @@ onMounted(async () => {
 		})
 	}
 })
+
+async function loadPairedDevices(instanceIds: string[]) {
+	const entries = await Promise.all(
+		instanceIds.map(async (instanceId) => {
+			const pid = Number(instanceId.split('-')[1])
+			if (!Number.isFinite(pid)) {
+				return null
+			}
+
+			const config = await deviceStore.loadDeviceConfig(pid)
+			if (!config) {
+				return null
+			}
+
+			return {
+				instanceId,
+				config,
+			}
+		}),
+	)
+
+	return entries.filter((item): item is { instanceId: string; config: RazerBaseDeviceConfig } => !!item)
+}
 
 async function pairDevice(event: FormSubmitEvent<PairFormValues>) {
 	const { values, valid } = event
@@ -75,13 +92,13 @@ async function pairDevice(event: FormSubmitEvent<PairFormValues>) {
 			throw new Error('pairing timeout after 10 seconds, canceled pairing')
 		}
 
-		subDeviceInstanceIds.value = pairedInstanceIds
+		pairedDevices.value = await loadPairedDevices(pairedInstanceIds)
 		supportedDeviceList.value = undefined
 
 		toast.add({
 			severity: 'success',
 			summary,
-			detail: `${subDeviceInstanceIds.value.join(', ')} paired successfully`,
+			detail: `${pairedInstanceIds.join(', ')} paired successfully`,
 			life: 3000,
 		})
 	} catch (e) {
@@ -119,46 +136,91 @@ async function waitPairedDevicePid() {
 </script>
 
 <template>
-	<div rounded="2xl" un-border="1 emerald-500/35" bg="#121212" overflow="hidden" p="6">
-		<div flex="~ col" gap="4">
-			<ProgressBar v-if="isConnecting" mode="indeterminate" style="height: 6px"></ProgressBar>
+	<Card rounded="2xl" un-border="1 emerald-500/35" bg="#121212" overflow="hidden">
+		<template #title>
+			<div flex="~" items="center" justify="between">
+				<div>
+					<label block="~" text="xs gray-400" m="b1" font="semibold" uppercase="~">Pairing</label>
+					<h3 text="xl emerald-50" font="bold">Subdevice Management</h3>
+				</div>
+				<div rounded="lg" p="x3 y2" bg="emerald-500/10" un-border="1 emerald-500/30" text="right">
+					<p text="xs emerald-200/85">Status</p>
+					<p text="sm emerald-100" font="bold">
+						{{ isConnecting ? 'Pairing...' : `${pairedDevices.length} Connected` }}
+					</p>
+				</div>
+			</div>
+		</template>
+		<template #content>
+			<div flex="~ col" gap="4">
+				<ProgressBar v-if="isConnecting" mode="indeterminate" style="height: 6px"></ProgressBar>
 
-			<div grid="~ cols-1 md:cols-3" gap="3">
-				<Form
-					v-slot="$form"
-					:resolver="valibotResolver(pairFormSchema)"
-					w="full md:col-span-1"
-					flex="~ col"
-					gap="2"
-					@submit="pairDevice"
+				<div
+					v-if="pairedDevices.length === 0 && !!supportedDeviceList?.length"
+					rounded="xl"
+					p="4"
+					bg="[#171717]"
+					un-border="1 emerald-500/20"
 				>
-					<Select
-						name="product_id"
-						:options="supportedDeviceList"
-						optionLabel="name"
-						optionValue="productId"
-						placeholder="Select HyperPolling Device"
-						w="full"
-						:disabled="isConnecting"
-					></Select>
-					<Message v-if="$form.product_id?.invalid" severity="error" size="small" variant="simple">{{
-						$form.product_id.error?.message
-					}}</Message>
-					<Button
-						w="full"
-						label="Pair"
-						icon="i-material-symbols-link"
-						severity="success"
-						type="submit"
-						:disabled="isConnecting"
-					></Button>
-				</Form>
-			</div>
+					<div grid="~ cols-1 md:cols-3" gap="3">
+						<Form
+							v-slot="$form"
+							:resolver="valibotResolver(pairFormSchema)"
+							w="full md:col-span-1"
+							flex="~ col"
+							gap="2"
+							@submit="pairDevice"
+						>
+							<Select
+								name="product_id"
+								:options="supportedDeviceList"
+								optionLabel="name"
+								optionValue="productId"
+								placeholder="Select HyperPolling Device"
+								w="full"
+								:disabled="isConnecting"
+							></Select>
+							<Message v-if="$form.product_id?.invalid" severity="error" size="small" variant="simple">{{
+								$form.product_id.error?.message
+							}}</Message>
+							<Button
+								w="full"
+								label="Pair"
+								icon="i-material-symbols-link"
+								severity="success"
+								type="submit"
+								:disabled="isConnecting"
+							></Button>
+						</Form>
+					</div>
+				</div>
 
-			<div mt="4" rounded="xl" p="4" bg="[#1a1a1a]" un-border="1 emerald-500/20">
-				<p text="xs gray-400" mb="1">Current Paired Device</p>
-				<p text="sm gray-100">{{ subDeviceInstanceIds?.join(', ') }}</p>
+				<div v-if="pairedDevices.length > 0" mt="2" grid="~ cols-1 md:cols-2" gap="3">
+					<div
+						v-for="item in pairedDevices"
+						:key="item.instanceId"
+						rounded="xl"
+						p="4"
+						bg="[#171717]"
+						un-border="1 emerald-500/20"
+						flex="~ col md:row"
+						gap="4"
+						items="start md:center"
+					>
+						<Image :src="item.config.ui.image" :alt="item.config.ui.name" width="100" />
+						<div>
+							<p text="xs emerald-300/85" uppercase="~" tracking="[0.18em]">Paired Device</p>
+							<p text="lg gray-100" font="semibold">{{ item.config.ui.name }}</p>
+							<p text="xs gray-400">Type: {{ item.config.ui.type }}</p>
+							<p text="xs gray-500" break-all>{{ item.instanceId }}</p>
+						</div>
+					</div>
+				</div>
+
+				<div v-else mt="2" rounded="xl" p="4" bg="[#171717]" un-border="1 emerald-500/20">
+					<p text="xs gray-400">No paired device connected.</p>
+				</div>
 			</div>
-		</div>
-	</div>
+		</template>
+	</Card>
 </template>
