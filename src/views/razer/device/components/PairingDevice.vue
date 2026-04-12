@@ -14,6 +14,7 @@ const pairFormSchema = v.object({
 type PairFormValues = v.InferOutput<typeof pairFormSchema>
 
 const toast = useToast()
+const router = useRouter()
 const route = useRoute()
 const deviceStore = useDeviceStore()
 
@@ -133,6 +134,13 @@ async function waitPairedDevicePid() {
 
 	return null
 }
+
+function goToDeviceSettings(instanceId: string) {
+	router.push({
+		name: `razerdevice`,
+		params: { instanceId: instanceId },
+	})
+}
 </script>
 
 <template>
@@ -199,6 +207,8 @@ async function waitPairedDevicePid() {
 					<div
 						v-for="item in pairedDevices"
 						:key="item.instanceId"
+						role="button"
+						tabindex="0"
 						rounded="xl"
 						p="4"
 						bg="[#171717]"
@@ -206,6 +216,11 @@ async function waitPairedDevicePid() {
 						flex="~ col md:row"
 						gap="4"
 						items="start md:center"
+						cursor="pointer"
+						transition="all duration-200"
+						hover="bg-[#1e1e1e] un-border-emerald-400/40"
+						focus-visible="outline-none un-border-emerald-300/70"
+						@click="goToDeviceSettings(item.instanceId)"
 					>
 						<Image :src="item.config.ui.image" :alt="item.config.ui.name" width="100" />
 						<div>

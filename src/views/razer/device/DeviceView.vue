@@ -30,33 +30,35 @@ const currentDevice = computed(() => {
 // Define async components for each tab content
 // Performance - DPI Stages
 const DpiStagesComp = defineAsyncComponent(() => import('./components/DpiStages.vue'))
-const hasDpiControl = useTypedCapabilityDevice('mouse', currentDevice.value, [
+const hasDpiControl = useTypedCapabilityDevice('mouse', () => currentDevice.value, [
 	'getDpiStages',
 	'setDpiStages',
 	'setActivateDpiStage',
 ] as const)
 
 const SnapTapComp = defineAsyncComponent(() => import('./components/SnapTap.vue'))
-const hasSnapTapControl = useTypedCapabilityDevice('keyboard', currentDevice.value, ['getSnapTapSetting'] as const)
+const hasSnapTapControl = useTypedCapabilityDevice('keyboard', () => currentDevice.value, [
+	'getSnapTapSetting',
+] as const)
 
 // Performance - Polling Rate
 const PollingRateComp = defineAsyncComponent(() => import('./components/PollingRate.vue'))
-const hasPollingControl = useCapabilityDevice(currentDevice.value, ['getPollingRate', 'setPollingRate'] as const)
+const hasPollingControl = useCapabilityDevice(() => currentDevice.value, ['getPollingRate', 'setPollingRate'] as const)
 
 // Power - Idle Time
 const IdleTimeComp = defineAsyncComponent(() => import('./components/IdleTime.vue'))
-const hasIdleTimeControl = useCapabilityDevice(currentDevice.value, ['getIdleTime', 'setIdleTime'] as const)
+const hasIdleTimeControl = useCapabilityDevice(() => currentDevice.value, ['getIdleTime', 'setIdleTime'] as const)
 
 // Power - Battery Threshold
 const BatteryThresholdComp = defineAsyncComponent(() => import('./components/BatteryThreshold.vue'))
-const hasBatteryThresholdControl = useCapabilityDevice(currentDevice.value, [
+const hasBatteryThresholdControl = useCapabilityDevice(() => currentDevice.value, [
 	'getLowBatteryThreshold',
 	'setLowBatteryThreshold',
 ] as const)
 
 // Pairing - Hyperpolling Dongle
 const DonglePairingComp = defineAsyncComponent(() => import('./components/PairingDevice.vue'))
-const hasHyperpollingControl = useCapabilityDevice(currentDevice.value, [
+const hasHyperpollingControl = useCapabilityDevice(() => currentDevice.value, [
 	'pairDevice',
 	'unpairDevice',
 	'getPairedDevices',

@@ -17,20 +17,22 @@ function deviceHasTypeAndFeatures<T extends RazerDeviceType, K extends keyof Raz
 }
 
 export function useCapabilityDevice<K extends keyof RazerDeviceFeature>(
-	d: RazerDevice<RazerBaseDeviceConfig> | undefined,
+	getDevice: () => RazerDevice<RazerBaseDeviceConfig> | undefined,
 	features: readonly K[],
 ) {
 	return computed((): DeviceWith<K> | undefined => {
-		return deviceHasFeatures(d, features) ? d : undefined
+		const device = getDevice()
+		return deviceHasFeatures(device, features) ? device : undefined
 	})
 }
 
 export function useTypedCapabilityDevice<T extends RazerDeviceType, K extends keyof RazerDeviceFeature>(
 	type: T,
-	d: RazerDevice<RazerBaseDeviceConfig> | undefined,
+	getDevice: () => RazerDevice<RazerBaseDeviceConfig> | undefined,
 	features: readonly K[],
 ) {
 	return computed((): TypedDeviceWith<T, K> | undefined => {
-		return deviceHasTypeAndFeatures(d, type, features) ? d : undefined
+		const device = getDevice()
+		return deviceHasTypeAndFeatures(device, type, features) ? device : undefined
 	})
 }
