@@ -139,8 +139,8 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		return devicesMap.value.get(instanceId)
 	}
 
-	function getPairedDeviceInstanceIds(instanceId: string) {
-		return parentToChildren.value.get(instanceId)
+	function getPairedDeviceInstanceIds(parentInstanceId: string) {
+		return parentToChildren.value.get(parentInstanceId)
 	}
 
 	return {

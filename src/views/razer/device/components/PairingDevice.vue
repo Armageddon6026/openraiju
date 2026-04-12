@@ -21,6 +21,13 @@ const subDeviceInstanceIds = ref<string[] | undefined>()
 const supportedDeviceList = ref<RazerPairedDeviceInfo[]>()
 const isConnecting = ref(false)
 
+const pairedDevices = computed(() => {
+	if (!subDeviceInstanceIds.value) return []
+	return subDeviceInstanceIds.value
+		.map((instanceId) => deviceStore.getDevice(instanceId))
+		.filter((device): device is RazerDevice<RazerBaseDeviceConfig> => !!device)
+})
+
 onMounted(async () => {
 	try {
 		const children = deviceStore.getPairedDeviceInstanceIds(route.params.instanceId as string)

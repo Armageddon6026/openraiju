@@ -88,8 +88,8 @@ declare interface RazerPairedDeviceInfo {
 }
 
 declare interface RazerDeviceFeature {
-	getSerial(this: RazerDeviceConfig, instance: HIDDevice): Promise<string>
-	getFirmware(this: RazerDeviceConfig, instance: HIDDevice): Promise<string>
+	getSerial: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<string>
+	getFirmware: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<string>
 	// option
 	getBatteryLevel?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<number>
 	getChargeState?: (this: RazerDeviceConfig, instance: HIDDevice) => Promise<boolean>
