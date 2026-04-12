@@ -10,6 +10,11 @@ type razer_led_indicator_mode = keyof typeof RAZER_LED_INDICATOR_MODE_MAP
 const toast = useToast()
 
 const ledIndicatorMode = ref<razer_led_indicator_mode>()
+const ledIndicatorModeDescription: Record<razer_led_indicator_mode, string> = {
+	1: 'White when connected to mouse.',
+	2: 'Green/Yellow/Red by battery level.',
+	3: 'Red when battery is low, off otherwise.',
+}
 
 const modeOptions = computed(() => {
 	return Object.entries(RAZER_LED_INDICATOR_MODE_MAP).map(([mode, value]) => ({
@@ -101,6 +106,9 @@ async function setLedIndicatorMode(mode: razer_led_indicator_mode) {
 							<p text="xs gray-400" m="b1">MODE {{ option.mode }}</p>
 							<p text="lg" font="bold" :class="ledIndicatorMode === option.mode ? 'text-emerald-100' : 'text-white'">
 								{{ option.label }}
+							</p>
+							<p text="xs" m="t2" :class="ledIndicatorMode === option.mode ? 'text-emerald-200/85' : 'text-gray-400'">
+								{{ ledIndicatorModeDescription[option.mode] }}
 							</p>
 						</div>
 						<span
