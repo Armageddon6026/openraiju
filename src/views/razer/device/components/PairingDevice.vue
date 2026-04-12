@@ -14,6 +14,7 @@ const pairFormSchema = v.object({
 type PairFormValues = v.InferOutput<typeof pairFormSchema>
 
 const toast = useToast()
+const confirm = useConfirm()
 const router = useRouter()
 const route = useRoute()
 const deviceStore = useDeviceStore()
@@ -135,6 +136,54 @@ async function waitPairedDevicePid() {
 	return null
 }
 
+async function unpairDevice(instanceId: string, productId: number, deviceName: string) {
+	const summary = 'Unpairing Device'
+
+	confirm.require({
+		message: 'Do you want to unpair this sub device?',
+		header: 'Unpair Sub Device',
+		rejectLabel: 'Cancel',
+		rejectProps: {
+			label: 'Cancel',
+			severity: 'secondary',
+			outlined: true,
+		},
+		acceptProps: {
+			label: 'Unpair',
+			severity: 'danger',
+		},
+		accept: async () => {
+			if (!device.config.unpairDevice) {
+				return
+			}
+
+			try {
+				await device.config.unpairDevice(device.instance, productId)
+				await deviceStore.unregisterDevice(instanceId)
+				pairedDevices.value = pairedDevices.value.filter((item) => item.instanceId !== instanceId)
+
+				if (pairedDevices.value.length === 0) {
+					supportedDeviceList.value = await device.config.getPairedSupportList(device.instance)
+				}
+
+				toast.add({
+					severity: 'success',
+					summary: summary,
+					detail: `${deviceName} disconnected`,
+					life: 3000,
+				})
+			} catch (e) {
+				toast.add({
+					severity: 'error',
+					summary: summary,
+					detail: `${e}`,
+					life: 3000,
+				})
+			}
+		},
+	})
+}
+
 function goToDeviceSettings(instanceId: string) {
 	router.push({
 		name: `razerdevice`,
@@ -229,6 +278,7 @@ function goToDeviceSettings(instanceId: string) {
 						:key="item.instanceId"
 						role="button"
 						tabindex="0"
+						relative="~"
 						rounded="xl"
 						p="4"
 						bg="[#171717]"
@@ -248,7 +298,14 @@ function goToDeviceSettings(instanceId: string) {
 							<p text="lg gray-100" font="semibold">{{ item.config.ui.name }}</p>
 							<p text="xs gray-400">Type: {{ item.config.ui.type }}</p>
 						</div>
-						<span i="material-symbols-chevron-right-rounded" text="2xl emerald-300/75" m="l-auto"></span>
+						<div absolute="~" top="2" right="2" z="1">
+							<Button
+								severity="danger"
+								variant="text"
+								icon="i-material-symbols-link-off-rounded"
+								@click.stop="unpairDevice(item.instanceId, item.config.productId, item.config.ui.name)"
+							></Button>
+						</div>
 					</div>
 				</div>
 
