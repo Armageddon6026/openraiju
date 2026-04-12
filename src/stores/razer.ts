@@ -12,14 +12,14 @@ export const useDeviceStore = defineStore('razerStore', () => {
 
 		// lazy loading
 		const configloader = RAZER_DEVICE_CONFIGS[`/src/driver/razer/devices/${hex}.ts`] as () =>
-			| Promise<{ default: RazerBaseDeviceConfig }>
+			| Promise<{ default: () => RazerBaseDeviceConfig }>
 			| undefined
 		if (!configloader) return null
 
 		const conf = await configloader()
 		if (!conf) return null
 
-		return conf.default
+		return conf.default()
 	}
 
 	async function registerDevice(instance: HIDDevice) {
