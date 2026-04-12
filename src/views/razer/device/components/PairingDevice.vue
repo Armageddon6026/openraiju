@@ -232,7 +232,7 @@ function goToDeviceSettings(instanceId: string) {
 							text="sm emerald-200"
 							font="bold"
 						>
-							{{ supportedDeviceList.length }} Ready
+							Ready
 						</div>
 					</div>
 
