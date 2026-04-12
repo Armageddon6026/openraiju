@@ -224,10 +224,9 @@ function goToDeviceSettings(instanceId: string) {
 					>
 						<Image :src="item.config.ui.image" :alt="item.config.ui.name" width="100" />
 						<div>
-							<p text="xs emerald-300/85" uppercase="~" tracking="[0.18em]">Paired Device</p>
+							<p text="xs emerald-300/85" uppercase="~" tracking="[0.18em]">Razer Device</p>
 							<p text="lg gray-100" font="semibold">{{ item.config.ui.name }}</p>
 							<p text="xs gray-400">Type: {{ item.config.ui.type }}</p>
-							<p text="xs gray-500" break-all>{{ item.instanceId }}</p>
 						</div>
 					</div>
 				</div>

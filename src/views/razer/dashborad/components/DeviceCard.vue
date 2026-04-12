@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { device } = defineProps<{ device: RazerDevice<RazerBaseDeviceConfig> }>()
 const emits = defineEmits<{
-	disconnect: [productId: number]
+	disconnect: []
 }>()
 
 const toast = useToast()
@@ -38,7 +38,7 @@ async function disconnectDevice() {
 		},
 		accept: async () => {
 			try {
-				emits('disconnect', device.config.productId)
+				emits('disconnect')
 				toast.add({
 					severity: 'success',
 					summary: summary,
@@ -80,7 +80,7 @@ async function unpairDevice() {
 
 			try {
 				await device.config.unpairDevice(device.instance, device.config.productId)
-				emits('disconnect', device.config.productId)
+				emits('disconnect')
 				toast.add({
 					severity: 'success',
 					summary: summary,
