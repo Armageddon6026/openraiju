@@ -27,8 +27,6 @@ export default {
 	getDpiStages: mouse_command.getDpiStages,
 	setDpiStages: mouse_command.setDpiStages,
 	setActivateDpiStage: mouse_command.setActivateDpiStage,
-	getTrackingStep: mouse_command.getTrackingStep,
-	setTrackingStep: mouse_command.setTrackingStep,
 	getPollingRate: hardware_command.getPollingRate,
 	setPollingRate: hardware_command.setPollingRate,
 } as const satisfies RazerDeviceConfig<'mouse'>
