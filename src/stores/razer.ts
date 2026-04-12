@@ -59,6 +59,7 @@ export const useDeviceStore = defineStore('razerStore', () => {
 			(pid) => pid !== parentDeviceConfig.productId,
 		)
 
+		const subDeviceInstanceIds: Array<string> = []
 		for (const pid of pids) {
 			const subDeviceConfig = await loadDeviceConfig(pid)
 			if (!subDeviceConfig) {
@@ -76,6 +77,7 @@ export const useDeviceStore = defineStore('razerStore', () => {
 			}
 
 			const subInstanceId = `${RAZER_VENDOR_ID}-${pid}-${subSn}`
+			subDeviceInstanceIds.push(subInstanceId)
 			devicesMap.value.set(subInstanceId, {
 				instance: parentDeviceInstance,
 				config: subDeviceConfig,
@@ -90,6 +92,8 @@ export const useDeviceStore = defineStore('razerStore', () => {
 			}
 			parentToChildren.value.get(instanceId)!.add(subInstanceId)
 		}
+
+		return subDeviceInstanceIds
 	}
 
 	async function unregisterDevice(instanceId: string) {
@@ -111,7 +115,7 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		await device.instance.forget()
 
 		// remove child devices
-		const children = parentToChildren.value.get(instanceId)
+		const children = getPairedDeviceInstanceIds(instanceId)
 		if (children) {
 			for (const childId of children) {
 				await unregisterDevice(childId)
@@ -124,11 +128,16 @@ export const useDeviceStore = defineStore('razerStore', () => {
 		return devicesMap.value.get(instanceId)
 	}
 
+	function getPairedDeviceInstanceIds(instanceId: string) {
+		return parentToChildren.value.get(instanceId)
+	}
+
 	return {
 		deviceEntries,
 		hasDevices,
 		loadDeviceConfig,
 		getDevice,
+		getPairedDeviceInstanceIds,
 		registerDevice,
 		registerSubDevices,
 		unregisterDevice,

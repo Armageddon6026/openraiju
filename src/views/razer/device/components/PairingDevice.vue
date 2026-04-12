@@ -15,7 +15,7 @@ const toast = useToast()
 const route = useRoute()
 const deviceStore = useDeviceStore()
 
-const pairedDevicePid = ref<number | null>(null)
+const pairedDeviceInstanceIds = ref<string[] | undefined>()
 const paired_device_list = ref<RazerPairedDeviceInfo[]>()
 const isConnecting = ref(false)
 const resolver = valibotResolver(
@@ -26,9 +26,9 @@ const resolver = valibotResolver(
 
 onMounted(async () => {
 	try {
-		const pids = await device.config.getPairedDevices(device.instance)
-		if (pids.length > 1) {
-			pairedDevicePid.value = pids.find((pid) => pid !== device.instance.productId) || null
+		const children = deviceStore.getPairedDeviceInstanceIds(route.params.instanceId as string)
+		if (children && children.size > 0) {
+			pairedDeviceInstanceIds.value = Array.from(children)
 		} else {
 			paired_device_list.value = await device.config.getPairedSupportList(device.instance)
 		}
@@ -61,19 +61,21 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 			values.product_id,
 		)
 
-		const pairedPid = await waitPairedDevicePid()
-		if (!pairedPid) {
+		const newInstanceIds = await waitPairedDevicePid()
+		if (!newInstanceIds || newInstanceIds.length === 0) {
 			cancelPairingCallback()
 			throw new Error('pairing timeout after 10 seconds, canceled pairing')
 		}
 
-		pairedDevicePid.value = pairedPid
+		console.log('newInstanceIds', newInstanceIds)
+
+		pairedDeviceInstanceIds.value = newInstanceIds
 		paired_device_list.value = undefined
 
 		toast.add({
 			severity: 'success',
 			summary,
-			detail: `pid ${pairedPid}`,
+			detail: `${pairedDeviceInstanceIds.value.join(', ')} paired successfully`,
 			life: 3000,
 		})
 	} catch (e) {
@@ -88,37 +90,6 @@ async function pairDevice({ valid, values }: { valid: boolean; values: PairFormV
 	}
 }
 
-async function unpairDevice() {
-	if (!pairedDevicePid.value) {
-		toast.add({
-			severity: 'warn',
-			summary: 'Unpairing Device',
-			detail: 'No paired device',
-			life: 3000,
-		})
-		return
-	}
-
-	const summary = 'Unpairing Device'
-	try {
-		await device.config.unpairDevice(device.instance, pairedDevicePid.value)
-		pairedDevicePid.value = null
-		toast.add({
-			severity: 'success',
-			summary: summary,
-			detail: `success`,
-			life: 3000,
-		})
-	} catch (e) {
-		toast.add({
-			severity: 'error',
-			summary: summary,
-			detail: `${e}`,
-			life: 3000,
-		})
-	}
-}
-
 async function waitPairedDevicePid() {
 	const maxRetryTime = 10000
 	const retryInterval = 1000
@@ -126,13 +97,9 @@ async function waitPairedDevicePid() {
 
 	while (Date.now() - startTime < maxRetryTime) {
 		try {
-			await deviceStore.registerSubDevices(route.params.instanceId as string)
-
-			const newPairedPid = (await device.config.getPairedDevices(device.instance)).find(
-				(pid) => pid !== device.instance.productId,
-			)
-			if (newPairedPid) {
-				return newPairedPid
+			const newInstanceIds = await deviceStore.registerSubDevices(route.params.instanceId as string)
+			if (newInstanceIds && newInstanceIds.length > 0) {
+				return newInstanceIds
 			}
 		} catch {
 			// 配對過程中可能暫時讀不到，忽略並重試
@@ -185,7 +152,7 @@ async function waitPairedDevicePid() {
 
 			<div mt="4" rounded="xl" p="4" bg="[#1a1a1a]" un-border="1 emerald-500/20">
 				<p text="xs gray-400" mb="1">Current Paired Device</p>
-				<p text="sm gray-100">{{ pairedDevicePid }}</p>
+				<p text="sm gray-100">{{ pairedDeviceInstanceIds?.join(', ') }}</p>
 			</div>
 		</div>
 	</div>
