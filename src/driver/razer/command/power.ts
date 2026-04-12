@@ -112,7 +112,7 @@ export const power_command = {
 		// BatteryWarning: 3
 		await sendCommand(
 			instance,
-			buildRazerReport(this.hardware.transaction_id, 0x01, 0x07, 0x02, [mode]),
+			buildRazerReport(this.hardware.transaction_id, 0x01, 0x07, 0x10, [mode]),
 			this.hardware.wait_min,
 		)
 	},

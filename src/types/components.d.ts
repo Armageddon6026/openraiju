@@ -21,6 +21,7 @@ declare module 'vue' {
     Form: typeof import('@primevue/forms/form')['default']
     IdleTime: typeof import('./../views/razer/device/components/IdleTime.vue')['default']
     Image: typeof import('primevue/image')['default']
+    LedIndicator: typeof import('./../views/razer/device/components/LedIndicator.vue')['default']
     Message: typeof import('primevue/message')['default']
     PairingDevice: typeof import('./../views/razer/device/components/PairingDevice.vue')['default']
     PollingRate: typeof import('./../views/razer/device/components/PollingRate.vue')['default']

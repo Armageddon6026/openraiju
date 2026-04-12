@@ -64,6 +64,13 @@ const hasHyperpollingControl = useCapabilityDevice(() => currentDevice.value, [
 	'getPairedDevices',
 ] as const)
 
+// Lighting - LED Indicator Mode
+const LedIndicatorComp = defineAsyncComponent(() => import('./components/LedIndicator.vue'))
+const hasLedIndicatorControl = useCapabilityDevice(() => currentDevice.value, [
+	'getLedIndicatorMode',
+	'setLedIndicatorMode',
+] as const)
+
 const visibleTabs = computed((): ResolvedTab[] => {
 	const tabs: ResolvedTab[] = [
 		{
@@ -80,7 +87,7 @@ const visibleTabs = computed((): ResolvedTab[] => {
 			value: 1,
 			icon: 'i-material-symbols-light-mode',
 			label: 'Lighting',
-			contents: [],
+			contents: [resolve(LedIndicatorComp, hasLedIndicatorControl.value)].filter(Boolean) as TabContent[],
 		},
 		{
 			value: 2,
