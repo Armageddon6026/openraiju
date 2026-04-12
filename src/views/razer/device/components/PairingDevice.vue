@@ -202,15 +202,15 @@ function goToDeviceSettings(instanceId: string) {
 									:options="supportedDeviceList"
 									optionLabel="name"
 									optionValue="productId"
-									placeholder="Select HyperPolling Device"
+									placeholder="Select Supported Device"
 									w="full"
 									:disabled="isConnecting"
 								></Select>
 								<Button
 									w="full md:150px"
-									label="Pair Device"
+									label="Start Pairing"
 									icon="i-material-symbols-link"
-									severity="success"
+									severity="info"
 									type="submit"
 									:loading="isConnecting"
 									:disabled="isConnecting"

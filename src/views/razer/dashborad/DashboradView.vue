@@ -6,12 +6,12 @@ import { RAZER_VENDOR_ID } from '@/driver/razer/define'
 const toast = useToast()
 const router = useRouter()
 const deviceStore = useDeviceStore()
-const razer_support_list = ref<HIDDeviceFilter[]>([])
+const razer_hid_filter = ref<HIDDeviceFilter[]>([])
 
 onMounted(async () => {
-	const res = await fetch('/razer/support_devices.json')
-	const data = await res.json()
-	razer_support_list.value = data.map((d: { productId: number; usagePage?: number; usage?: number }) => ({
+	const data = await fetch('/razer/webhid_filter.json')
+	const filter = await data.json()
+	razer_hid_filter.value = filter.map((d: { productId: number; usagePage?: number; usage?: number }) => ({
 		vendorId: RAZER_VENDOR_ID,
 		productId: d.productId,
 		usagePage: d.usagePage ?? 0x01,
@@ -27,7 +27,7 @@ async function connectDevice() {
 	try {
 		const instances = (
 			await navigator.hid.requestDevice({
-				filters: razer_support_list.value,
+				filters: razer_hid_filter.value,
 			})
 		).filter((d) => d.collections.length == 1)
 
