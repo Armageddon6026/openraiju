@@ -13,5 +13,6 @@
 	"editor.formatOnSave": true,
 	"vue.hover.rich": true,
 	"oxc.lint.run": "onSave",
-	"oxc.requireConfig": true
+	"oxc.requireConfig": true,
+	"workbench.browser.openLocalhostLinks": true
 }

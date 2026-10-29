@@ -1,42 +1,41 @@
-# openrazer_web
+# Openraiju - Razer WebHID Controller
 
-This template should help get you started developing with Vue 3 in Vite.
+A simple web-based controller for Razer devices, built with Vue, UnoCSS, and the WebHID API.
 
-## Recommended IDE Setup
+## Screenshots
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+![Screenshot A](./doc/screenshot/a.jpg)
 
-## Recommended Browser Setup
+![Screenshot B](./doc/screenshot/e.jpg)
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Tech Stack
 
-## Type Support for `.vue` Imports in TS
+- [Vue](https://vuejs.org/)
+- [UnoCSS](https://unocss.dev/)
+- [WebHID API](https://developer.mozilla.org/en-US/docs/Web/API/WebHID_API)
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## Getting Started
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
 pnpm install
+pnpm run dev
 ```
 
-### Compile and Hot-Reload for Development
+Open the local URL provided by Vite in your browser.
 
-```sh
-pnpm dev
-```
+## Usage
 
-### Type-Check, Compile and Minify for Production
+1. Connect your compatible Razer device.
+2. Open the project in a WebHID-compatible browser.
+3. Grant permission to access your device when prompted.
+4. Use the interface to control supported features.
 
-```sh
-pnpm build
-```
+## Notes
+
+- Requires a browser that supports the WebHID API.
+- Device compatibility and available features depend on the implementation.
+- WebHID generally requires a secure context, such as HTTPS or localhost.
+
+## License
+
+MIT
